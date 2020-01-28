@@ -2,8 +2,8 @@ import Foundation
 
 #if os(iOS) || os(tvOS) || os(watchOS)
   import UIKit
-  typealias Image = UIColor
+  public typealias Color = UIColor
 #elseif os(macOS)
   import Cocoa
-  typealias Image = NSColor
+  public typealias Color = NSColor
 #endif
