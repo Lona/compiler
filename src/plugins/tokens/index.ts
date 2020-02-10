@@ -3,6 +3,8 @@ import { Helpers } from '../../helpers'
 import { ConvertedWorkspace, ConvertedFile } from './tokens-ast'
 import { convert } from './convert'
 
+export { ConvertedWorkspace, ConvertedFile }
+
 export const parseFile = async (
   filePath: string,
   helpers: Helpers

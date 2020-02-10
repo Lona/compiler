@@ -6,6 +6,7 @@ import * as fileSearch from './file-search'
 
 type LonaJSON = {
   ignore: string[]
+  [key: string]: any
 }
 
 export type Config = {
@@ -45,7 +46,7 @@ export async function load(
   ) as LonaJSON
 
   if (!lonaFile.ignore) {
-    lonaFile.ignore = ['node_modules', '.git']
+    lonaFile.ignore = ['**/node_modules/**', '**/.git/**']
   }
 
   const componentPaths = fileSearch.sync(

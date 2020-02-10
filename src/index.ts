@@ -5,6 +5,8 @@ import { Plugin } from './plugins'
 import { findPlugin, isWorkspacePath, config, findWorkspace } from './utils'
 import Helpers from './helpers'
 
+export type Config = config.Config
+
 export const getConfig = async (workspacePath: string) => {
   const resolvedPath = path.resolve(workspacePath)
 

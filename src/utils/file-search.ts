@@ -9,7 +9,5 @@ export const sync = (
   glob: string,
   options: { ignore?: string[] } = {}
 ) => {
-  return Glob.sync(path.join(workspacePath, glob), options).map(x =>
-    path.relative(workspacePath, x)
-  )
+  return Glob.sync(glob, { ...options, cwd: workspacePath })
 }

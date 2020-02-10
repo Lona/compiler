@@ -4,6 +4,8 @@ import { ConvertedWorkspace, ConvertedFile } from '../tokens/tokens-ast'
 import { convert } from './convert'
 import { findChildPages } from './utils'
 
+export { ConvertedWorkspace, ConvertedFile }
+
 export const parseFile = async (
   filePath: string,
   helpers: Helpers
