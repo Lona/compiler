@@ -20,6 +20,7 @@ export type Helpers = {
   evaluationContext: EvaluationContext | undefined
   HandlePreludeFactory: typeof HandlePreludeFactory
   reporter: {
+    info(...args: any[]): void
     log(...args: any[]): void
     warn(...args: any[]): void
     error(...args: any[]): void
@@ -35,7 +36,13 @@ export type PreludeFlags = {
 
 export default async (
   workspacePath: string,
-  _outputPath?: unknown
+  _outputPath?: unknown,
+  reporter?: {
+    info(...args: any[]): void
+    log(...args: any[]): void
+    warn(...args: any[]): void
+    error(...args: any[]): void
+  }
 ): Promise<Helpers> => {
   const outputPath =
     typeof _outputPath === 'string'
@@ -92,7 +99,8 @@ export default async (
       return cachedEvaluationContext
     },
     HandlePreludeFactory,
-    reporter: {
+    reporter: reporter || {
+      info: console.info.bind(console),
       log: console.log.bind(console),
       warn: console.warn.bind(console),
       error: console.error.bind(console),

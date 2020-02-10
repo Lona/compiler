@@ -39,7 +39,6 @@ export async function load(
   }
 ): Promise<Config> {
   const rootDirname = path.dirname(path.dirname(__dirname))
-  console.error(`Running compiler from: ${rootDirname}`)
 
   const lonaFile = JSON.parse(
     await fs.promises.readFile(path.join(workspacePath, 'lona.json'), 'utf-8')
