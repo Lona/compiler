@@ -1,22 +1,28 @@
 {
-  "name": "lonac",
-  "version": "0.10.0",
+  "name": "@lona/compiler",
+  "version": "0.1.0",
   "description": "Lona cross-platform code compiler",
   "main": "lib/index.js",
-  "bin": "lib/bin.js",
+  "bin": {
+    "lona": "lib/bin.js"
+  },
+  "files": [
+    "lib",
+    "static"
+  ],
   "types": "lib/index.d.ts",
   "scripts": {
     "build:src": "tsc -- declaration",
     "build:types": "ts-node ./scripts/generate-prelude-types.ts",
     "build": "rm -rf ./lib && npm run build:types && npm run build:src",
     "prepublishOnly": "npm run build",
-    "snapshot": "npm run snapshot:tokens",
-    "snapshot:tokens": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=tokens > ../../examples/generated/FlatTokens/output.json",
-    "snapshot:documentation": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=documentation > ../../examples/generated/tokens/documentation.json",
-    "snapshot:swift": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=swift --output=../../examples/generated/tokens/swift",
-    "snapshot:js": "ts-node src/bin.ts convert ../../examples/FlatTokens --format=js --output=../../examples/generated/tokens/react-dom"
+    "snapshot": "npm run snapshot:tokens && npm run snapshot:documentation && npm run snapshot:swift && npm run snapshot:js",
+    "snapshot:tokens": "ts-node src/bin.ts convert ./examples/workspace --format=tokens > ./examples/generated/tokens.json",
+    "snapshot:documentation": "ts-node src/bin.ts convert ./examples/workspace --format=documentation > ./examples/generated/documentation.json",
+    "snapshot:swift": "ts-node src/bin.ts convert ./examples/workspace --format=swift --output=./examples/generated/swift",
+    "snapshot:js": "ts-node src/bin.ts convert ./examples/workspace --format=js --output=./examples/generated/js"
   },
-  "repository": "https://github.com/airbnb/Lona",
+  "repository": "https://github.com/Lona/compiler",
   "author": "Mathieu Dutour",
   "license": "MIT",
   "dependencies": {

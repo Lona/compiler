@@ -5,8 +5,8 @@ import yargs from 'yargs'
 import { getConfig, convert } from './index'
 
 yargs
-  .scriptName('lonac')
-  .usage('Usage: lonac <command> [options]')
+  .scriptName('@lona/compiler')
+  .usage('Usage: lona <command> [options]')
   .command(
     'config [workspace]',
     'Get the configuration of a Lona workspace',
