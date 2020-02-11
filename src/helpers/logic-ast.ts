@@ -278,29 +278,29 @@ export function getNode(
 }
 
 function pathTo(
-  node: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier,
+  rootNode: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier,
   id: string
 ):
   | (LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier)[]
   | undefined {
-  if (id === ('id' in node ? node.id : node.data.id)) {
-    return [node]
+  if (id === ('id' in rootNode ? rootNode.id : rootNode.data.id)) {
+    return [rootNode]
   }
-  if (!('type' in node)) {
+  if (!('type' in rootNode)) {
     return undefined
   }
 
-  const pattern = getPattern(node)
+  const pattern = getPattern(rootNode)
   if (pattern && pattern.id === id) {
     return [pattern]
   }
 
-  const identifier = getIdentifier(node)
+  const identifier = getIdentifier(rootNode)
   if (identifier && identifier.id === id) {
     return [identifier]
   }
 
-  return subNodes(node).reduce<
+  return subNodes(rootNode).reduce<
     (LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier)[] | undefined
   >((prev, item) => {
     if (prev) {
@@ -308,17 +308,17 @@ function pathTo(
     }
     const subPath = pathTo(item, id)
     if (subPath) {
-      return [node, ...subPath]
+      return [rootNode, ...subPath]
     }
     return undefined
   }, undefined)
 }
 
 export function findNode(
-  node: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier,
+  rootNode: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier,
   id: string
 ) {
-  const path = pathTo(node, id)
+  const path = pathTo(rootNode, id)
   if (!path) {
     return undefined
   }
@@ -335,13 +335,19 @@ export function findParentNode(
     return undefined
   }
 
-  return path[path.length - 2]
+  const parent = path[path.length - 2]
+
+  if (!('type' in parent)) {
+    return undefined
+  }
+
+  return parent
 }
 
 export function declarationPathTo(
   node: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier,
   id: string
-) {
+): string[] {
   const path = pathTo(node, id)
   if (!path) {
     return []

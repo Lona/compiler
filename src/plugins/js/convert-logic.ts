@@ -1,17 +1,8 @@
 import { LogicAST } from '@lona/serialization'
 import lowerFirst from 'lodash.lowerfirst'
-import helpers, {
-  Helpers,
-  HardcodedMap,
-  EvaluationContext,
-} from '../../helpers'
+import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
 import { nonNullable } from '../../utils'
 import * as JSAST from './js-ast'
-import {
-  declarationPathTo,
-  makeProgram,
-  findParentNode,
-} from '../../helpers/logic-ast'
 import { enumName } from './format'
 
 type LogicGenerationContext = {
@@ -77,7 +68,8 @@ const createVariableOrProperty = (
 const sharedPrefix = (
   rootNode: LogicAST.SyntaxNode,
   a: string,
-  b: string
+  b: string,
+  context: LogicGenerationContext
 ): string[] => {
   function inner(aPath: string[], bPath: string[]): string[] {
     const a = aPath.shift()
@@ -88,8 +80,8 @@ const sharedPrefix = (
     return []
   }
 
-  const aPath = declarationPathTo(rootNode, a)
-  const bPath = declarationPathTo(rootNode, b)
+  const aPath = context.helpers.ast.traversal.declarationPathTo(rootNode, a)
+  const bPath = context.helpers.ast.traversal.declarationPathTo(rootNode, b)
   return inner(aPath, bPath)
 }
 
@@ -277,7 +269,7 @@ export default function convert(
     resolveStandardLibrary: helpers.createStandardLibraryResolver(hardcoded),
   }
 
-  const program = makeProgram(node)
+  const program = helpers.ast.makeProgram(node)
 
   if (!program) {
     helpers.reporter.warn(`Unhandled syntaxNode type "${node.type}"`)
@@ -378,7 +370,8 @@ const declaration = (
             const prefix = sharedPrefix(
               context.rootNode,
               node.data.id,
-              child.data.expression.data.id
+              child.data.expression.data.id,
+              context
             )
 
             if (prefix.length === 0) {
@@ -484,7 +477,10 @@ const expression = (
         return standard
       }
 
-      const pattern = declarationPathTo(context.rootNode, patternId)
+      const pattern = context.helpers.ast.traversal.declarationPathTo(
+        context.rootNode,
+        patternId
+      )
 
       if (!pattern.length) {
         return standard
@@ -549,7 +545,7 @@ const expression = (
         return standard
       }
 
-      const parent = findParentNode(
+      const parent = context.helpers.ast.traversal.findParentNode(
         context.helpers.evaluationContext.rootNode,
         patternId
       )
@@ -610,7 +606,7 @@ const expression = (
         parent.type === 'declaration' &&
         parent.data.content.type === 'enumeration'
       ) {
-        const enumeration = findParentNode(
+        const enumeration = context.helpers.ast.traversal.findParentNode(
           context.helpers.evaluationContext.rootNode,
           parent.data.id
         )

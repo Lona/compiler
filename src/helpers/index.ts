@@ -8,6 +8,12 @@ import { FSWrapper, createFSWrapper } from './fs'
 export { HardcodedMap } from './hardcoded-mapping'
 export { EvaluationContext } from './logic-evaluate'
 import { TraversalConfig, reduce } from './logic-traversal'
+import {
+  makeProgram,
+  declarationPathTo,
+  findParentNode,
+  findNode,
+} from './logic-ast'
 
 /**
  * Helpers passed to every plugins. They contains some methods abstracting
@@ -41,7 +47,28 @@ export type Helpers = {
    */
   createStandardLibraryResolver: typeof createStandardLibraryResolver
   ast: {
+    /** Tries to make a program out of any Logic node */
+    makeProgram: (node: LogicAST.SyntaxNode) => LogicAST.Program | undefined
+    /** A set of methods to help traverse the AST */
     traversal: {
+      declarationPathTo: (
+        node: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier,
+        id: string
+      ) => string[]
+      /** Find the node with the matching id */
+      findNode: (
+        rootNode: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier,
+        id: string
+      ) =>
+        | LogicAST.SyntaxNode
+        | LogicAST.Pattern
+        | LogicAST.Identifier
+        | undefined
+      /** Find the parent of the node with the matching id */
+      findParentNode: (
+        rootNode: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier,
+        id: string
+      ) => LogicAST.SyntaxNode | undefined
       /**
        * The `reduce()` method executes a reducer function (that you provide)
        * on each node of the AST, resulting in a single output value.
@@ -103,7 +130,11 @@ export default async (
     createStandardLibraryResolver,
     reporter,
     ast: {
+      makeProgram,
       traversal: {
+        declarationPathTo,
+        findNode,
+        findParentNode,
         reduce,
       },
     },

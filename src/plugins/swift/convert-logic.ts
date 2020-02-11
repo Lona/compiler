@@ -3,7 +3,6 @@ import { LogicAST } from '@lona/serialization'
 import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
 import { nonNullable } from '../../utils'
 import * as SwiftAST from './swift-ast'
-import { makeProgram } from '../../helpers/logic-ast'
 
 type LogicGenerationContext = {
   isStatic: boolean
@@ -211,7 +210,7 @@ export default function convert(
     resolveStandardLibrary: helpers.createStandardLibraryResolver(hardcoded),
   }
 
-  const program = makeProgram(node)
+  const program = helpers.ast.makeProgram(node)
 
   if (!program) {
     helpers.reporter.warn(`Unhandled syntaxNode type "${node.type}"`)
