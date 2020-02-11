@@ -9,7 +9,7 @@ type LogicGenerationContext = {
   isStatic: boolean
   isTopLevel: boolean
   helpers: Helpers
-  handlePreludeDeps: (
+  resolveStandardLibrary: (
     node: LogicAST.SyntaxNode,
     evaluationContext: undefined | EvaluationContext,
     context: LogicGenerationContext
@@ -208,7 +208,7 @@ export default function convert(
     isStatic: false,
     isTopLevel: true,
     helpers,
-    handlePreludeDeps: helpers.HandlePreludeFactory(hardcoded),
+    resolveStandardLibrary: helpers.createStandardLibraryResolver(hardcoded),
   }
 
   const program = makeProgram(node)
@@ -232,7 +232,7 @@ const statement = (
   node: LogicAST.Statement,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = context.handlePreludeDeps(
+  const potentialHandled = context.resolveStandardLibrary(
     node,
     context.helpers.evaluationContext,
     context
@@ -261,7 +261,7 @@ const declaration = (
   node: LogicAST.Declaration,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = context.handlePreludeDeps(
+  const potentialHandled = context.resolveStandardLibrary(
     node,
     context.helpers.evaluationContext,
     context
@@ -440,7 +440,7 @@ const expression = (
   node: LogicAST.Expression,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = context.handlePreludeDeps(
+  const potentialHandled = context.resolveStandardLibrary(
     node,
     context.helpers.evaluationContext,
     context
@@ -506,7 +506,7 @@ const literal = (
   node: LogicAST.Literal,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = context.handlePreludeDeps(
+  const potentialHandled = context.resolveStandardLibrary(
     node,
     context.helpers.evaluationContext,
     context

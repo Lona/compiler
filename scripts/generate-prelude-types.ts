@@ -1,8 +1,15 @@
+/**
+ * Generate the TS definition of the hardcoded map necesserary for each plugin.
+ * The map is kind of the standard library of Lona, defined in the logic files
+ * in /static/logic.
+ * The generated file is in /src/helpers/hardcoded-mapping.ts
+ */
 import * as fs from 'fs'
 import * as path from 'path'
 
 import * as LogicAST from '../src/helpers/logic-ast'
 import { build } from '../src/helpers/logic-scope'
+import { defaultReporter } from '../src/helpers/reporter'
 
 const preludePath = path.join(__dirname, '../static/logic')
 const preludeLibs = fs.readdirSync(preludePath)
@@ -16,7 +23,7 @@ const libraryFiles: LogicAST.AST.Program[] = preludeLibs.map(
 
 const preludeProgram = LogicAST.joinPrograms(libraryFiles)
 
-const scopeContext = build(preludeProgram)
+const scopeContext = build(preludeProgram, defaultReporter)
 
 const hardcodedMapping = scopeContext._namespace.map
   .map<[string[], LogicAST.AST.SyntaxNode | void]>(x => [
@@ -95,7 +102,7 @@ ${Object.keys(hardcodedMapping)
   .join('\n')}
 }
 
-export const HandlePreludeFactory = <T, U extends any[]>(
+export const createStandardLibraryResolver = <T, U extends any[]>(
   hardcodedMap: HardcodedMap<T, U>
 ) => (
   node: LogicAST.SyntaxNode,

@@ -1,5 +1,6 @@
 import * as LogicAST from './logic-ast'
 import * as LogicTraversal from './logic-traversal'
+import { Reporter } from './reporter'
 import { ShallowMap } from '../utils/shallow-map'
 
 class ScopeStack<K extends string, V> {
@@ -98,6 +99,7 @@ const builtInTypeConstructorNames = [
 
 export const build = (
   rootNode: LogicAST.AST.SyntaxNode,
+  reporter: Reporter,
   initialContext: ScopeContext = empty()
 ): ScopeContext => {
   const initialNamespace = initialContext._namespace.copy()
@@ -233,9 +235,9 @@ export const build = (
           if (declaration.type === 'variable' && declaration.data.initializer) {
             LogicTraversal.reduce(
               declaration.data.initializer,
-              config,
+              walk,
               context,
-              walk
+              config
             )
           }
         })
@@ -295,7 +297,7 @@ export const build = (
             fromInitialContext,
           }
         } else {
-          console.error(
+          reporter.error(
             'Failed to find pattern for identifier:',
             identifier.string,
             node
@@ -309,15 +311,15 @@ export const build = (
 
   const contextWithNamespaceDeclarations = LogicTraversal.reduce(
     rootNode,
-    config,
+    namespaceDeclarations,
     initialContext,
-    namespaceDeclarations
+    config
   )
 
   return LogicTraversal.reduce(
     rootNode,
-    config,
+    walk,
     contextWithNamespaceDeclarations,
-    walk
+    config
   )
 }

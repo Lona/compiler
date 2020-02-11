@@ -3,20 +3,9 @@ import uuid from '../utils/uuid'
 
 export { LogicAST as AST }
 
-export function joinPrograms(
-  programs: (LogicAST.Program | void)[]
-): LogicAST.Program {
-  return {
-    type: 'program',
-    data: {
-      id: uuid(),
-      block: programs.reduce(
-        (prev, x) => (x ? prev.concat(x.data.block) : prev),
-        [] as LogicAST.Statement[]
-      ),
-    },
-  }
-}
+/**
+ * Typescript type predicates
+ */
 
 export function isStatement(
   node: LogicAST.SyntaxNode
@@ -54,6 +43,26 @@ export function isTypeAnnotation(
   )
 }
 
+/**
+ * Takes an array of programs and returns a program containing
+ * the statements of all programs
+ */
+export function joinPrograms(
+  programs: (LogicAST.Program | void)[]
+): LogicAST.Program {
+  return {
+    type: 'program',
+    data: {
+      id: uuid(),
+      block: programs.reduce(
+        (prev, x) => (x ? prev.concat(x.data.block) : prev),
+        [] as LogicAST.Statement[]
+      ),
+    },
+  }
+}
+
+/** tries to make a program out of any Logic node */
 export function makeProgram(
   node: LogicAST.SyntaxNode
 ): LogicAST.Program | undefined {
@@ -117,177 +126,107 @@ export function getIdentifier(
   }
 }
 
-export function subNodes(
-  node: LogicAST.SyntaxNode
-): {
-  nodes: LogicAST.SyntaxNode[]
-  patterns: LogicAST.Pattern[]
-  identifiers: LogicAST.Identifier[]
-} {
+export function subNodes(node: LogicAST.SyntaxNode): LogicAST.SyntaxNode[] {
   if (node.type === 'loop') {
-    return {
-      nodes: ([node.data.expression] as LogicAST.SyntaxNode[]).concat(
-        node.data.block
-      ),
-      patterns: [node.data.pattern],
-      identifiers: [],
-    }
+    return ([node.data.expression] as LogicAST.SyntaxNode[]).concat(
+      node.data.block
+    )
   }
   if (node.type === 'branch') {
-    return {
-      nodes: ([node.data.condition] as LogicAST.SyntaxNode[]).concat(
-        node.data.block
-      ),
-      patterns: [],
-      identifiers: [],
-    }
+    return ([node.data.condition] as LogicAST.SyntaxNode[]).concat(
+      node.data.block
+    )
   }
   if (node.type === 'declaration') {
-    return { nodes: [node.data.content], patterns: [], identifiers: [] }
+    return [node.data.content]
   }
   if (node.type === 'expression') {
-    return { nodes: [node.data.expression], patterns: [], identifiers: [] }
+    return [node.data.expression]
   }
 
   if (node.type === 'variable') {
-    return {
-      nodes: ([] as LogicAST.SyntaxNode[])
-        .concat(node.data.annotation ? [node.data.annotation] : [])
-        .concat(node.data.initializer ? [node.data.initializer] : []),
-      patterns: [node.data.name],
-      identifiers: [],
-    }
+    return ([] as LogicAST.SyntaxNode[])
+      .concat(node.data.annotation ? [node.data.annotation] : [])
+      .concat(node.data.initializer ? [node.data.initializer] : [])
   }
   if (node.type === 'function') {
-    return {
-      nodes: ([node.data.returnType] as LogicAST.SyntaxNode[])
-        .concat(node.data.genericParameters)
-        .concat(node.data.parameters)
-        .concat(node.data.block),
-      patterns: [node.data.name],
-      identifiers: [],
-    }
+    return ([node.data.returnType] as LogicAST.SyntaxNode[])
+      .concat(node.data.genericParameters)
+      .concat(node.data.parameters)
+      .concat(node.data.block)
   }
   if (node.type === 'enumeration') {
-    return {
-      nodes: ([] as LogicAST.SyntaxNode[])
-        .concat(node.data.genericParameters)
-        .concat(node.data.cases),
-      patterns: [node.data.name],
-      identifiers: [],
-    }
+    return ([] as LogicAST.SyntaxNode[])
+      .concat(node.data.genericParameters)
+      .concat(node.data.cases)
   }
   if (node.type === 'namespace') {
-    return {
-      nodes: node.data.declarations,
-      patterns: [node.data.name],
-      identifiers: [],
-    }
+    return node.data.declarations
   }
   if (node.type === 'record') {
-    return {
-      nodes: ([] as LogicAST.SyntaxNode[])
-        .concat(node.data.declarations)
-        .concat(node.data.genericParameters),
-      patterns: [node.data.name],
-      identifiers: [],
-    }
+    return ([] as LogicAST.SyntaxNode[])
+      .concat(node.data.declarations)
+      .concat(node.data.genericParameters)
   }
-  if (node.type === 'importDeclaration') {
-    return { nodes: [], patterns: [node.data.name], identifiers: [] }
-  }
-
   if (node.type === 'binaryExpression') {
-    return {
-      nodes: [node.data.left, node.data.right, node.data.op],
-      patterns: [],
-      identifiers: [],
-    }
-  }
-  if (node.type === 'identifierExpression') {
-    return { nodes: [], patterns: [], identifiers: [node.data.identifier] }
+    return [node.data.left, node.data.right, node.data.op]
   }
   if (node.type === 'functionCallExpression') {
-    return {
-      nodes: ([node.data.expression] as LogicAST.SyntaxNode[]).concat(
-        node.data.arguments
-      ),
-      patterns: [],
-      identifiers: [],
-    }
+    return ([node.data.expression] as LogicAST.SyntaxNode[]).concat(
+      node.data.arguments
+    )
   }
   if (node.type === 'literalExpression') {
-    return { nodes: [node.data.literal], patterns: [], identifiers: [] }
+    return [node.data.literal]
   }
   if (node.type === 'memberExpression') {
-    return {
-      nodes: [node.data.expression],
-      patterns: [],
-      identifiers: [node.data.memberName],
-    }
+    return [node.data.expression]
   }
 
   if (node.type === 'program') {
-    return { nodes: node.data.block, patterns: [], identifiers: [] }
+    return node.data.block
   }
 
   if (node.type === 'parameter') {
     if ('localName' in node.data) {
-      return {
-        nodes: [node.data.annotation, node.data.defaultValue],
-        patterns: [node.data.localName],
-        identifiers: [],
-      }
+      return [node.data.annotation, node.data.defaultValue]
     }
-    return { nodes: [], patterns: [node.data.name], identifiers: [] }
   }
 
   if (node.type === 'value') {
-    return { nodes: [node.data.expression], patterns: [], identifiers: [] }
+    return [node.data.expression]
   }
 
   if (node.type === 'typeIdentifier') {
-    return {
-      nodes: node.data.genericArguments,
-      patterns: [],
-      identifiers: [node.data.identifier],
-    }
+    return node.data.genericArguments
   }
   if (node.type === 'functionType') {
-    return {
-      nodes: ([node.data.returnType] as LogicAST.SyntaxNode[]).concat(
-        node.data.argumentTypes
-      ),
-      patterns: [],
-      identifiers: [],
-    }
+    return ([node.data.returnType] as LogicAST.SyntaxNode[]).concat(
+      node.data.argumentTypes
+    )
   }
 
   if (node.type === 'array') {
-    return { nodes: node.data.value, patterns: [], identifiers: [] }
+    return node.data.value
   }
 
   if (node.type === 'topLevelParameters') {
-    return { nodes: node.data.parameters, patterns: [], identifiers: [] }
+    return node.data.parameters
   }
 
   if (node.type === 'enumerationCase') {
-    return {
-      nodes: node.data.associatedValueTypes,
-      patterns: [node.data.name],
-      identifiers: [],
-    }
+    return node.data.associatedValueTypes
   }
 
   if (node.type === 'topLevelDeclarations') {
-    return { nodes: node.data.declarations, patterns: [], identifiers: [] }
+    return node.data.declarations
   }
 
   if (node.type === 'argument') {
-    return { nodes: [node.data.expression], patterns: [], identifiers: [] }
+    return [node.data.expression]
   }
 
-  return { nodes: [], patterns: [], identifiers: [] }
+  return []
 }
 
 export function flattenedMemberExpression(
@@ -326,7 +265,7 @@ export function getNode(
     return rootNode
   }
 
-  const children = subNodes(rootNode).nodes
+  const children = subNodes(rootNode)
 
   for (let child of children) {
     const node = getNode(child, id)
@@ -351,19 +290,17 @@ function pathTo(
     return undefined
   }
 
-  const { nodes, patterns, identifiers } = subNodes(node)
-
-  const matchingPattern = patterns.find(x => x.id === id)
-  if (matchingPattern) {
-    return [matchingPattern]
+  const pattern = getPattern(node)
+  if (pattern && pattern.id === id) {
+    return [pattern]
   }
 
-  const matchingIdentifier = identifiers.find(x => x.id === id)
-  if (matchingIdentifier) {
-    return [matchingIdentifier]
+  const identifier = getIdentifier(node)
+  if (identifier && identifier.id === id) {
+    return [identifier]
   }
 
-  return nodes.reduce<
+  return subNodes(node).reduce<
     (LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier)[] | undefined
   >((prev, item) => {
     if (prev) {

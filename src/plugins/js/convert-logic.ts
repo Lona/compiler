@@ -1,6 +1,10 @@
 import { LogicAST } from '@lona/serialization'
 import lowerFirst from 'lodash.lowerfirst'
-import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
+import helpers, {
+  Helpers,
+  HardcodedMap,
+  EvaluationContext,
+} from '../../helpers'
 import { nonNullable } from '../../utils'
 import * as JSAST from './js-ast'
 import {
@@ -8,7 +12,6 @@ import {
   makeProgram,
   findParentNode,
 } from '../../helpers/logic-ast'
-import { reduce as traverseLogic } from '../../helpers/logic-traversal'
 import { enumName } from './format'
 
 type LogicGenerationContext = {
@@ -16,7 +19,7 @@ type LogicGenerationContext = {
   isTopLevel: boolean
   rootNode: LogicAST.SyntaxNode
   helpers: Helpers
-  handlePreludeDeps: (
+  resolveStandardLibrary: (
     node: LogicAST.SyntaxNode,
     evaluationContext: undefined | EvaluationContext,
     context: LogicGenerationContext
@@ -271,7 +274,7 @@ export default function convert(
     isTopLevel: true,
     rootNode: node,
     helpers,
-    handlePreludeDeps: helpers.HandlePreludeFactory(hardcoded),
+    resolveStandardLibrary: helpers.createStandardLibraryResolver(hardcoded),
   }
 
   const program = makeProgram(node)
@@ -293,7 +296,7 @@ const statement = (
   node: LogicAST.Statement,
   context: LogicGenerationContext
 ): JSAST.JSNode => {
-  const potentialHandled = context.handlePreludeDeps(
+  const potentialHandled = context.resolveStandardLibrary(
     node,
     context.helpers.evaluationContext,
     context
@@ -316,7 +319,7 @@ const declaration = (
   node: LogicAST.Declaration,
   context: LogicGenerationContext
 ): JSAST.JSNode => {
-  const potentialHandled = context.handlePreludeDeps(
+  const potentialHandled = context.resolveStandardLibrary(
     node,
     context.helpers.evaluationContext,
     context
@@ -359,7 +362,7 @@ const declaration = (
         ? expression(node.data.initializer, newContext)
         : { type: 'Identifier', data: ['undefined'] }
 
-      const isDynamic = traverseLogic(
+      const isDynamic = context.helpers.ast.traversal.reduce(
         {
           type: 'declaration',
           data: {
@@ -367,9 +370,7 @@ const declaration = (
             content: node,
           },
         },
-        undefined,
-        false,
-        (result, child) => {
+        (prev, child) => {
           if (
             child.type === 'expression' &&
             child.data.expression.type === 'identifierExpression'
@@ -381,14 +382,15 @@ const declaration = (
             )
 
             if (prefix.length === 0) {
-              return result
+              return prev
             }
 
             return true
           }
 
-          return result
-        }
+          return prev
+        },
+        false
       )
 
       const variable = createVariableOrProperty(
@@ -460,7 +462,7 @@ const expression = (
   node: LogicAST.Expression,
   context: LogicGenerationContext
 ): JSAST.JSNode => {
-  const potentialHandled = context.handlePreludeDeps(
+  const potentialHandled = context.resolveStandardLibrary(
     node,
     context.helpers.evaluationContext,
     context
@@ -645,7 +647,7 @@ const literal = (
   node: LogicAST.Literal,
   context: LogicGenerationContext
 ): JSAST.JSNode => {
-  const potentialHandled = context.handlePreludeDeps(
+  const potentialHandled = context.resolveStandardLibrary(
     node,
     context.helpers.evaluationContext,
     context

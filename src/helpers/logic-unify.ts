@@ -2,6 +2,7 @@ import intersection from 'lodash.intersection'
 import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
 import * as LogicTraversal from './logic-traversal'
+import { Reporter } from './reporter'
 import { ShallowMap, assertNever, nonNullable } from '../utils'
 
 type FunctionArgument = {
@@ -254,6 +255,7 @@ const makeEmptyContext = (): UnificationContext => ({
 export const makeUnificationContext = (
   rootNode: LogicAST.AST.SyntaxNode,
   scopeContext: LogicScope.ScopeContext,
+  reporter: Reporter,
   initialContext: UnificationContext = makeEmptyContext()
 ): UnificationContext => {
   let build = (
@@ -439,7 +441,7 @@ export const makeUnificationContext = (
             tail: initializerType,
           })
         } else {
-          console.error(
+          reporter.error(
             `WARNING: No initializer type for ${node.data.name.name} (${initializerId})`
           )
         }
@@ -565,16 +567,12 @@ export const makeUnificationContext = (
     return result
   }
 
-  return LogicTraversal.reduce(
-    rootNode,
-    LogicTraversal.emptyConfig(),
-    initialContext,
-    build
-  )
+  return LogicTraversal.reduce(rootNode, build, initialContext)
 }
 
 export const unify = (
   constraints: Contraint[],
+  reporter: Reporter,
   substitution: ShallowMap<Unification, Unification> = new ShallowMap()
 ): ShallowMap<Unification, Unification> => {
   while (constraints.length > 0) {
@@ -599,7 +597,7 @@ export const unify = (
         (headContainsLabels && !tailContainsLabels && tailArguments.length) ||
         (tailContainsLabels && !headContainsLabels && headArguments.length)
       ) {
-        console.error(headArguments, tailArguments)
+        reporter.error(headArguments, tailArguments)
         throw new Error(`[UnificationError] [GenericArgumentsLabelMismatch]`)
       }
 
@@ -652,8 +650,7 @@ export const unify = (
       })
     } else if (head.type === 'constant' && tail.type === 'constant') {
       if (head.name !== tail.name) {
-        console.error(head)
-        console.error(tail)
+        reporter.error(head, tail)
         throw new Error(
           `[UnificationError] [NameMismatch] ${head.name} ${tail.name}`
         )
@@ -672,7 +669,7 @@ export const unify = (
         })
       })
     } else if (head.type === 'generic' || tail.type === 'generic') {
-      console.error('tried to unify generics (problem?)', head, tail)
+      reporter.error('tried to unify generics (problem?)', head, tail)
     } else if (head.type === 'variable') {
       substitution.set(head, tail)
     } else if (tail.type === 'variable') {

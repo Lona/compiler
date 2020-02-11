@@ -1,29 +1,69 @@
-import * as fs from 'fs'
-import * as path from 'path'
 import { LogicAST } from '@lona/serialization'
-
 import { config as Config } from '../utils'
 import { generate as generateEvaluationContext } from './evaluation-context'
 import { EvaluationContext } from './logic-evaluate'
-import { HandlePreludeFactory } from './hardcoded-mapping'
-
+import { createStandardLibraryResolver } from './hardcoded-mapping'
+import { Reporter, defaultReporter } from './reporter'
+import { FSWrapper, createFSWrapper } from './fs'
 export { HardcodedMap } from './hardcoded-mapping'
 export { EvaluationContext } from './logic-evaluate'
+import { TraversalConfig, reduce } from './logic-traversal'
 
+/**
+ * Helpers passed to every plugins. They contains some methods abstracting
+ * the file system, the evaluation context of the workspace,
+ * a reporter (to centralize the logs), the workspace's configuration, etc.
+ */
 export type Helpers = {
-  fs: {
-    readFile(filePath: string): Promise<string>
-    writeFile(filePath: string, data: string): Promise<void>
-    copyDir(dirPath: string, output?: string): Promise<void>
-  }
+  fs: FSWrapper
+  reporter: Reporter
   config: Config.Config
+  /**
+   * The evaluation context of the Lona Workspace.
+   *
+   * It contains some mapping between the identifiers and what they reference,
+   * eg. `Optional.none` -> the function declaration in Prelude.logic
+   * which is used to evaluate `Optional.none` to
+   * `{ type: unit, memory: { type: 'unit' } }` for example. It takes care of
+   * the scope of the identifier to determine the reference.
+   *
+   * Additionally, it keeps track of where declaration are from.
+   */
   evaluationContext: EvaluationContext | undefined
-  HandlePreludeFactory: typeof HandlePreludeFactory
-  reporter: {
-    info(...args: any[]): void
-    log(...args: any[]): void
-    warn(...args: any[]): void
-    error(...args: any[]): void
+  /**
+   * Takes a hardcoded map `standard library -> node` and creates a function
+   * which returns a node if the Logic node passed as argument is from
+   * the standard library.
+   *
+   * Depending on the context, the hardcoded map might use the
+   * evaluation context to evaluate the Logic node instead of trying to translate
+   * the standard library method into the target format.
+   */
+  createStandardLibraryResolver: typeof createStandardLibraryResolver
+  ast: {
+    traversal: {
+      /**
+       * The `reduce()` method executes a reducer function (that you provide)
+       * on each node of the AST, resulting in a single output value.
+       *
+       * Your reducer function's returned value is assigned to the accumulator,
+       * whose value is remembered across each iteration throughout the AST,
+       * and ultimately becomes the final, single resulting value.
+       *
+       * The traversal is depth-first, you can specify whether it should be
+       * pre-order or post-order in the config.
+       */
+      reduce: <T>(
+        node: LogicAST.SyntaxNode,
+        callbackfn: (
+          previousValue: T,
+          currentNode: LogicAST.SyntaxNode,
+          config: TraversalConfig
+        ) => T,
+        initialResult: T,
+        config?: TraversalConfig
+      ) => T
+    }
   }
 }
 
@@ -36,50 +76,10 @@ export type PreludeFlags = {
 
 export default async (
   workspacePath: string,
-  _outputPath?: unknown,
-  reporter?: {
-    info(...args: any[]): void
-    log(...args: any[]): void
-    warn(...args: any[]): void
-    error(...args: any[]): void
-  }
+  outputPath?: unknown,
+  _reporter?: Reporter
 ): Promise<Helpers> => {
-  const outputPath =
-    typeof _outputPath === 'string'
-      ? _outputPath
-      : path.join(process.cwd(), 'lona-generated')
-  const fsWrapper = {
-    readFile(filePath: string) {
-      return fs.promises.readFile(
-        path.resolve(workspacePath, filePath),
-        'utf-8'
-      )
-    },
-    writeFile(filePath: string, data: string) {
-      const resolvedPath = path.resolve(outputPath, filePath)
-      fs.mkdirSync(path.dirname(resolvedPath), { recursive: true })
-      return fs.promises.writeFile(resolvedPath, data, 'utf-8')
-    },
-    async copyDir(dirPath: string, output: string = '.') {
-      const resolvedPath = path.resolve(workspacePath, dirPath)
-      const files = await fs.promises.readdir(resolvedPath)
-
-      await Promise.all(
-        files.map(async x => {
-          if (
-            (await fs.promises.stat(path.join(resolvedPath, x))).isDirectory()
-          ) {
-            return
-          }
-
-          return fsWrapper.writeFile(
-            path.join(output, x),
-            await fsWrapper.readFile(path.join(dirPath, x))
-          )
-        })
-      )
-    },
-  }
+  const fsWrapper = createFSWrapper(workspacePath, outputPath)
 
   const config = await Config.load(workspacePath, {
     forEvaluation: true,
@@ -88,6 +88,8 @@ export default async (
 
   let cachedEvaluationContext: EvaluationContext | undefined
 
+  const reporter = _reporter || defaultReporter
+
   return {
     fs: fsWrapper,
     config,
@@ -95,15 +97,15 @@ export default async (
       if (cachedEvaluationContext) {
         return cachedEvaluationContext
       }
-      cachedEvaluationContext = generateEvaluationContext(config)
+      cachedEvaluationContext = generateEvaluationContext(config, reporter)
       return cachedEvaluationContext
     },
-    HandlePreludeFactory,
-    reporter: reporter || {
-      info: console.info.bind(console),
-      log: console.log.bind(console),
-      warn: console.warn.bind(console),
-      error: console.error.bind(console),
+    createStandardLibraryResolver,
+    reporter,
+    ast: {
+      traversal: {
+        reduce,
+      },
     },
   }
 }

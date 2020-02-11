@@ -3,6 +3,7 @@ import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
 import { isHardcodedMapCall } from './hardcoded-mapping'
 import { hardcoded } from './logic-evaluation-hardcoded-map'
+import { Reporter } from './reporter'
 import { nonNullable, ShallowMap, assertNever } from '../utils'
 
 export type Memory =
@@ -35,18 +36,34 @@ type Thunk = {
   f: (args: Value[]) => Value
 }
 
+/**
+ * The evaluation context of the Lona Workspace.
+ *
+ * It contains some mapping between the identifiers and what they reference,
+ * eg. `Optional.none` -> the function declaration in Prelude.logic
+ * which is used to evaluate `Optional.none` to
+ * `{ type: unit, memory: { type: 'unit' } }` for example. It takes care of
+ * the scope of the identifier to determine the reference.
+ *
+ * Additionally, it keeps track of where declaration are from.
+ */
 export class EvaluationContext {
-  values: { [uuid: string]: Value } = {}
-  thunks: { [uuid: string]: Thunk } = {}
-  scopeContext: LogicScope.ScopeContext
-  rootNode: LogicAST.AST.SyntaxNode
+  private values: { [uuid: string]: Value } = {}
+  private thunks: { [uuid: string]: Thunk } = {}
+  private scopeContext: LogicScope.ScopeContext
+  private reporter: Reporter
+
+  /** The root Logic node used to build the evaluation context  */
+  public rootNode: LogicAST.AST.SyntaxNode
 
   constructor(
     scopeContext: LogicScope.ScopeContext,
-    rootNode: LogicAST.AST.SyntaxNode
+    rootNode: LogicAST.AST.SyntaxNode,
+    reporter: Reporter
   ) {
     this.scopeContext = scopeContext
     this.rootNode = rootNode
+    this.reporter = reporter
   }
 
   add(uuid: string, thunk: Thunk) {
@@ -57,6 +74,7 @@ export class EvaluationContext {
     this.values[uuid] = value
   }
 
+  /** Whether the id references something from the Lona's standard library */
   isFromInitialScope(uuid: string): boolean {
     return (
       this.scopeContext.identifierToPattern[uuid] || {
@@ -73,6 +91,7 @@ export class EvaluationContext {
     ).pattern
   }
 
+  /** Evaluate the id to a value, resolving any dependency along the way */
   evaluate(uuid: string): Value | undefined {
     const value = this.values[uuid]
     if (value) {
@@ -80,13 +99,13 @@ export class EvaluationContext {
     }
     const thunk = this.thunks[uuid]
     if (!thunk) {
-      console.error(`no thunk for ${uuid}`)
+      this.reporter.error(`no thunk for ${uuid}`)
       return undefined
     }
 
     const resolvedDependencies = thunk.dependencies.map(x => this.evaluate(x))
     if (resolvedDependencies.some(x => !x)) {
-      console.error(
+      this.reporter.error(
         `Failed to evaluate thunk ${uuid} - missing dep ${
           thunk.dependencies[resolvedDependencies.findIndex(x => !x)]
         }`
@@ -102,8 +121,9 @@ export class EvaluationContext {
 
 const makeEmpty = (
   scopeContext: LogicScope.ScopeContext,
-  rootNode: LogicAST.AST.SyntaxNode
-) => new EvaluationContext(scopeContext, rootNode)
+  rootNode: LogicAST.AST.SyntaxNode,
+  reporter: Reporter
+) => new EvaluationContext(scopeContext, rootNode, reporter)
 
 export const evaluate = (
   node: LogicAST.AST.SyntaxNode,
@@ -111,23 +131,26 @@ export const evaluate = (
   scopeContext: LogicScope.ScopeContext,
   unificationContext: LogicUnify.UnificationContext,
   substitution: ShallowMap<LogicUnify.Unification, LogicUnify.Unification>,
-  context_: EvaluationContext = makeEmpty(scopeContext, rootNode)
+  reporter: Reporter,
+  context_: EvaluationContext = makeEmpty(scopeContext, rootNode, reporter)
 ): EvaluationContext | undefined => {
-  const context = LogicAST.subNodes(node).nodes.reduce<
-    EvaluationContext | undefined
-  >((prev, subNode) => {
-    if (!prev) {
-      return undefined
-    }
-    return evaluate(
-      subNode,
-      rootNode,
-      scopeContext,
-      unificationContext,
-      substitution,
-      prev
-    )
-  }, context_)
+  const context = LogicAST.subNodes(node).reduce<EvaluationContext | undefined>(
+    (prev, subNode) => {
+      if (!prev) {
+        return undefined
+      }
+      return evaluate(
+        subNode,
+        rootNode,
+        scopeContext,
+        unificationContext,
+        substitution,
+        reporter,
+        prev
+      )
+    },
+    context_
+  )
 
   if (!context) {
     return undefined
@@ -191,7 +214,7 @@ export const evaluate = (
     case 'array': {
       const type = unificationContext.nodes[node.data.id]
       if (!type) {
-        console.error('Failed to unify type of array')
+        reporter.error('Failed to unify type of array')
         break
       }
       const resolvedType = LogicUnify.substitute(substitution, type)
@@ -253,20 +276,20 @@ export const evaluate = (
       break
     }
     case 'binaryExpression': {
-      console.error('TODO: ' + node.type)
+      reporter.error('TODO: ' + node.type)
       break
     }
     case 'functionCallExpression': {
       const { expression, arguments: args } = node.data
       let functionType = unificationContext.nodes[expression.data.id]
       if (!functionType) {
-        console.error('Unknown type of functionCallExpression')
+        reporter.error('Unknown type of functionCallExpression')
         break
       }
 
       const resolvedType = LogicUnify.substitute(substitution, functionType)
       if (resolvedType.type !== 'function') {
-        console.error(
+        reporter.error(
           'Invalid functionCallExpression type (only functions are valid)',
           resolvedType
         )
@@ -296,7 +319,9 @@ export const evaluate = (
           const [functionValue, ...functionArgs] = values
 
           if (functionValue.memory.type !== 'function') {
-            console.error('tried to evaluate a function that is not a function')
+            reporter.error(
+              'tried to evaluate a function that is not a function'
+            )
             return { type: LogicUnify.unit, memory: { type: 'unit' } }
           }
 
@@ -317,7 +342,7 @@ export const evaluate = (
 
             // this is a custom function that we have no idea what it is
             // so let's warn about it and ignore it
-            console.error(
+            reporter.error(
               `Failed to evaluate "${node.data.id}": Unknown function ${functionName}`
             )
             return { type: LogicUnify.unit, memory: { type: 'unit' } }
@@ -404,7 +429,7 @@ export const evaluate = (
       const fullPath = LogicAST.declarationPathTo(rootNode, node.data.id)
 
       if (!type) {
-        console.error('Unknown function type')
+        reporter.error('Unknown function type')
         break
       }
       context.addValue(name.id, {
@@ -424,7 +449,7 @@ export const evaluate = (
       const { name, declarations } = node.data
       const type = unificationContext.patternTypes[name.id]
       if (!type) {
-        console.error('Unknown record type')
+        reporter.error('Unknown record type')
       } else {
         const resolvedType = LogicUnify.substitute(substitution, type)
         const dependencies = declarations
@@ -485,7 +510,7 @@ export const evaluate = (
       const type = unificationContext.patternTypes[node.data.name.id]
 
       if (!type) {
-        console.error('unknown enumberation type')
+        reporter.error('unknown enumberation type')
         break
       }
       node.data.cases.forEach(enumCase => {

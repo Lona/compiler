@@ -38,8 +38,6 @@ export async function load(
     fs?: { readFile(filePath: string): Promise<string> }
   }
 ): Promise<Config> {
-  const rootDirname = path.dirname(path.dirname(__dirname))
-
   const lonaFile = JSON.parse(
     await fs.promises.readFile(path.join(workspacePath, 'lona.json'), 'utf-8')
   ) as LonaJSON

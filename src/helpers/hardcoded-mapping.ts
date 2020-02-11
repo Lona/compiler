@@ -153,7 +153,7 @@ export const isHardcodedMapCall = {
   },
 }
 
-export const HandlePreludeFactory = <T, U extends any[]>(
+export const createStandardLibraryResolver = <T, U extends any[]>(
   hardcodedMap: HardcodedMap<T, U>
 ) => (
   node: LogicAST.SyntaxNode,

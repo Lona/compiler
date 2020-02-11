@@ -5,10 +5,17 @@ import * as LogicAST from './logic-ast'
 import * as LogicScope from './logic-scope'
 import * as LogicUnify from './logic-unify'
 import * as LogicEvaluate from './logic-evaluate'
+import { Reporter } from './reporter'
 import uuid from '../utils/uuid'
 
+/**
+ * Iterates through the import declaration of the program
+ * and "resolve them", eg. returns a program that contains both
+ * the content of imported files and the current program
+ */
 function resolveImports(
   program: LogicAST.AST.Program,
+  reporter: Reporter,
   existingImports: string[] = []
 ): LogicAST.AST.Program {
   return {
@@ -38,7 +45,7 @@ function resolveImports(
           const libraryExists = fs.existsSync(libraryPath)
 
           if (!libraryExists) {
-            console.error(
+            reporter.error(
               `Failed to find library ${libraryName} at path ${libraryPath}`
             )
             return [x]
@@ -49,12 +56,13 @@ function resolveImports(
           )
 
           if (!library) {
-            console.error(`Failed to import library ${libraryName}`)
+            reporter.error(`Failed to import library ${libraryName}`)
             return [x]
           }
 
           const resolvedLibrary = resolveImports(
             library,
+            reporter,
             existingImports.concat(libraryName)
           )
 
@@ -65,7 +73,7 @@ function resolveImports(
   }
 }
 
-export const generate = (config: Config) => {
+export const generate = (config: Config, reporter: Reporter) => {
   const preludePath = path.join(__dirname, '../../static/logic')
   const preludeLibs = fs.readdirSync(preludePath)
 
@@ -78,30 +86,35 @@ export const generate = (config: Config) => {
 
   const preludeProgram = LogicAST.joinPrograms(libraryFiles)
 
-  const preludeScope = LogicScope.build(preludeProgram)
+  const preludeScope = LogicScope.build(preludeProgram, reporter)
 
   let programNode = LogicAST.joinPrograms(
     Object.values(config.logicFiles).map(LogicAST.makeProgram)
   )
 
-  programNode = resolveImports(programNode)
+  programNode = resolveImports(programNode, reporter)
 
-  const scopeContext = LogicScope.build(programNode, preludeScope)
+  const scopeContext = LogicScope.build(programNode, reporter, preludeScope)
 
   programNode = LogicAST.joinPrograms([preludeProgram, programNode])
 
   const unificationContext = LogicUnify.makeUnificationContext(
     programNode,
-    scopeContext
+    scopeContext,
+    reporter
   )
-  const substitution = LogicUnify.unify(unificationContext.constraints)
+  const substitution = LogicUnify.unify(
+    unificationContext.constraints,
+    reporter
+  )
 
   const evaluationContext = LogicEvaluate.evaluate(
     programNode,
     programNode,
     scopeContext,
     unificationContext,
-    substitution
+    substitution,
+    reporter
   )
 
   return evaluationContext
