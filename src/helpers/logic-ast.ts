@@ -1,5 +1,5 @@
 import { LogicAST } from '@lona/serialization'
-import uuid from '../utils/uuid'
+import { uuid } from '../utils'
 
 export { LogicAST as AST }
 

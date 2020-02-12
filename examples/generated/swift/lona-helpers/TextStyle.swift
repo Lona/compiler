@@ -27,7 +27,7 @@ public class TextStyle {
     alignment: NSTextAlignment? = nil) {
     self.fontFamily = fontFamily
     self.fontName = fontName
-    self.fontWeight = fontWeight ?? FontWeight.w400
+    self.fontWeight = fontWeight ?? Font.Weight.regular
     self.fontSize = fontSize ?? Font.systemFontSize
     self.lineHeight = lineHeight
     self.kerning = kerning ?? 0

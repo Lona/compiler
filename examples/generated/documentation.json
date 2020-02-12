@@ -35,7 +35,7 @@
       "contents": {
         "type": "documentationPage",
         "value": {
-          "mdxString": "<div class=\"lona-token lona-token-shadow\">\n  <div  class=\"lona-token-preview lona-token-preview-shadow\" data-x=\"0\" data-y=\"2\" data-blur=\"2\" data-radius=\"0\" data-color=\"black\"></div>\n  <div class=\"lona-token-details lona-token-details-shadow\">\n    <span class=\"lona-token-name lona-token-name-shadow\">small</span>\n    <span class=\"lona-token-value lona-token-value-shadow\">0px 2px 2px 0px black</span>\n  </div>\n</div>",
+          "mdxString": "<div class=\"lona-token lona-token-shadow\">\n  <div  class=\"lona-token-preview lona-token-preview-shadow\" data-x=\"0\" data-y=\"2\" data-blur=\"2\" data-radius=\"0\" data-color=\"#45CBFF\"></div>\n  <div class=\"lona-token-details lona-token-details-shadow\">\n    <span class=\"lona-token-name lona-token-name-shadow\">small</span>\n    <span class=\"lona-token-value lona-token-value-shadow\">0px 2px 2px 0px #45CBFF</span>\n  </div>\n</div>",
           "children": []
         }
       }

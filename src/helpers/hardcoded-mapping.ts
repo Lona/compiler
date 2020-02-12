@@ -169,7 +169,7 @@ export const createStandardLibraryResolver = <T, U extends any[]>(
   if (node.type === 'functionCallExpression') {
     let memberExpression = node.data.expression
 
-    if (!evaluationContext.isFromInitialScope(memberExpression.data.id)) {
+    if (!evaluationContext.isFromStandardLibrary(memberExpression.data.id)) {
       return
     }
 
@@ -185,7 +185,7 @@ export const createStandardLibraryResolver = <T, U extends any[]>(
   if (node.type === 'memberExpression') {
     let memberExpression = node
 
-    if (!evaluationContext.isFromInitialScope(memberExpression.data.id)) {
+    if (!evaluationContext.isFromStandardLibrary(memberExpression.data.id)) {
       return
     }
 

@@ -75,12 +75,22 @@ export class EvaluationContext {
   }
 
   /** Whether the id references something from the Lona's standard library */
-  isFromInitialScope(uuid: string): boolean {
-    return (
-      this.scopeContext.identifierToPattern[uuid] || {
-        fromInitialContext: false,
-      }
-    ).fromInitialContext
+  isFromStandardLibrary(uuid: string): boolean {
+    return this.getOriginalFile(uuid) === 'standard library'
+  }
+
+  /** Whether the id references something from another file,
+   * and returns that file if true */
+  isFromOtherFile(uuid: string, currentFile: string): string | undefined {
+    const otherFile = this.getOriginalFile(uuid)
+    if (
+      otherFile &&
+      otherFile !== currentFile &&
+      otherFile !== 'standard library'
+    ) {
+      return otherFile
+    }
+    return undefined
   }
 
   getPattern(uuid: string): string | undefined {
@@ -89,6 +99,14 @@ export class EvaluationContext {
         pattern: undefined,
       }
     ).pattern
+  }
+
+  private getOriginalFile(uuid: string): string | undefined {
+    return (
+      this.scopeContext.identifierToPattern[uuid] || {
+        in: undefined,
+      }
+    ).in
   }
 
   /** Evaluate the id to a value, resolving any dependency along the way */
@@ -328,7 +346,7 @@ export const evaluate = (
           if (functionValue.memory.value.type === 'path') {
             const functionName = functionValue.memory.value.value.join('.')
             if (
-              context.isFromInitialScope(expression.data.id) &&
+              context.isFromStandardLibrary(expression.data.id) &&
               isHardcodedMapCall.functionCallExpression(functionName, hardcoded)
             ) {
               const value = hardcoded.functionCallExpression[functionName](

@@ -6,7 +6,7 @@ import * as LogicScope from './logic-scope'
 import * as LogicUnify from './logic-unify'
 import * as LogicEvaluate from './logic-evaluate'
 import { Reporter } from './reporter'
-import uuid from '../utils/uuid'
+import { uuid, nonNullable } from '../utils'
 
 /**
  * Iterates through the import declaration of the program
@@ -74,29 +74,42 @@ function resolveImports(
 }
 
 export const generate = (config: Config, reporter: Reporter) => {
-  const preludePath = path.join(__dirname, '../../static/logic')
-  const preludeLibs = fs.readdirSync(preludePath)
+  const standardLibsPath = path.join(__dirname, '../../static/logic')
+  const standardLibs = fs.readdirSync(standardLibsPath)
 
-  const libraryFiles: LogicAST.AST.Program[] = preludeLibs.map(
+  const libraryFiles: LogicAST.AST.Program[] = standardLibs.map(
     x =>
       LogicAST.makeProgram(
-        JSON.parse(fs.readFileSync(path.join(preludePath, x), 'utf8'))
+        JSON.parse(fs.readFileSync(path.join(standardLibsPath, x), 'utf8'))
       ) as LogicAST.AST.Program
   )
 
-  const preludeProgram = LogicAST.joinPrograms(libraryFiles)
+  const standardLibsProgram = LogicAST.joinPrograms(libraryFiles)
 
-  const preludeScope = LogicScope.build(preludeProgram, reporter)
+  const logicPrograms = Object.keys(config.logicFiles)
+    .map(k => {
+      const node = LogicAST.makeProgram(config.logicFiles[k])
+      if (!node) {
+        return undefined
+      }
+      return {
+        in: k,
+        node,
+      }
+    })
+    .filter(nonNullable)
 
-  let programNode = LogicAST.joinPrograms(
-    Object.values(config.logicFiles).map(LogicAST.makeProgram)
+  const scopeContext = LogicScope.build(
+    [{ node: standardLibsProgram, in: 'standard library' }].concat(
+      logicPrograms
+    ),
+    reporter
   )
 
-  programNode = resolveImports(programNode, reporter)
-
-  const scopeContext = LogicScope.build(programNode, reporter, preludeScope)
-
-  programNode = LogicAST.joinPrograms([preludeProgram, programNode])
+  const programNode = LogicAST.joinPrograms([
+    standardLibsProgram,
+    ...logicPrograms.map(x => x.node),
+  ])
 
   const unificationContext = LogicUnify.makeUnificationContext(
     programNode,

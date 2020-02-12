@@ -25,7 +25,7 @@ export const parseFile = async (
     ) {
       return ''
     }
-    jsAST = convertLogic(logicNode, helpers)
+    jsAST = convertLogic(logicNode, filePath, helpers)
   }
 
   if (!jsAST) {

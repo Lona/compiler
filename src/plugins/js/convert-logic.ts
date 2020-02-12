@@ -1,3 +1,4 @@
+import path from 'path'
 import { LogicAST } from '@lona/serialization'
 import lowerFirst from 'lodash.lowerfirst'
 import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
@@ -5,10 +6,20 @@ import { nonNullable } from '../../utils'
 import * as JSAST from './js-ast'
 import { enumName } from './format'
 
+function resolveImportPath(from: string, to: string) {
+  const relativePath = path
+    .relative(path.dirname(from), to)
+    .replace(path.extname(to), '')
+
+  return relativePath.indexOf('.') === 0 ? relativePath : `./${relativePath}`
+}
+
 type LogicGenerationContext = {
   isStatic: boolean
   isTopLevel: boolean
   rootNode: LogicAST.SyntaxNode
+  filePath: string
+  importIdentifier: (identifier: string, from: string) => void
   helpers: Helpers
   resolveStandardLibrary: (
     node: LogicAST.SyntaxNode,
@@ -20,11 +31,6 @@ type LogicGenerationContext = {
 type RecordParameter = {
   name: string
   defaultValue: LogicAST.Expression
-}
-
-type EnumerationParameter = {
-  enumerationName: string
-  caseName: string
 }
 
 const createVariableOrProperty = (
@@ -259,13 +265,24 @@ const hardcoded: HardcodedMap<JSAST.JSNode, [LogicGenerationContext]> = {
 
 export default function convert(
   node: LogicAST.SyntaxNode,
+  filePath: string,
   helpers: Helpers
 ): JSAST.JSNode {
+  const imports: { [from: string]: Set<string> } = {}
+  function importIdentifier(identifier: string, from: string) {
+    if (!imports[from]) {
+      imports[from] = new Set()
+    }
+    imports[from].add(identifier)
+  }
+
   const context: LogicGenerationContext = {
     isStatic: false,
     isTopLevel: true,
     rootNode: node,
+    filePath,
     helpers,
+    importIdentifier,
     resolveStandardLibrary: helpers.createStandardLibraryResolver(hardcoded),
   }
 
@@ -276,11 +293,28 @@ export default function convert(
     return { type: 'Empty' }
   }
 
+  const data = program.data.block
+    .filter(x => x.type !== 'placeholder')
+    .map(x => statement(x, context))
+
+  const importNodes = Object.keys(imports).map<JSAST.JSNode>(source => {
+    return {
+      type: 'ImportDeclaration',
+      data: {
+        source: resolveImportPath(filePath, source),
+        specifiers: Array.from(imports[source]).map(x => ({
+          type: 'ImportSpecifier',
+          data: {
+            imported: x,
+          },
+        })),
+      },
+    }
+  })
+
   return {
     type: 'Program',
-    data: program.data.block
-      .filter(x => x.type !== 'placeholder')
-      .map(x => statement(x, context)),
+    data: importNodes.concat(data),
   }
 }
 
@@ -465,6 +499,11 @@ const expression = (
   }
   switch (node.type) {
     case 'identifierExpression': {
+      const isFromOtherFile = context.helpers.evaluationContext?.isFromOtherFile(
+        node.data.identifier.id,
+        context.filePath
+      )
+
       const standard: JSAST.JSNode = {
         type: 'Identifier',
         data: [lowerFirst(node.data.identifier.string)],
@@ -474,6 +513,9 @@ const expression = (
       )
 
       if (!patternId) {
+        if (isFromOtherFile) {
+          context.importIdentifier(standard.data[0], isFromOtherFile)
+        }
         return standard
       }
 
@@ -483,7 +525,14 @@ const expression = (
       )
 
       if (!pattern.length) {
+        if (isFromOtherFile) {
+          context.importIdentifier(standard.data[0], isFromOtherFile)
+        }
         return standard
+      }
+
+      if (isFromOtherFile) {
+        context.importIdentifier(lowerFirst(pattern[0]), isFromOtherFile)
       }
 
       return {

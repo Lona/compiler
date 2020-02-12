@@ -48,7 +48,7 @@ let popNamespace = (context: ScopeContext) =>
 
 let setInCurrentNamespace = (
   name: string,
-  value: string,
+  value: { value: string; from: string },
   context: ScopeContext
 ) => context._namespace.set(context._currentNamespacePath.concat([name]), value)
 
@@ -58,32 +58,37 @@ let setGenericParameters = (
 ) =>
   genericParameters.forEach(genericParameter => {
     if (genericParameter.type === 'parameter') {
-      context.patternToTypeName[genericParameter.data.name.id] =
+      context._patternToTypeName[genericParameter.data.name.id] =
         genericParameter.data.name.name
     }
   })
 
 export type ScopeContext = {
   /* Values in these are never removed, even if a variable is out of scope */
-  patternToName: { [key: string]: string }
+
   identifierToPattern: {
-    [key: string]: { pattern: string; fromInitialContext: boolean }
+    [key: string]: { pattern: string; in: string }
   }
   patternToIdentifier: {
-    [key: string]: { identifier: string; fromInitialContext: boolean }
+    [key: string]: {
+      identifier: string
+      in: string
+    }
   }
-  patternToTypeName: { [key: string]: string }
+  _patternToName: { [key: string]: string }
+  _patternToTypeName: { [key: string]: string }
   /* This keeps track of the current scope */
-  _patternNames: ScopeStack<string, string>
-  _namespace: ShallowMap<string[], string>
+  _patternNames: ScopeStack<string, { value: string; from: string }>
+  _namespace: ShallowMap<string[], { value: string; from: string }>
   _currentNamespacePath: string[]
+  _currentScopeName?: string
 }
 
 const empty = (): ScopeContext => ({
-  patternToName: {},
   identifierToPattern: {},
   patternToIdentifier: {},
-  patternToTypeName: {},
+  _patternToName: {},
+  _patternToTypeName: {},
   _patternNames: new ScopeStack(),
   _namespace: new ShallowMap(),
   _currentNamespacePath: [],
@@ -98,13 +103,15 @@ const builtInTypeConstructorNames = [
 ]
 
 export const build = (
-  rootNode: LogicAST.AST.SyntaxNode,
+  rootNodes: { node: LogicAST.AST.SyntaxNode; in: string }[],
   reporter: Reporter,
   initialContext: ScopeContext = empty()
 ): ScopeContext => {
-  const initialNamespace = initialContext._namespace.copy()
-  const initialPatternNames = initialContext._patternNames.copy()
-  const initialCurrentNamespacePath = [...initialContext._currentNamespacePath]
+  // instead of joining the programs before, we can be passed an array of program
+  // and for each reduce them. It doesn't matter since the traversal is depth first
+  // so we get an array of { program, file } and `walk` takes the file name to pass it where it's needed
+  // That also means that we probably don't need to care about `initialNamespace`
+  // it's just when `file` is `prelude`
 
   const config = LogicTraversal.emptyConfig()
 
@@ -116,10 +123,18 @@ export const build = (
     config.needsRevisitAfterTraversingChildren = true
 
     if (node.type === 'variable' && config._isRevisit) {
-      setInCurrentNamespace(node.data.name.name, node.data.name.id, context)
+      setInCurrentNamespace(
+        node.data.name.name,
+        { value: node.data.name.id, from: context._currentScopeName || '' },
+        context
+      )
     }
     if (node.type === 'function' && config._isRevisit) {
-      setInCurrentNamespace(node.data.name.name, node.data.name.id, context)
+      setInCurrentNamespace(
+        node.data.name.name,
+        { value: node.data.name.id, from: context._currentScopeName || '' },
+        context
+      )
     }
     if (node.type === 'record') {
       if (!config._isRevisit) {
@@ -130,7 +145,11 @@ export const build = (
         /* Built-ins should be constructed using literals */
         if (builtInTypeConstructorNames.indexOf(patternName) === -1) {
           /* Create constructor function */
-          setInCurrentNamespace(patternName, node.data.name.id, context)
+          setInCurrentNamespace(
+            patternName,
+            { value: node.data.name.id, from: context._currentScopeName || '' },
+            context
+          )
         }
       }
     }
@@ -144,7 +163,10 @@ export const build = (
         if (enumCase.type === 'enumerationCase') {
           setInCurrentNamespace(
             enumCase.data.name.name,
-            enumCase.data.name.id,
+            {
+              value: enumCase.data.name.id,
+              from: context._currentScopeName || '',
+            },
             context
           )
         }
@@ -183,15 +205,13 @@ export const build = (
         const patternId = context._namespace.get(keyPath)
 
         if (patternId) {
-          const fromInitialContext =
-            !!initialNamespace.get(keyPath) || initialNamespace.isEmpty()
           context.identifierToPattern[node.data.id] = {
-            pattern: patternId,
-            fromInitialContext,
+            pattern: patternId.value,
+            in: patternId.from,
           }
-          context.patternToIdentifier[patternId] = {
+          context.patternToIdentifier[patternId.value] = {
             identifier: node.data.id,
-            fromInitialContext,
+            in: context._currentScopeName || '',
           }
         }
       }
@@ -199,16 +219,22 @@ export const build = (
 
     if (node.type === 'variable' && config._isRevisit) {
       const { id: variableId, name: variableName } = node.data.name
-      context._patternNames.set(variableName, variableId)
-      context.patternToName[variableId] = variableName
+      context._patternNames.set(variableName, {
+        value: variableId,
+        from: context._currentScopeName || '',
+      })
+      context._patternToName[variableId] = variableName
     }
     if (node.type === 'function') {
       if (config._isRevisit) {
         context._patternNames.pop()
       } else {
         const { id: functionId, name: functionName } = node.data.name
-        context.patternToName[functionId] = functionName
-        context._patternNames.set(functionName, functionId)
+        context._patternToName[functionId] = functionName
+        context._patternNames.set(functionName, {
+          value: functionId,
+          from: context._currentScopeName || '',
+        })
         context._patternNames.push()
 
         node.data.parameters.forEach(parameter => {
@@ -217,8 +243,11 @@ export const build = (
               id: parameterId,
               name: parameterName,
             } = parameter.data.localName
-            context.patternToName[parameterId] = parameterName
-            context._patternNames.set(parameterName, parameterId)
+            context._patternToName[parameterId] = parameterName
+            context._patternNames.set(parameterName, {
+              value: parameterId,
+              from: context._currentScopeName || '',
+            })
           }
         })
 
@@ -228,7 +257,7 @@ export const build = (
     if (node.type === 'record') {
       const { id: recordId, name: recordName } = node.data.name
       if (!config._isRevisit) {
-        context.patternToTypeName[recordId] = recordName
+        context._patternToTypeName[recordId] = recordName
         setGenericParameters(node.data.genericParameters, context)
 
         node.data.declarations.forEach(declaration => {
@@ -245,8 +274,11 @@ export const build = (
         config.ignoreChildren = true
       } else {
         if (builtInTypeConstructorNames.indexOf(recordName) === -1) {
-          context.patternToName[recordId] = recordName
-          context._patternNames.set(recordName, recordId)
+          context._patternToName[recordId] = recordName
+          context._patternNames.set(recordName, {
+            value: recordId,
+            from: context._currentScopeName || '',
+          })
         }
       }
     }
@@ -280,21 +312,13 @@ export const build = (
           )
 
         if (lookup) {
-          const fromInitialContext =
-            !!initialPatternNames.get(identifier.string) ||
-            !!initialNamespace.get([identifier.string]) ||
-            !!initialNamespace.get(
-              initialCurrentNamespacePath.concat([identifier.string])
-            ) ||
-            initialNamespace.isEmpty()
-
           context.identifierToPattern[identifier.id] = {
-            pattern: lookup,
-            fromInitialContext,
+            pattern: lookup.value,
+            in: lookup.from,
           }
-          context.patternToIdentifier[lookup] = {
+          context.patternToIdentifier[lookup.value] = {
             identifier: identifier.id,
-            fromInitialContext,
+            in: context._currentScopeName || '',
           }
         } else {
           reporter.error(
@@ -309,17 +333,31 @@ export const build = (
     return context
   }
 
-  const contextWithNamespaceDeclarations = LogicTraversal.reduce(
-    rootNode,
-    namespaceDeclarations,
-    initialContext,
-    config
-  )
+  let contextWithNamespaceDeclarations: ScopeContext = initialContext
 
-  return LogicTraversal.reduce(
-    rootNode,
-    walk,
-    contextWithNamespaceDeclarations,
-    config
-  )
+  rootNodes.forEach(rootNode => {
+    contextWithNamespaceDeclarations._currentScopeName = rootNode.in
+    contextWithNamespaceDeclarations = LogicTraversal.reduce(
+      rootNode.node,
+      namespaceDeclarations,
+      contextWithNamespaceDeclarations,
+      config
+    )
+    delete contextWithNamespaceDeclarations._currentScopeName
+  })
+
+  let finalContext: ScopeContext = contextWithNamespaceDeclarations
+
+  rootNodes.forEach(rootNode => {
+    finalContext._currentScopeName = rootNode.in
+    finalContext = LogicTraversal.reduce(
+      rootNode.node,
+      walk,
+      finalContext,
+      config
+    )
+    delete finalContext._currentScopeName
+  })
+
+  return finalContext
 }

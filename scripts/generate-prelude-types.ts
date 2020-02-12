@@ -23,12 +23,15 @@ const libraryFiles: LogicAST.AST.Program[] = preludeLibs.map(
 
 const preludeProgram = LogicAST.joinPrograms(libraryFiles)
 
-const scopeContext = build(preludeProgram, defaultReporter)
+const scopeContext = build(
+  [{ node: preludeProgram, in: 'standard library' }],
+  defaultReporter
+)
 
 const hardcodedMapping = scopeContext._namespace.map
   .map<[string[], LogicAST.AST.SyntaxNode | void]>(x => [
     x.key,
-    LogicAST.getNode(preludeProgram, x.value),
+    LogicAST.getNode(preludeProgram, x.value.value),
   ])
   .reduce(
     (prev, [key, node]) => {
@@ -120,7 +123,7 @@ export const createStandardLibraryResolver = <T, U extends any[]>(
       k => `if (node.type === '${k}') {
     let memberExpression = ${memberExprMapping[k]}
 
-    if (!evaluationContext.isFromInitialScope(memberExpression.data.id)) {
+    if (!evaluationContext.isFromStandardLibrary(memberExpression.data.id)) {
       return
     }
 
