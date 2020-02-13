@@ -6,6 +6,7 @@
  */
 import * as fs from 'fs'
 import * as path from 'path'
+import upperFirst from 'lodash.upperFirst'
 
 import * as LogicAST from '../src/helpers/logic-ast'
 import { build } from '../src/helpers/logic-scope'
@@ -57,11 +58,6 @@ const hardcodedMapping = scopeContext._namespace.map
     }
   )
 
-const syntaxNodeMapping: { [type: string]: string } = {
-  functionCallExpression: 'FunctionCallExpressionExpression',
-  memberExpression: 'MemberExpressionExpression',
-}
-
 const memberExprMapping: { [type: string]: string } = {
   functionCallExpression: 'node.data.expression',
   memberExpression: 'node',
@@ -82,7 +78,7 @@ ${Object.keys(hardcodedMapping[k])
   .map(
     x =>
       `    '${x}': (
-      node: LogicAST.${syntaxNodeMapping[k]},
+      node: LogicAST.${upperFirst(k)},
       ...args: U
     ) => T | undefined`
   )
@@ -132,7 +128,10 @@ export const createStandardLibraryResolver = <T, U extends any[]>(
       .join('.')
 
     if (isHardcodedMapCall.${k}(path, hardcodedMap)) {
-      matchedHardcodedNode = hardcodedMap.${k}[path](node, ...args)
+      matchedHardcodedNode = hardcodedMap.${k}[path](
+        node,
+        ...args
+      )
     }
   }`
     )

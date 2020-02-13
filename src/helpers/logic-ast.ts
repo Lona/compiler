@@ -4,46 +4,6 @@ import { uuid } from '../utils'
 export { LogicAST as AST }
 
 /**
- * Typescript type predicates
- */
-
-export function isStatement(
-  node: LogicAST.SyntaxNode
-): node is LogicAST.Statement {
-  return (
-    node.type === 'loop' ||
-    node.type === 'branch' ||
-    node.type === 'declaration' ||
-    node.type === 'expression'
-  )
-}
-
-export function isDeclaration(
-  node: LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier
-): node is LogicAST.Declaration {
-  return (
-    'type' in node &&
-    (node.type === 'variable' ||
-      node.type === 'function' ||
-      node.type === 'enumeration' ||
-      node.type === 'namespace' ||
-      node.type === 'placeholder' ||
-      node.type === 'record' ||
-      node.type === 'importDeclaration')
-  )
-}
-
-export function isTypeAnnotation(
-  node: LogicAST.SyntaxNode
-): node is LogicAST.TypeAnnotation {
-  return (
-    node.type === 'typeIdentifier' ||
-    node.type === 'functionType' ||
-    node.type === 'placeholder'
-  )
-}
-
-/**
  * Takes an array of programs and returns a program containing
  * the statements of all programs
  */
@@ -69,10 +29,10 @@ export function makeProgram(
   if (node.type === 'program') {
     return node
   }
-  if (isStatement(node)) {
+  if (LogicAST.isStatement(node)) {
     return { type: 'program', data: { id: uuid(), block: [node] } }
   }
-  if (isDeclaration(node)) {
+  if (LogicAST.isDeclaration(node)) {
     return makeProgram({
       type: 'declaration',
       data: { id: uuid(), content: node },
@@ -352,7 +312,7 @@ export function declarationPathTo(
   if (!path) {
     return []
   }
-  return path.filter(isDeclaration).map(x => {
+  return path.filter(LogicAST.isDeclaration).map(x => {
     switch (x.type) {
       case 'variable':
       case 'function':

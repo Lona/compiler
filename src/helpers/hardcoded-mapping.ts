@@ -6,133 +6,130 @@ import { EvaluationContext } from './logic-evaluate'
 export type HardcodedMap<T, U extends any[]> = {
   functionCallExpression: {
     'Color.setHue': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'Color.setSaturation': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'Color.setLightness': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'Color.fromHSL': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'Color.saturate': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'Boolean.or': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'Boolean.and': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'Number.range': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'String.concat': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'Array.at': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'Optional.value': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'Optional.none': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
-    'Shadow': (
-      node: LogicAST.FunctionCallExpressionExpression,
-      ...args: U
-    ) => T | undefined
+    Shadow: (node: LogicAST.FunctionCallExpression, ...args: U) => T | undefined
     'FontWeight.ultraLight': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.thin': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.light': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.regular': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.medium': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.semibold': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.bold': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.heavy': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.black': (
-      node: LogicAST.FunctionCallExpressionExpression,
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
-    'TextStyle': (
-      node: LogicAST.FunctionCallExpressionExpression,
+    TextStyle: (
+      node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
   }
   memberExpression: {
     'FontWeight.w100': (
-      node: LogicAST.MemberExpressionExpression,
+      node: LogicAST.MemberExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.w200': (
-      node: LogicAST.MemberExpressionExpression,
+      node: LogicAST.MemberExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.w300': (
-      node: LogicAST.MemberExpressionExpression,
+      node: LogicAST.MemberExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.w400': (
-      node: LogicAST.MemberExpressionExpression,
+      node: LogicAST.MemberExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.w500': (
-      node: LogicAST.MemberExpressionExpression,
+      node: LogicAST.MemberExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.w600': (
-      node: LogicAST.MemberExpressionExpression,
+      node: LogicAST.MemberExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.w700': (
-      node: LogicAST.MemberExpressionExpression,
+      node: LogicAST.MemberExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.w800': (
-      node: LogicAST.MemberExpressionExpression,
+      node: LogicAST.MemberExpression,
       ...args: U
     ) => T | undefined
     'FontWeight.w900': (
-      node: LogicAST.MemberExpressionExpression,
+      node: LogicAST.MemberExpression,
       ...args: U
     ) => T | undefined
   }
@@ -178,7 +175,10 @@ export const createStandardLibraryResolver = <T, U extends any[]>(
       .join('.')
 
     if (isHardcodedMapCall.functionCallExpression(path, hardcodedMap)) {
-      matchedHardcodedNode = hardcodedMap.functionCallExpression[path](node, ...args)
+      matchedHardcodedNode = hardcodedMap.functionCallExpression[path](
+        node,
+        ...args
+      )
     }
   }
 

@@ -26,7 +26,7 @@
   "author": "Mathieu Dutour",
   "license": "MIT",
   "dependencies": {
-    "@lona/serialization": "0.0.18-pre-10",
+    "@lona/serialization": "0.0.18-pre-11",
     "color": "^3.1.2",
     "glob": "^7.1.6",
     "lodash.camelcase": "^4.3.0",

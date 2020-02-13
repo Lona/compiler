@@ -192,7 +192,7 @@ export const build = (
   ) => {
     config.needsRevisitAfterTraversingChildren = true
 
-    if (LogicAST.isTypeAnnotation(node) && !config._isRevisit) {
+    if (LogicAST.AST.isTypeAnnotation(node) && !config._isRevisit) {
       config.ignoreChildren = true
       config.needsRevisitAfterTraversingChildren = false
     }

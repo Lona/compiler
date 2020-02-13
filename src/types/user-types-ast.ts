@@ -3,36 +3,36 @@ export type Reference = 'URL' | 'Color' | string
 export type Named = {
   name: 'Named'
   alias: string
-  of: Type
+  of: UserType
 }
 
 export type ResolvedEnum = {
   name: 'Enum' | 'Variant'
-  cases: { tag: string; ltype: Type }[]
+  cases: { tag: string; ltype: UserType }[]
 }
 
 export type Enum = {
   name: 'Enum' | 'Variant'
   cases?: (string | undefined)[]
   case?: string
-  type?: Type
+  type?: UserType
 }
 
 export type Function = {
   name: 'Function'
-  parameters?: { label: string; ltype: Type }[]
-  returnType?: Type
+  parameters?: { label: string; ltype: UserType }[]
+  returnType?: UserType
 }
 
 export type Array = {
   name: 'Array'
-  of: Type
+  of: UserType
 }
 
-export type Type = Reference | Named | Enum | Function | Array
+export type UserType = Reference | Named | Enum | Function | Array
 
 export type TypesFile = {
-  types: Type[]
+  types: UserType[]
 }
 
 export function dereference(x: Reference): Reference | Named {
