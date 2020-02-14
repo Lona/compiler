@@ -1,0 +1,22 @@
+name: 'Test example'
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: yarn install --frozen-lockfile
+
+      # build to check everything is ok
+      - run: yarn build
+
+      # run all the examples
+      - run: yarn snapshot
+
+      # check that the examples didn't change
+      - run: git diff-index --quiet HEAD
