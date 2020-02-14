@@ -124,7 +124,7 @@ export default async (
       if (cachedEvaluationContext) {
         return cachedEvaluationContext
       }
-      console.log({config: JSON.stringify(config), reporter})
+      console.log({ config: JSON.stringify(config), reporter })
       cachedEvaluationContext = generateEvaluationContext(config, reporter)
       return cachedEvaluationContext
     },

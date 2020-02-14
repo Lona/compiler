@@ -7,792 +7,190 @@
   "logicFiles": {
     "Shadows.md": {
       "data": {
-        "declarations": [{
-          "data": {
-            "annotation": {
-              "data": {
-                "genericArguments": [],
-                "id": "a65ca719-8054-4864-b3b5-e0f56dd374ad",
-                "identifier": {
-                  "id": "a9b2b6ec-2759-4896-9547-f9f101a5e556",
-                  "isPlaceholder": false,
-                  "string": "Shadow"
-                }
-              },
-              "type": "typeIdentifier"
-            },
-            "id": "6f0ad487-0b22-447a-a15f-a21cf3b85ef8",
-            "initializer": {
-              "data": {
-                "arguments": [{
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "id": "27de1dc3-84f1-4ba1-9f09-cd0501692228",
-                        "literal": {
-                          "data": {
-                            "id": "bed3eb0b-e5c8-42e9-b8b6-275abfe50406",
-                            "value": 0
-                          },
-                          "type": "number"
-                        }
-                      },
-                      "type": "literalExpression"
-                    },
-                    "id": "5396843c-1854-4c8c-a48d-86c413f38762",
-                    "label": "x"
-                  },
-                  "type": "argument"
-                }, {
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "id": "70afadcf-1c57-4290-8331-b9f671975a1c",
-                        "literal": {
-                          "data": {
-                            "id": "6e0e1eaa-8cdb-42d8-a317-0097defceee0",
-                            "value": 2
-                          },
-                          "type": "number"
-                        }
-                      },
-                      "type": "literalExpression"
-                    },
-                    "id": "f8d8f9f9-8f9b-41c6-a71f-272956fcdc39",
-                    "label": "y"
-                  },
-                  "type": "argument"
-                }, {
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "id": "a082194a-3806-4506-8509-e5ac8c1781f8",
-                        "literal": {
-                          "data": {
-                            "id": "2c72ca34-c61d-4c76-8d44-228f8225ee08",
-                            "value": 2
-                          },
-                          "type": "number"
-                        }
-                      },
-                      "type": "literalExpression"
-                    },
-                    "id": "e7ead10a-efa6-4171-856e-44356bcf54dd",
-                    "label": "blur"
-                  },
-                  "type": "argument"
-                }, {
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "id": "e41d14cd-6fa9-4da2-9474-d3eb0c9fae57",
-                        "literal": {
-                          "data": {
-                            "id": "8cd434ea-dafd-4068-8c5e-c72ca297bf7d",
-                            "value": 0
-                          },
-                          "type": "number"
-                        }
-                      },
-                      "type": "literalExpression"
-                    },
-                    "id": "20db9ce4-0577-4f8c-8375-dc1761bd9335",
-                    "label": "radius"
-                  },
-                  "type": "argument"
-                }, {
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "id": "ef3a1083-9b78-488a-836c-028e1020ae4a",
-                        "identifier": {
-                          "id": "19306178-4242-4032-92f2-f98b066f0bc3",
-                          "isPlaceholder": false,
-                          "string": "primary"
-                        }
-                      },
-                      "type": "identifierExpression"
-                    },
-                    "id": "b47e024d-a1f6-4b2a-b2cc-34439eec1531",
-                    "label": "color"
-                  },
-                  "type": "argument"
-                }, {
-                  "data": {
-                    "id": "60767cb7-588c-4e49-91b8-b3ab00f4dea8"
-                  },
-                  "type": "placeholder"
-                }],
-                "expression": {
-                  "data": {
-                    "id": "7e760054-f8aa-412e-89ac-f933924bd030",
-                    "identifier": {
-                      "id": "2aedd633-c563-4341-8d8c-d7a92d893b29",
-                      "isPlaceholder": false,
-                      "string": "Shadow"
-                    }
-                  },
-                  "type": "identifierExpression"
+        "declarations": [
+          {
+            "data": {
+              "annotation": {
+                "data": {
+                  "genericArguments": [],
+                  "id": "a65ca719-8054-4864-b3b5-e0f56dd374ad",
+                  "identifier": {
+                    "id": "a9b2b6ec-2759-4896-9547-f9f101a5e556",
+                    "isPlaceholder": false,
+                    "string": "Shadow"
+                  }
                 },
-                "id": "53d9b02f-12a7-4fd5-959e-e843afdec0bd"
+                "type": "typeIdentifier"
               },
-              "type": "functionCallExpression"
+              "id": "6f0ad487-0b22-447a-a15f-a21cf3b85ef8",
+              "initializer": {
+                "data": {
+                  "arguments": [
+                    {
+                      "data": {
+                        "expression": {
+                          "data": {
+                            "id": "27de1dc3-84f1-4ba1-9f09-cd0501692228",
+                            "literal": {
+                              "data": {
+                                "id": "bed3eb0b-e5c8-42e9-b8b6-275abfe50406",
+                                "value": 0
+                              },
+                              "type": "number"
+                            }
+                          },
+                          "type": "literalExpression"
+                        },
+                        "id": "5396843c-1854-4c8c-a48d-86c413f38762",
+                        "label": "x"
+                      },
+                      "type": "argument"
+                    },
+                    {
+                      "data": {
+                        "expression": {
+                          "data": {
+                            "id": "70afadcf-1c57-4290-8331-b9f671975a1c",
+                            "literal": {
+                              "data": {
+                                "id": "6e0e1eaa-8cdb-42d8-a317-0097defceee0",
+                                "value": 2
+                              },
+                              "type": "number"
+                            }
+                          },
+                          "type": "literalExpression"
+                        },
+                        "id": "f8d8f9f9-8f9b-41c6-a71f-272956fcdc39",
+                        "label": "y"
+                      },
+                      "type": "argument"
+                    },
+                    {
+                      "data": {
+                        "expression": {
+                          "data": {
+                            "id": "a082194a-3806-4506-8509-e5ac8c1781f8",
+                            "literal": {
+                              "data": {
+                                "id": "2c72ca34-c61d-4c76-8d44-228f8225ee08",
+                                "value": 2
+                              },
+                              "type": "number"
+                            }
+                          },
+                          "type": "literalExpression"
+                        },
+                        "id": "e7ead10a-efa6-4171-856e-44356bcf54dd",
+                        "label": "blur"
+                      },
+                      "type": "argument"
+                    },
+                    {
+                      "data": {
+                        "expression": {
+                          "data": {
+                            "id": "e41d14cd-6fa9-4da2-9474-d3eb0c9fae57",
+                            "literal": {
+                              "data": {
+                                "id": "8cd434ea-dafd-4068-8c5e-c72ca297bf7d",
+                                "value": 0
+                              },
+                              "type": "number"
+                            }
+                          },
+                          "type": "literalExpression"
+                        },
+                        "id": "20db9ce4-0577-4f8c-8375-dc1761bd9335",
+                        "label": "radius"
+                      },
+                      "type": "argument"
+                    },
+                    {
+                      "data": {
+                        "expression": {
+                          "data": {
+                            "id": "ef3a1083-9b78-488a-836c-028e1020ae4a",
+                            "identifier": {
+                              "id": "19306178-4242-4032-92f2-f98b066f0bc3",
+                              "isPlaceholder": false,
+                              "string": "primary"
+                            }
+                          },
+                          "type": "identifierExpression"
+                        },
+                        "id": "b47e024d-a1f6-4b2a-b2cc-34439eec1531",
+                        "label": "color"
+                      },
+                      "type": "argument"
+                    },
+                    {
+                      "data": {
+                        "id": "60767cb7-588c-4e49-91b8-b3ab00f4dea8"
+                      },
+                      "type": "placeholder"
+                    }
+                  ],
+                  "expression": {
+                    "data": {
+                      "id": "7e760054-f8aa-412e-89ac-f933924bd030",
+                      "identifier": {
+                        "id": "2aedd633-c563-4341-8d8c-d7a92d893b29",
+                        "isPlaceholder": false,
+                        "string": "Shadow"
+                      }
+                    },
+                    "type": "identifierExpression"
+                  },
+                  "id": "53d9b02f-12a7-4fd5-959e-e843afdec0bd"
+                },
+                "type": "functionCallExpression"
+              },
+              "name": {
+                "id": "24eccf2d-7ac9-49ce-a6fc-762865edd6f6",
+                "name": "small"
+              }
             },
-            "name": {
-              "id": "24eccf2d-7ac9-49ce-a6fc-762865edd6f6",
-              "name": "small"
-            }
+            "type": "variable"
           },
-          "type": "variable"
-        }, {
-          "data": {
-            "id": "efdb8a60-310a-40b3-9cb7-7953b02363ed"
-          },
-          "type": "placeholder"
-        }],
+          {
+            "data": {
+              "id": "efdb8a60-310a-40b3-9cb7-7953b02363ed"
+            },
+            "type": "placeholder"
+          }
+        ],
         "id": "D43B202B-0B4D-4CF4-AADB-0D9F058ED944"
       },
       "type": "topLevelDeclarations"
     },
     "TextStyles.md": {
       "data": {
-        "declarations": [{
-          "data": {
-            "annotation": {
-              "data": {
-                "genericArguments": [],
-                "id": "f32caf88-a847-447f-9249-080012f59fda",
-                "identifier": {
-                  "id": "bbbff588-cafe-4908-a8b4-3bd4cb3f83c3",
-                  "isPlaceholder": false,
-                  "string": "TextStyle"
-                }
-              },
-              "type": "typeIdentifier"
-            },
-            "id": "7eeddd79-89fe-4740-87e7-f0a9d63a8224",
-            "initializer": {
-              "data": {
-                "arguments": [{
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "arguments": [{
-                          "data": {
-                            "expression": {
-                              "data": {
-                                "id": "8a7556d6-16da-4b28-88d9-3399418b2a3c",
-                                "literal": {
-                                  "data": {
-                                    "id": "7c66dd74-bdb7-4228-bd60-1bf2740bd0e1",
-                                    "value": "Helvetica"
-                                  },
-                                  "type": "string"
-                                }
-                              },
-                              "type": "literalExpression"
-                            },
-                            "id": "431804f7-d5b3-4f14-99fe-4bee83a17283",
-                            "label": null
-                          },
-                          "type": "argument"
-                        }, {
-                          "data": {
-                            "id": "01e88c30-6f00-4e3f-a1c0-7eb74c580d1d"
-                          },
-                          "type": "placeholder"
-                        }],
-                        "expression": {
-                          "data": {
-                            "expression": {
-                              "data": {
-                                "id": "238cd05c-ba47-4441-b8ec-5deb40d296ac",
-                                "identifier": {
-                                  "id": "5f3a2364-8684-4150-b461-74d5bfc317be",
-                                  "isPlaceholder": false,
-                                  "string": "Optional"
-                                }
-                              },
-                              "type": "identifierExpression"
-                            },
-                            "id": "529408bc-2c22-488e-ac6e-43e20b70b716",
-                            "memberName": {
-                              "id": "8296ea11-5e90-46e8-b48e-809db78a3e13",
-                              "isPlaceholder": false,
-                              "string": "value"
-                            }
-                          },
-                          "type": "memberExpression"
-                        },
-                        "id": "45d37f8e-4e33-4593-9576-0f5a552cd104"
-                      },
-                      "type": "functionCallExpression"
-                    },
-                    "id": "f6819172-b743-4b82-8ce6-6cbf94f6c45e",
-                    "label": "fontFamily"
-                  },
-                  "type": "argument"
-                }, {
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "arguments": [{
-                          "data": {
-                            "expression": {
-                              "data": {
-                                "id": "decf4d18-5716-43de-ae0c-9f0a5661d5cb",
-                                "literal": {
-                                  "data": {
-                                    "id": "22dda493-bfe7-459f-9dc5-640dc7aed9f5",
-                                    "value": 28
-                                  },
-                                  "type": "number"
-                                }
-                              },
-                              "type": "literalExpression"
-                            },
-                            "id": "5127c55b-b3ff-4769-b924-ce50478189a5",
-                            "label": null
-                          },
-                          "type": "argument"
-                        }, {
-                          "data": {
-                            "id": "c5f230c0-2f19-498d-a3e9-2df963af8b85"
-                          },
-                          "type": "placeholder"
-                        }],
-                        "expression": {
-                          "data": {
-                            "expression": {
-                              "data": {
-                                "id": "21f15c0d-3855-4a05-9ecf-8b93fe29777c",
-                                "identifier": {
-                                  "id": "419605b1-1f34-400a-bbca-ec711d0e52b9",
-                                  "isPlaceholder": false,
-                                  "string": "Optional"
-                                }
-                              },
-                              "type": "identifierExpression"
-                            },
-                            "id": "5cfc45f2-c902-45ea-a4f6-6031f33bd34d",
-                            "memberName": {
-                              "id": "5fe35924-f248-43e3-bcf9-e70038d02a14",
-                              "isPlaceholder": false,
-                              "string": "value"
-                            }
-                          },
-                          "type": "memberExpression"
-                        },
-                        "id": "f7c0dc50-a072-4148-9e45-77ad86c13987"
-                      },
-                      "type": "functionCallExpression"
-                    },
-                    "id": "9bd9b55c-e1ed-4f84-ae26-689d58231449",
-                    "label": "fontSize"
-                  },
-                  "type": "argument"
-                }, {
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "expression": {
-                          "data": {
-                            "id": "c68816c4-2dd3-4ded-852c-2a86a2e3dd94",
-                            "identifier": {
-                              "id": "2c803862-3ab9-40dd-a454-f1dce9594514",
-                              "isPlaceholder": false,
-                              "string": "FontWeight"
-                            }
-                          },
-                          "type": "identifierExpression"
-                        },
-                        "id": "195fcc6f-913c-4074-b392-e2ff7633cc9d",
-                        "memberName": {
-                          "id": "ceefe2a3-461c-4ada-9b35-80a4d05d6006",
-                          "isPlaceholder": false,
-                          "string": "w700"
-                        }
-                      },
-                      "type": "memberExpression"
-                    },
-                    "id": "d287f038-99b0-49c4-b3b5-fc90c77478c6",
-                    "label": "fontWeight"
-                  },
-                  "type": "argument"
-                }, {
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "arguments": [{
-                          "data": {
-                            "expression": {
-                              "data": {
-                                "id": "a4a48c9f-5388-4793-a938-a98c8eb6c01f",
-                                "literal": {
-                                  "data": {
-                                    "id": "08089763-70f6-4eec-bba7-c73e4a078071",
-                                    "value": "teal"
-                                  },
-                                  "type": "color"
-                                }
-                              },
-                              "type": "literalExpression"
-                            },
-                            "id": "797a9582-c6eb-4df0-84cd-b7d777958563",
-                            "label": null
-                          },
-                          "type": "argument"
-                        }, {
-                          "data": {
-                            "id": "b7f4ef64-98e9-4c20-8780-f2d1eef71c07"
-                          },
-                          "type": "placeholder"
-                        }],
-                        "expression": {
-                          "data": {
-                            "expression": {
-                              "data": {
-                                "id": "a2a2c027-431f-45ef-b568-c8d910501608",
-                                "identifier": {
-                                  "id": "35247fa8-b6f8-46f3-b71f-136f4d02f1c4",
-                                  "isPlaceholder": false,
-                                  "string": "Optional"
-                                }
-                              },
-                              "type": "identifierExpression"
-                            },
-                            "id": "443bf5db-2033-42f9-b86a-477f9dcac40f",
-                            "memberName": {
-                              "id": "0a158203-b46f-48ed-aaf7-c9969c205518",
-                              "isPlaceholder": false,
-                              "string": "value"
-                            }
-                          },
-                          "type": "memberExpression"
-                        },
-                        "id": "1690e6e1-24df-4bbc-8535-fa7172e9626d"
-                      },
-                      "type": "functionCallExpression"
-                    },
-                    "id": "f6288253-0825-4bbd-a513-dc7b9ee57f01",
-                    "label": "color"
-                  },
-                  "type": "argument"
-                }, {
-                  "data": {
-                    "id": "19188073-575b-49e2-9d74-3ecb1aa8654e"
-                  },
-                  "type": "placeholder"
-                }],
-                "expression": {
-                  "data": {
-                    "id": "681a22a0-7cfa-4fde-9d64-5e6957c8ca83",
-                    "identifier": {
-                      "id": "1fb94187-9337-4e97-b90c-636a4bfdf949",
-                      "isPlaceholder": false,
-                      "string": "TextStyle"
-                    }
-                  },
-                  "type": "identifierExpression"
-                },
-                "id": "bf2aeed2-f40a-4024-b9a0-f2d573894051"
-              },
-              "type": "functionCallExpression"
-            },
-            "name": {
-              "id": "a6860b68-3eb0-4c3c-8d2f-c89f0ef9713a",
-              "name": "heading1"
-            }
-          },
-          "type": "variable"
-        }, {
-          "data": {
-            "id": "254216d6-521c-4498-a7cd-3d3802b88f13"
-          },
-          "type": "placeholder"
-        }],
-        "id": "E490BD83-0CD8-4996-998B-2F7134D7E6D4"
-      },
-      "type": "topLevelDeclarations"
-    },
-    "Colors.md": {
-      "data": {
-        "declarations": [{
-          "data": {
-            "annotation": {
-              "data": {
-                "genericArguments": [],
-                "id": "33960d6f-3002-476e-9929-ba609cbddf6b",
-                "identifier": {
-                  "id": "58c2b00d-d0d9-4aa5-89a6-c13769506de4",
-                  "isPlaceholder": false,
-                  "string": "Color"
-                }
-              },
-              "type": "typeIdentifier"
-            },
-            "id": "caf8ddc0-052d-4cc8-bc36-3a1ab6a6a234",
-            "initializer": {
-              "data": {
-                "id": "7651fccd-5414-4db8-aba8-ad2e3c4a1f3b",
-                "literal": {
-                  "data": {
-                    "id": "ac020749-3e92-466e-bf7e-ab132469eeba",
-                    "value": "#45CBFF"
-                  },
-                  "type": "color"
-                }
-              },
-              "type": "literalExpression"
-            },
-            "name": {
-              "id": "bd546621-9e20-4fbf-a5ee-b8acc07935c5",
-              "name": "primary"
-            }
-          },
-          "type": "variable"
-        }, {
-          "data": {
-            "id": "d9d27cb8-7642-4d05-be6b-a58be0973edb"
-          },
-          "type": "placeholder"
-        }, {
-          "data": {
-            "annotation": {
-              "data": {
-                "genericArguments": [],
-                "id": "7e4e13ab-04d7-44d1-bf1c-8270fd9b73a1",
-                "identifier": {
-                  "id": "34e8fada-bcc1-44f8-8955-104d23e83d4e",
-                  "isPlaceholder": false,
-                  "string": "Color"
-                }
-              },
-              "type": "typeIdentifier"
-            },
-            "id": "4d234316-7284-4e4b-b1e5-b067b7787101",
-            "initializer": {
-              "data": {
-                "id": "7e73ca5f-8a06-45bd-8610-3e106b07436e",
-                "identifier": {
-                  "id": "fe61d948-ef53-48e6-901e-ab1b0ebf3872",
-                  "isPlaceholder": false,
-                  "string": "primary"
-                }
-              },
-              "type": "identifierExpression"
-            },
-            "name": {
-              "id": "2f2f23f3-9321-4fac-b2a2-8bc75ffea14b",
-              "name": "accent"
-            }
-          },
-          "type": "variable"
-        }, {
-          "data": {
-            "id": "2ae02ee0-7516-41cc-ae6d-7858117864e9"
-          },
-          "type": "placeholder"
-        }, {
-          "data": {
-            "annotation": {
-              "data": {
-                "genericArguments": [],
-                "id": "670bb6dd-5dde-43d0-be34-9d06b99378b6",
-                "identifier": {
-                  "id": "42918e78-d0f4-43a1-a7b4-3a47c0ef0bfc",
-                  "isPlaceholder": false,
-                  "string": "Color"
-                }
-              },
-              "type": "typeIdentifier"
-            },
-            "id": "8fe3e13c-54fa-47e6-b008-ee540d59b6b1",
-            "initializer": {
-              "data": {
-                "arguments": [{
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "id": "564d90c8-21fa-4f7a-b5b8-31daef4d58b5",
-                        "identifier": {
-                          "id": "b9c5b2c7-f0b6-49da-9e89-dbb49749a012",
-                          "isPlaceholder": false,
-                          "string": "accent"
-                        }
-                      },
-                      "type": "identifierExpression"
-                    },
-                    "id": "e7fddcbd-1b8d-401b-aa51-8f6623128f66",
-                    "label": "color"
-                  },
-                  "type": "argument"
-                }, {
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "id": "3a24e978-a986-4151-94a1-0ee56015dd16",
-                        "literal": {
-                          "data": {
-                            "id": "6e2391c4-1c19-43c6-834c-49d7bb0a7d86",
-                            "value": 0.3
-                          },
-                          "type": "number"
-                        }
-                      },
-                      "type": "literalExpression"
-                    },
-                    "id": "a4aa03e3-4944-402e-9592-7ab9a4f18852",
-                    "label": "factor"
-                  },
-                  "type": "argument"
-                }, {
-                  "data": {
-                    "id": "fed6e276-fa68-4935-bf5f-b7dc7f26119d"
-                  },
-                  "type": "placeholder"
-                }],
-                "expression": {
-                  "data": {
-                    "expression": {
-                      "data": {
-                        "id": "6fc45fce-a5f9-4c99-99dd-89a46b50e20d",
-                        "identifier": {
-                          "id": "a6aa7198-b0f9-4e24-a836-7f598e213868",
-                          "isPlaceholder": false,
-                          "string": "Color"
-                        }
-                      },
-                      "type": "identifierExpression"
-                    },
-                    "id": "81b2bc4b-dd24-47da-a798-f96b45215cc3",
-                    "memberName": {
-                      "id": "59774021-37f2-477b-9483-7d059a7a54d7",
-                      "isPlaceholder": false,
-                      "string": "saturate"
-                    }
-                  },
-                  "type": "memberExpression"
-                },
-                "id": "57b851a4-1430-4075-a7f9-b5992ed50dfd"
-              },
-              "type": "functionCallExpression"
-            },
-            "name": {
-              "id": "ebab622f-ab24-4c2c-ad18-6440e84bf955",
-              "name": "testSaturate"
-            }
-          },
-          "type": "variable"
-        }, {
-          "data": {
-            "id": "6848a7cb-533d-418b-a678-f88a76389f01"
-          },
-          "type": "placeholder"
-        }],
-        "id": "AC27DC98-517F-442D-ABD6-BA41F00691C0"
-      },
-      "type": "topLevelDeclarations"
-    },
-    "README.md": {
-      "data": {
-        "declarations": [],
-        "id": "18F53EAF-C0F4-45E8-806B-661D427E031D"
-      },
-      "type": "topLevelDeclarations"
-    }
-  },
-  "componentFiles": {
-    "Shadows.md": {
-      "children": [{
-        "type": "code",
-        "data": {
-          "lang": "tokens",
-          "meta": null,
-          "value": "let small: Shadow = Shadow(x: 0, y: 2, blur: 2, radius: 0, color: primary)",
-          "parsed": {
+        "declarations": [
+          {
             "data": {
-              "declarations": [{
+              "annotation": {
                 "data": {
-                  "annotation": {
-                    "data": {
-                      "genericArguments": [],
-                      "id": "a65ca719-8054-4864-b3b5-e0f56dd374ad",
-                      "identifier": {
-                        "id": "a9b2b6ec-2759-4896-9547-f9f101a5e556",
-                        "isPlaceholder": false,
-                        "string": "Shadow"
-                      }
-                    },
-                    "type": "typeIdentifier"
-                  },
-                  "id": "6f0ad487-0b22-447a-a15f-a21cf3b85ef8",
-                  "initializer": {
-                    "data": {
-                      "arguments": [{
-                        "data": {
-                          "expression": {
-                            "data": {
-                              "id": "27de1dc3-84f1-4ba1-9f09-cd0501692228",
-                              "literal": {
-                                "data": {
-                                  "id": "bed3eb0b-e5c8-42e9-b8b6-275abfe50406",
-                                  "value": 0
-                                },
-                                "type": "number"
-                              }
-                            },
-                            "type": "literalExpression"
-                          },
-                          "id": "5396843c-1854-4c8c-a48d-86c413f38762",
-                          "label": "x"
-                        },
-                        "type": "argument"
-                      }, {
-                        "data": {
-                          "expression": {
-                            "data": {
-                              "id": "70afadcf-1c57-4290-8331-b9f671975a1c",
-                              "literal": {
-                                "data": {
-                                  "id": "6e0e1eaa-8cdb-42d8-a317-0097defceee0",
-                                  "value": 2
-                                },
-                                "type": "number"
-                              }
-                            },
-                            "type": "literalExpression"
-                          },
-                          "id": "f8d8f9f9-8f9b-41c6-a71f-272956fcdc39",
-                          "label": "y"
-                        },
-                        "type": "argument"
-                      }, {
-                        "data": {
-                          "expression": {
-                            "data": {
-                              "id": "a082194a-3806-4506-8509-e5ac8c1781f8",
-                              "literal": {
-                                "data": {
-                                  "id": "2c72ca34-c61d-4c76-8d44-228f8225ee08",
-                                  "value": 2
-                                },
-                                "type": "number"
-                              }
-                            },
-                            "type": "literalExpression"
-                          },
-                          "id": "e7ead10a-efa6-4171-856e-44356bcf54dd",
-                          "label": "blur"
-                        },
-                        "type": "argument"
-                      }, {
-                        "data": {
-                          "expression": {
-                            "data": {
-                              "id": "e41d14cd-6fa9-4da2-9474-d3eb0c9fae57",
-                              "literal": {
-                                "data": {
-                                  "id": "8cd434ea-dafd-4068-8c5e-c72ca297bf7d",
-                                  "value": 0
-                                },
-                                "type": "number"
-                              }
-                            },
-                            "type": "literalExpression"
-                          },
-                          "id": "20db9ce4-0577-4f8c-8375-dc1761bd9335",
-                          "label": "radius"
-                        },
-                        "type": "argument"
-                      }, {
-                        "data": {
-                          "expression": {
-                            "data": {
-                              "id": "ef3a1083-9b78-488a-836c-028e1020ae4a",
-                              "identifier": {
-                                "id": "19306178-4242-4032-92f2-f98b066f0bc3",
-                                "isPlaceholder": false,
-                                "string": "primary"
-                              }
-                            },
-                            "type": "identifierExpression"
-                          },
-                          "id": "b47e024d-a1f6-4b2a-b2cc-34439eec1531",
-                          "label": "color"
-                        },
-                        "type": "argument"
-                      }, {
-                        "data": {
-                          "id": "60767cb7-588c-4e49-91b8-b3ab00f4dea8"
-                        },
-                        "type": "placeholder"
-                      }],
-                      "expression": {
-                        "data": {
-                          "id": "7e760054-f8aa-412e-89ac-f933924bd030",
-                          "identifier": {
-                            "id": "2aedd633-c563-4341-8d8c-d7a92d893b29",
-                            "isPlaceholder": false,
-                            "string": "Shadow"
-                          }
-                        },
-                        "type": "identifierExpression"
-                      },
-                      "id": "53d9b02f-12a7-4fd5-959e-e843afdec0bd"
-                    },
-                    "type": "functionCallExpression"
-                  },
-                  "name": {
-                    "id": "24eccf2d-7ac9-49ce-a6fc-762865edd6f6",
-                    "name": "small"
+                  "genericArguments": [],
+                  "id": "f32caf88-a847-447f-9249-080012f59fda",
+                  "identifier": {
+                    "id": "bbbff588-cafe-4908-a8b4-3bd4cb3f83c3",
+                    "isPlaceholder": false,
+                    "string": "TextStyle"
                   }
                 },
-                "type": "variable"
-              }, {
+                "type": "typeIdentifier"
+              },
+              "id": "7eeddd79-89fe-4740-87e7-f0a9d63a8224",
+              "initializer": {
                 "data": {
-                  "id": "efdb8a60-310a-40b3-9cb7-7953b02363ed"
-                },
-                "type": "placeholder"
-              }],
-              "id": "1e186c61-93f8-473d-8800-b55502d7eab0"
-            },
-            "type": "topLevelDeclarations"
-          }
-        }
-      }]
-    },
-    "TextStyles.md": {
-      "children": [{
-        "type": "code",
-        "data": {
-          "lang": "tokens",
-          "meta": null,
-          "value": "let heading1: TextStyle = TextStyle(fontFamily: Optional.value(\"Helvetica\"), fontSize: Optional.value(28), fontWeight: FontWeight.w700, color: Optional.value(#color(css: \"teal\")))",
-          "parsed": {
-            "data": {
-              "declarations": [{
-                "data": {
-                  "annotation": {
-                    "data": {
-                      "genericArguments": [],
-                      "id": "f32caf88-a847-447f-9249-080012f59fda",
-                      "identifier": {
-                        "id": "bbbff588-cafe-4908-a8b4-3bd4cb3f83c3",
-                        "isPlaceholder": false,
-                        "string": "TextStyle"
-                      }
-                    },
-                    "type": "typeIdentifier"
-                  },
-                  "id": "7eeddd79-89fe-4740-87e7-f0a9d63a8224",
-                  "initializer": {
-                    "data": {
-                      "arguments": [{
-                        "data": {
-                          "expression": {
-                            "data": {
-                              "arguments": [{
+                  "arguments": [
+                    {
+                      "data": {
+                        "expression": {
+                          "data": {
+                            "arguments": [
+                              {
                                 "data": {
                                   "expression": {
                                     "data": {
@@ -811,47 +209,51 @@
                                   "label": null
                                 },
                                 "type": "argument"
-                              }, {
+                              },
+                              {
                                 "data": {
                                   "id": "01e88c30-6f00-4e3f-a1c0-7eb74c580d1d"
                                 },
                                 "type": "placeholder"
-                              }],
-                              "expression": {
-                                "data": {
-                                  "expression": {
-                                    "data": {
-                                      "id": "238cd05c-ba47-4441-b8ec-5deb40d296ac",
-                                      "identifier": {
-                                        "id": "5f3a2364-8684-4150-b461-74d5bfc317be",
-                                        "isPlaceholder": false,
-                                        "string": "Optional"
-                                      }
-                                    },
-                                    "type": "identifierExpression"
+                              }
+                            ],
+                            "expression": {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "id": "238cd05c-ba47-4441-b8ec-5deb40d296ac",
+                                    "identifier": {
+                                      "id": "5f3a2364-8684-4150-b461-74d5bfc317be",
+                                      "isPlaceholder": false,
+                                      "string": "Optional"
+                                    }
                                   },
-                                  "id": "529408bc-2c22-488e-ac6e-43e20b70b716",
-                                  "memberName": {
-                                    "id": "8296ea11-5e90-46e8-b48e-809db78a3e13",
-                                    "isPlaceholder": false,
-                                    "string": "value"
-                                  }
+                                  "type": "identifierExpression"
                                 },
-                                "type": "memberExpression"
+                                "id": "529408bc-2c22-488e-ac6e-43e20b70b716",
+                                "memberName": {
+                                  "id": "8296ea11-5e90-46e8-b48e-809db78a3e13",
+                                  "isPlaceholder": false,
+                                  "string": "value"
+                                }
                               },
-                              "id": "45d37f8e-4e33-4593-9576-0f5a552cd104"
+                              "type": "memberExpression"
                             },
-                            "type": "functionCallExpression"
+                            "id": "45d37f8e-4e33-4593-9576-0f5a552cd104"
                           },
-                          "id": "f6819172-b743-4b82-8ce6-6cbf94f6c45e",
-                          "label": "fontFamily"
+                          "type": "functionCallExpression"
                         },
-                        "type": "argument"
-                      }, {
-                        "data": {
-                          "expression": {
-                            "data": {
-                              "arguments": [{
+                        "id": "f6819172-b743-4b82-8ce6-6cbf94f6c45e",
+                        "label": "fontFamily"
+                      },
+                      "type": "argument"
+                    },
+                    {
+                      "data": {
+                        "expression": {
+                          "data": {
+                            "arguments": [
+                              {
                                 "data": {
                                   "expression": {
                                     "data": {
@@ -870,75 +272,80 @@
                                   "label": null
                                 },
                                 "type": "argument"
-                              }, {
+                              },
+                              {
                                 "data": {
                                   "id": "c5f230c0-2f19-498d-a3e9-2df963af8b85"
                                 },
                                 "type": "placeholder"
-                              }],
-                              "expression": {
-                                "data": {
-                                  "expression": {
-                                    "data": {
-                                      "id": "21f15c0d-3855-4a05-9ecf-8b93fe29777c",
-                                      "identifier": {
-                                        "id": "419605b1-1f34-400a-bbca-ec711d0e52b9",
-                                        "isPlaceholder": false,
-                                        "string": "Optional"
-                                      }
-                                    },
-                                    "type": "identifierExpression"
-                                  },
-                                  "id": "5cfc45f2-c902-45ea-a4f6-6031f33bd34d",
-                                  "memberName": {
-                                    "id": "5fe35924-f248-43e3-bcf9-e70038d02a14",
-                                    "isPlaceholder": false,
-                                    "string": "value"
-                                  }
-                                },
-                                "type": "memberExpression"
-                              },
-                              "id": "f7c0dc50-a072-4148-9e45-77ad86c13987"
-                            },
-                            "type": "functionCallExpression"
-                          },
-                          "id": "9bd9b55c-e1ed-4f84-ae26-689d58231449",
-                          "label": "fontSize"
-                        },
-                        "type": "argument"
-                      }, {
-                        "data": {
-                          "expression": {
-                            "data": {
-                              "expression": {
-                                "data": {
-                                  "id": "c68816c4-2dd3-4ded-852c-2a86a2e3dd94",
-                                  "identifier": {
-                                    "id": "2c803862-3ab9-40dd-a454-f1dce9594514",
-                                    "isPlaceholder": false,
-                                    "string": "FontWeight"
-                                  }
-                                },
-                                "type": "identifierExpression"
-                              },
-                              "id": "195fcc6f-913c-4074-b392-e2ff7633cc9d",
-                              "memberName": {
-                                "id": "ceefe2a3-461c-4ada-9b35-80a4d05d6006",
-                                "isPlaceholder": false,
-                                "string": "w700"
                               }
+                            ],
+                            "expression": {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "id": "21f15c0d-3855-4a05-9ecf-8b93fe29777c",
+                                    "identifier": {
+                                      "id": "419605b1-1f34-400a-bbca-ec711d0e52b9",
+                                      "isPlaceholder": false,
+                                      "string": "Optional"
+                                    }
+                                  },
+                                  "type": "identifierExpression"
+                                },
+                                "id": "5cfc45f2-c902-45ea-a4f6-6031f33bd34d",
+                                "memberName": {
+                                  "id": "5fe35924-f248-43e3-bcf9-e70038d02a14",
+                                  "isPlaceholder": false,
+                                  "string": "value"
+                                }
+                              },
+                              "type": "memberExpression"
                             },
-                            "type": "memberExpression"
+                            "id": "f7c0dc50-a072-4148-9e45-77ad86c13987"
                           },
-                          "id": "d287f038-99b0-49c4-b3b5-fc90c77478c6",
-                          "label": "fontWeight"
+                          "type": "functionCallExpression"
                         },
-                        "type": "argument"
-                      }, {
-                        "data": {
-                          "expression": {
-                            "data": {
-                              "arguments": [{
+                        "id": "9bd9b55c-e1ed-4f84-ae26-689d58231449",
+                        "label": "fontSize"
+                      },
+                      "type": "argument"
+                    },
+                    {
+                      "data": {
+                        "expression": {
+                          "data": {
+                            "expression": {
+                              "data": {
+                                "id": "c68816c4-2dd3-4ded-852c-2a86a2e3dd94",
+                                "identifier": {
+                                  "id": "2c803862-3ab9-40dd-a454-f1dce9594514",
+                                  "isPlaceholder": false,
+                                  "string": "FontWeight"
+                                }
+                              },
+                              "type": "identifierExpression"
+                            },
+                            "id": "195fcc6f-913c-4074-b392-e2ff7633cc9d",
+                            "memberName": {
+                              "id": "ceefe2a3-461c-4ada-9b35-80a4d05d6006",
+                              "isPlaceholder": false,
+                              "string": "w700"
+                            }
+                          },
+                          "type": "memberExpression"
+                        },
+                        "id": "d287f038-99b0-49c4-b3b5-fc90c77478c6",
+                        "label": "fontWeight"
+                      },
+                      "type": "argument"
+                    },
+                    {
+                      "data": {
+                        "expression": {
+                          "data": {
+                            "arguments": [
+                              {
                                 "data": {
                                   "expression": {
                                     "data": {
@@ -957,362 +364,1059 @@
                                   "label": null
                                 },
                                 "type": "argument"
-                              }, {
+                              },
+                              {
                                 "data": {
                                   "id": "b7f4ef64-98e9-4c20-8780-f2d1eef71c07"
                                 },
                                 "type": "placeholder"
-                              }],
-                              "expression": {
-                                "data": {
-                                  "expression": {
-                                    "data": {
-                                      "id": "a2a2c027-431f-45ef-b568-c8d910501608",
-                                      "identifier": {
-                                        "id": "35247fa8-b6f8-46f3-b71f-136f4d02f1c4",
-                                        "isPlaceholder": false,
-                                        "string": "Optional"
-                                      }
-                                    },
-                                    "type": "identifierExpression"
+                              }
+                            ],
+                            "expression": {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "id": "a2a2c027-431f-45ef-b568-c8d910501608",
+                                    "identifier": {
+                                      "id": "35247fa8-b6f8-46f3-b71f-136f4d02f1c4",
+                                      "isPlaceholder": false,
+                                      "string": "Optional"
+                                    }
                                   },
-                                  "id": "443bf5db-2033-42f9-b86a-477f9dcac40f",
-                                  "memberName": {
-                                    "id": "0a158203-b46f-48ed-aaf7-c9969c205518",
-                                    "isPlaceholder": false,
-                                    "string": "value"
-                                  }
+                                  "type": "identifierExpression"
                                 },
-                                "type": "memberExpression"
+                                "id": "443bf5db-2033-42f9-b86a-477f9dcac40f",
+                                "memberName": {
+                                  "id": "0a158203-b46f-48ed-aaf7-c9969c205518",
+                                  "isPlaceholder": false,
+                                  "string": "value"
+                                }
                               },
-                              "id": "1690e6e1-24df-4bbc-8535-fa7172e9626d"
+                              "type": "memberExpression"
                             },
-                            "type": "functionCallExpression"
+                            "id": "1690e6e1-24df-4bbc-8535-fa7172e9626d"
                           },
-                          "id": "f6288253-0825-4bbd-a513-dc7b9ee57f01",
-                          "label": "color"
+                          "type": "functionCallExpression"
                         },
-                        "type": "argument"
-                      }, {
-                        "data": {
-                          "id": "19188073-575b-49e2-9d74-3ecb1aa8654e"
-                        },
-                        "type": "placeholder"
-                      }],
-                      "expression": {
-                        "data": {
-                          "id": "681a22a0-7cfa-4fde-9d64-5e6957c8ca83",
-                          "identifier": {
-                            "id": "1fb94187-9337-4e97-b90c-636a4bfdf949",
-                            "isPlaceholder": false,
-                            "string": "TextStyle"
-                          }
-                        },
-                        "type": "identifierExpression"
+                        "id": "f6288253-0825-4bbd-a513-dc7b9ee57f01",
+                        "label": "color"
                       },
-                      "id": "bf2aeed2-f40a-4024-b9a0-f2d573894051"
+                      "type": "argument"
                     },
-                    "type": "functionCallExpression"
-                  },
-                  "name": {
-                    "id": "a6860b68-3eb0-4c3c-8d2f-c89f0ef9713a",
-                    "name": "heading1"
-                  }
-                },
-                "type": "variable"
-              }, {
-                "data": {
-                  "id": "254216d6-521c-4498-a7cd-3d3802b88f13"
-                },
-                "type": "placeholder"
-              }],
-              "id": "3cb295c4-4b78-43d2-9e79-9c9fbb90b547"
-            },
-            "type": "topLevelDeclarations"
-          }
-        }
-      }]
-    },
-    "Colors.md": {
-      "children": [{
-        "type": "heading",
-        "data": {
-          "depth": 1,
-          "children": [{
-            "type": "text",
-            "data": {
-              "value": "Colors"
-            }
-          }]
-        }
-      }, {
-        "type": "code",
-        "data": {
-          "lang": "tokens",
-          "meta": null,
-          "value": "let primary: Color = #color(css: \"#45CBFF\")",
-          "parsed": {
-            "data": {
-              "declarations": [{
-                "data": {
-                  "annotation": {
+                    {
+                      "data": {
+                        "id": "19188073-575b-49e2-9d74-3ecb1aa8654e"
+                      },
+                      "type": "placeholder"
+                    }
+                  ],
+                  "expression": {
                     "data": {
-                      "genericArguments": [],
-                      "id": "33960d6f-3002-476e-9929-ba609cbddf6b",
+                      "id": "681a22a0-7cfa-4fde-9d64-5e6957c8ca83",
                       "identifier": {
-                        "id": "58c2b00d-d0d9-4aa5-89a6-c13769506de4",
+                        "id": "1fb94187-9337-4e97-b90c-636a4bfdf949",
                         "isPlaceholder": false,
-                        "string": "Color"
-                      }
-                    },
-                    "type": "typeIdentifier"
-                  },
-                  "id": "caf8ddc0-052d-4cc8-bc36-3a1ab6a6a234",
-                  "initializer": {
-                    "data": {
-                      "id": "7651fccd-5414-4db8-aba8-ad2e3c4a1f3b",
-                      "literal": {
-                        "data": {
-                          "id": "ac020749-3e92-466e-bf7e-ab132469eeba",
-                          "value": "#45CBFF"
-                        },
-                        "type": "color"
-                      }
-                    },
-                    "type": "literalExpression"
-                  },
-                  "name": {
-                    "id": "bd546621-9e20-4fbf-a5ee-b8acc07935c5",
-                    "name": "primary"
-                  }
-                },
-                "type": "variable"
-              }, {
-                "data": {
-                  "id": "d9d27cb8-7642-4d05-be6b-a58be0973edb"
-                },
-                "type": "placeholder"
-              }],
-              "id": "ee8cf049-bea4-4154-ba00-b667b51afb61"
-            },
-            "type": "topLevelDeclarations"
-          }
-        }
-      }, {
-        "type": "code",
-        "data": {
-          "lang": "tokens",
-          "meta": null,
-          "value": "let accent: Color = primary",
-          "parsed": {
-            "data": {
-              "declarations": [{
-                "data": {
-                  "annotation": {
-                    "data": {
-                      "genericArguments": [],
-                      "id": "7e4e13ab-04d7-44d1-bf1c-8270fd9b73a1",
-                      "identifier": {
-                        "id": "34e8fada-bcc1-44f8-8955-104d23e83d4e",
-                        "isPlaceholder": false,
-                        "string": "Color"
-                      }
-                    },
-                    "type": "typeIdentifier"
-                  },
-                  "id": "4d234316-7284-4e4b-b1e5-b067b7787101",
-                  "initializer": {
-                    "data": {
-                      "id": "7e73ca5f-8a06-45bd-8610-3e106b07436e",
-                      "identifier": {
-                        "id": "fe61d948-ef53-48e6-901e-ab1b0ebf3872",
-                        "isPlaceholder": false,
-                        "string": "primary"
+                        "string": "TextStyle"
                       }
                     },
                     "type": "identifierExpression"
                   },
-                  "name": {
-                    "id": "2f2f23f3-9321-4fac-b2a2-8bc75ffea14b",
-                    "name": "accent"
+                  "id": "bf2aeed2-f40a-4024-b9a0-f2d573894051"
+                },
+                "type": "functionCallExpression"
+              },
+              "name": {
+                "id": "a6860b68-3eb0-4c3c-8d2f-c89f0ef9713a",
+                "name": "heading1"
+              }
+            },
+            "type": "variable"
+          },
+          {
+            "data": {
+              "id": "254216d6-521c-4498-a7cd-3d3802b88f13"
+            },
+            "type": "placeholder"
+          }
+        ],
+        "id": "E490BD83-0CD8-4996-998B-2F7134D7E6D4"
+      },
+      "type": "topLevelDeclarations"
+    },
+    "Colors.md": {
+      "data": {
+        "declarations": [
+          {
+            "data": {
+              "annotation": {
+                "data": {
+                  "genericArguments": [],
+                  "id": "33960d6f-3002-476e-9929-ba609cbddf6b",
+                  "identifier": {
+                    "id": "58c2b00d-d0d9-4aa5-89a6-c13769506de4",
+                    "isPlaceholder": false,
+                    "string": "Color"
                   }
                 },
-                "type": "variable"
-              }, {
+                "type": "typeIdentifier"
+              },
+              "id": "caf8ddc0-052d-4cc8-bc36-3a1ab6a6a234",
+              "initializer": {
                 "data": {
-                  "id": "2ae02ee0-7516-41cc-ae6d-7858117864e9"
-                },
-                "type": "placeholder"
-              }],
-              "id": "25eea69b-4192-4768-b6ae-2bb1eba14b9c"
-            },
-            "type": "topLevelDeclarations"
-          }
-        }
-      }, {
-        "type": "code",
-        "data": {
-          "lang": "tokens",
-          "meta": null,
-          "value": "let testSaturate: Color = Color.saturate(color: accent, factor: 0.3)",
-          "parsed": {
-            "data": {
-              "declarations": [{
-                "data": {
-                  "annotation": {
+                  "id": "7651fccd-5414-4db8-aba8-ad2e3c4a1f3b",
+                  "literal": {
                     "data": {
-                      "genericArguments": [],
-                      "id": "670bb6dd-5dde-43d0-be34-9d06b99378b6",
-                      "identifier": {
-                        "id": "42918e78-d0f4-43a1-a7b4-3a47c0ef0bfc",
-                        "isPlaceholder": false,
-                        "string": "Color"
-                      }
+                      "id": "ac020749-3e92-466e-bf7e-ab132469eeba",
+                      "value": "#45CBFF"
                     },
-                    "type": "typeIdentifier"
-                  },
-                  "id": "8fe3e13c-54fa-47e6-b008-ee540d59b6b1",
-                  "initializer": {
+                    "type": "color"
+                  }
+                },
+                "type": "literalExpression"
+              },
+              "name": {
+                "id": "bd546621-9e20-4fbf-a5ee-b8acc07935c5",
+                "name": "primary"
+              }
+            },
+            "type": "variable"
+          },
+          {
+            "data": {
+              "id": "d9d27cb8-7642-4d05-be6b-a58be0973edb"
+            },
+            "type": "placeholder"
+          },
+          {
+            "data": {
+              "annotation": {
+                "data": {
+                  "genericArguments": [],
+                  "id": "7e4e13ab-04d7-44d1-bf1c-8270fd9b73a1",
+                  "identifier": {
+                    "id": "34e8fada-bcc1-44f8-8955-104d23e83d4e",
+                    "isPlaceholder": false,
+                    "string": "Color"
+                  }
+                },
+                "type": "typeIdentifier"
+              },
+              "id": "4d234316-7284-4e4b-b1e5-b067b7787101",
+              "initializer": {
+                "data": {
+                  "id": "7e73ca5f-8a06-45bd-8610-3e106b07436e",
+                  "identifier": {
+                    "id": "fe61d948-ef53-48e6-901e-ab1b0ebf3872",
+                    "isPlaceholder": false,
+                    "string": "primary"
+                  }
+                },
+                "type": "identifierExpression"
+              },
+              "name": {
+                "id": "2f2f23f3-9321-4fac-b2a2-8bc75ffea14b",
+                "name": "accent"
+              }
+            },
+            "type": "variable"
+          },
+          {
+            "data": {
+              "id": "2ae02ee0-7516-41cc-ae6d-7858117864e9"
+            },
+            "type": "placeholder"
+          },
+          {
+            "data": {
+              "annotation": {
+                "data": {
+                  "genericArguments": [],
+                  "id": "670bb6dd-5dde-43d0-be34-9d06b99378b6",
+                  "identifier": {
+                    "id": "42918e78-d0f4-43a1-a7b4-3a47c0ef0bfc",
+                    "isPlaceholder": false,
+                    "string": "Color"
+                  }
+                },
+                "type": "typeIdentifier"
+              },
+              "id": "8fe3e13c-54fa-47e6-b008-ee540d59b6b1",
+              "initializer": {
+                "data": {
+                  "arguments": [
+                    {
+                      "data": {
+                        "expression": {
+                          "data": {
+                            "id": "564d90c8-21fa-4f7a-b5b8-31daef4d58b5",
+                            "identifier": {
+                              "id": "b9c5b2c7-f0b6-49da-9e89-dbb49749a012",
+                              "isPlaceholder": false,
+                              "string": "accent"
+                            }
+                          },
+                          "type": "identifierExpression"
+                        },
+                        "id": "e7fddcbd-1b8d-401b-aa51-8f6623128f66",
+                        "label": "color"
+                      },
+                      "type": "argument"
+                    },
+                    {
+                      "data": {
+                        "expression": {
+                          "data": {
+                            "id": "3a24e978-a986-4151-94a1-0ee56015dd16",
+                            "literal": {
+                              "data": {
+                                "id": "6e2391c4-1c19-43c6-834c-49d7bb0a7d86",
+                                "value": 0.3
+                              },
+                              "type": "number"
+                            }
+                          },
+                          "type": "literalExpression"
+                        },
+                        "id": "a4aa03e3-4944-402e-9592-7ab9a4f18852",
+                        "label": "factor"
+                      },
+                      "type": "argument"
+                    },
+                    {
+                      "data": {
+                        "id": "fed6e276-fa68-4935-bf5f-b7dc7f26119d"
+                      },
+                      "type": "placeholder"
+                    }
+                  ],
+                  "expression": {
                     "data": {
-                      "arguments": [{
-                        "data": {
-                          "expression": {
-                            "data": {
-                              "id": "564d90c8-21fa-4f7a-b5b8-31daef4d58b5",
-                              "identifier": {
-                                "id": "b9c5b2c7-f0b6-49da-9e89-dbb49749a012",
-                                "isPlaceholder": false,
-                                "string": "accent"
-                              }
-                            },
-                            "type": "identifierExpression"
-                          },
-                          "id": "e7fddcbd-1b8d-401b-aa51-8f6623128f66",
-                          "label": "color"
-                        },
-                        "type": "argument"
-                      }, {
-                        "data": {
-                          "expression": {
-                            "data": {
-                              "id": "3a24e978-a986-4151-94a1-0ee56015dd16",
-                              "literal": {
-                                "data": {
-                                  "id": "6e2391c4-1c19-43c6-834c-49d7bb0a7d86",
-                                  "value": 0.3
-                                },
-                                "type": "number"
-                              }
-                            },
-                            "type": "literalExpression"
-                          },
-                          "id": "a4aa03e3-4944-402e-9592-7ab9a4f18852",
-                          "label": "factor"
-                        },
-                        "type": "argument"
-                      }, {
-                        "data": {
-                          "id": "fed6e276-fa68-4935-bf5f-b7dc7f26119d"
-                        },
-                        "type": "placeholder"
-                      }],
                       "expression": {
                         "data": {
+                          "id": "6fc45fce-a5f9-4c99-99dd-89a46b50e20d",
+                          "identifier": {
+                            "id": "a6aa7198-b0f9-4e24-a836-7f598e213868",
+                            "isPlaceholder": false,
+                            "string": "Color"
+                          }
+                        },
+                        "type": "identifierExpression"
+                      },
+                      "id": "81b2bc4b-dd24-47da-a798-f96b45215cc3",
+                      "memberName": {
+                        "id": "59774021-37f2-477b-9483-7d059a7a54d7",
+                        "isPlaceholder": false,
+                        "string": "saturate"
+                      }
+                    },
+                    "type": "memberExpression"
+                  },
+                  "id": "57b851a4-1430-4075-a7f9-b5992ed50dfd"
+                },
+                "type": "functionCallExpression"
+              },
+              "name": {
+                "id": "ebab622f-ab24-4c2c-ad18-6440e84bf955",
+                "name": "testSaturate"
+              }
+            },
+            "type": "variable"
+          },
+          {
+            "data": {
+              "id": "6848a7cb-533d-418b-a678-f88a76389f01"
+            },
+            "type": "placeholder"
+          }
+        ],
+        "id": "AC27DC98-517F-442D-ABD6-BA41F00691C0"
+      },
+      "type": "topLevelDeclarations"
+    },
+    "README.md": {
+      "data": {
+        "declarations": [],
+        "id": "18F53EAF-C0F4-45E8-806B-661D427E031D"
+      },
+      "type": "topLevelDeclarations"
+    }
+  },
+  "componentFiles": {
+    "Shadows.md": {
+      "children": [
+        {
+          "type": "code",
+          "data": {
+            "lang": "tokens",
+            "meta": null,
+            "value": "let small: Shadow = Shadow(x: 0, y: 2, blur: 2, radius: 0, color: primary)",
+            "parsed": {
+              "data": {
+                "declarations": [
+                  {
+                    "data": {
+                      "annotation": {
+                        "data": {
+                          "genericArguments": [],
+                          "id": "a65ca719-8054-4864-b3b5-e0f56dd374ad",
+                          "identifier": {
+                            "id": "a9b2b6ec-2759-4896-9547-f9f101a5e556",
+                            "isPlaceholder": false,
+                            "string": "Shadow"
+                          }
+                        },
+                        "type": "typeIdentifier"
+                      },
+                      "id": "6f0ad487-0b22-447a-a15f-a21cf3b85ef8",
+                      "initializer": {
+                        "data": {
+                          "arguments": [
+                            {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "id": "27de1dc3-84f1-4ba1-9f09-cd0501692228",
+                                    "literal": {
+                                      "data": {
+                                        "id": "bed3eb0b-e5c8-42e9-b8b6-275abfe50406",
+                                        "value": 0
+                                      },
+                                      "type": "number"
+                                    }
+                                  },
+                                  "type": "literalExpression"
+                                },
+                                "id": "5396843c-1854-4c8c-a48d-86c413f38762",
+                                "label": "x"
+                              },
+                              "type": "argument"
+                            },
+                            {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "id": "70afadcf-1c57-4290-8331-b9f671975a1c",
+                                    "literal": {
+                                      "data": {
+                                        "id": "6e0e1eaa-8cdb-42d8-a317-0097defceee0",
+                                        "value": 2
+                                      },
+                                      "type": "number"
+                                    }
+                                  },
+                                  "type": "literalExpression"
+                                },
+                                "id": "f8d8f9f9-8f9b-41c6-a71f-272956fcdc39",
+                                "label": "y"
+                              },
+                              "type": "argument"
+                            },
+                            {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "id": "a082194a-3806-4506-8509-e5ac8c1781f8",
+                                    "literal": {
+                                      "data": {
+                                        "id": "2c72ca34-c61d-4c76-8d44-228f8225ee08",
+                                        "value": 2
+                                      },
+                                      "type": "number"
+                                    }
+                                  },
+                                  "type": "literalExpression"
+                                },
+                                "id": "e7ead10a-efa6-4171-856e-44356bcf54dd",
+                                "label": "blur"
+                              },
+                              "type": "argument"
+                            },
+                            {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "id": "e41d14cd-6fa9-4da2-9474-d3eb0c9fae57",
+                                    "literal": {
+                                      "data": {
+                                        "id": "8cd434ea-dafd-4068-8c5e-c72ca297bf7d",
+                                        "value": 0
+                                      },
+                                      "type": "number"
+                                    }
+                                  },
+                                  "type": "literalExpression"
+                                },
+                                "id": "20db9ce4-0577-4f8c-8375-dc1761bd9335",
+                                "label": "radius"
+                              },
+                              "type": "argument"
+                            },
+                            {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "id": "ef3a1083-9b78-488a-836c-028e1020ae4a",
+                                    "identifier": {
+                                      "id": "19306178-4242-4032-92f2-f98b066f0bc3",
+                                      "isPlaceholder": false,
+                                      "string": "primary"
+                                    }
+                                  },
+                                  "type": "identifierExpression"
+                                },
+                                "id": "b47e024d-a1f6-4b2a-b2cc-34439eec1531",
+                                "label": "color"
+                              },
+                              "type": "argument"
+                            },
+                            {
+                              "data": {
+                                "id": "60767cb7-588c-4e49-91b8-b3ab00f4dea8"
+                              },
+                              "type": "placeholder"
+                            }
+                          ],
                           "expression": {
                             "data": {
-                              "id": "6fc45fce-a5f9-4c99-99dd-89a46b50e20d",
+                              "id": "7e760054-f8aa-412e-89ac-f933924bd030",
                               "identifier": {
-                                "id": "a6aa7198-b0f9-4e24-a836-7f598e213868",
+                                "id": "2aedd633-c563-4341-8d8c-d7a92d893b29",
                                 "isPlaceholder": false,
-                                "string": "Color"
+                                "string": "Shadow"
                               }
                             },
                             "type": "identifierExpression"
                           },
-                          "id": "81b2bc4b-dd24-47da-a798-f96b45215cc3",
-                          "memberName": {
-                            "id": "59774021-37f2-477b-9483-7d059a7a54d7",
-                            "isPlaceholder": false,
-                            "string": "saturate"
-                          }
+                          "id": "53d9b02f-12a7-4fd5-959e-e843afdec0bd"
                         },
-                        "type": "memberExpression"
+                        "type": "functionCallExpression"
                       },
-                      "id": "57b851a4-1430-4075-a7f9-b5992ed50dfd"
+                      "name": {
+                        "id": "24eccf2d-7ac9-49ce-a6fc-762865edd6f6",
+                        "name": "small"
+                      }
                     },
-                    "type": "functionCallExpression"
+                    "type": "variable"
                   },
-                  "name": {
-                    "id": "ebab622f-ab24-4c2c-ad18-6440e84bf955",
-                    "name": "testSaturate"
+                  {
+                    "data": {
+                      "id": "efdb8a60-310a-40b3-9cb7-7953b02363ed"
+                    },
+                    "type": "placeholder"
                   }
-                },
-                "type": "variable"
-              }, {
-                "data": {
-                  "id": "6848a7cb-533d-418b-a678-f88a76389f01"
-                },
-                "type": "placeholder"
-              }],
-              "id": "aa7a065e-31fc-4ce7-b7c7-46657b690ea8"
-            },
-            "type": "topLevelDeclarations"
+                ],
+                "id": "1e186c61-93f8-473d-8800-b55502d7eab0"
+              },
+              "type": "topLevelDeclarations"
+            }
           }
         }
-      }]
+      ]
+    },
+    "TextStyles.md": {
+      "children": [
+        {
+          "type": "code",
+          "data": {
+            "lang": "tokens",
+            "meta": null,
+            "value": "let heading1: TextStyle = TextStyle(fontFamily: Optional.value(\"Helvetica\"), fontSize: Optional.value(28), fontWeight: FontWeight.w700, color: Optional.value(#color(css: \"teal\")))",
+            "parsed": {
+              "data": {
+                "declarations": [
+                  {
+                    "data": {
+                      "annotation": {
+                        "data": {
+                          "genericArguments": [],
+                          "id": "f32caf88-a847-447f-9249-080012f59fda",
+                          "identifier": {
+                            "id": "bbbff588-cafe-4908-a8b4-3bd4cb3f83c3",
+                            "isPlaceholder": false,
+                            "string": "TextStyle"
+                          }
+                        },
+                        "type": "typeIdentifier"
+                      },
+                      "id": "7eeddd79-89fe-4740-87e7-f0a9d63a8224",
+                      "initializer": {
+                        "data": {
+                          "arguments": [
+                            {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "arguments": [
+                                      {
+                                        "data": {
+                                          "expression": {
+                                            "data": {
+                                              "id": "8a7556d6-16da-4b28-88d9-3399418b2a3c",
+                                              "literal": {
+                                                "data": {
+                                                  "id": "7c66dd74-bdb7-4228-bd60-1bf2740bd0e1",
+                                                  "value": "Helvetica"
+                                                },
+                                                "type": "string"
+                                              }
+                                            },
+                                            "type": "literalExpression"
+                                          },
+                                          "id": "431804f7-d5b3-4f14-99fe-4bee83a17283",
+                                          "label": null
+                                        },
+                                        "type": "argument"
+                                      },
+                                      {
+                                        "data": {
+                                          "id": "01e88c30-6f00-4e3f-a1c0-7eb74c580d1d"
+                                        },
+                                        "type": "placeholder"
+                                      }
+                                    ],
+                                    "expression": {
+                                      "data": {
+                                        "expression": {
+                                          "data": {
+                                            "id": "238cd05c-ba47-4441-b8ec-5deb40d296ac",
+                                            "identifier": {
+                                              "id": "5f3a2364-8684-4150-b461-74d5bfc317be",
+                                              "isPlaceholder": false,
+                                              "string": "Optional"
+                                            }
+                                          },
+                                          "type": "identifierExpression"
+                                        },
+                                        "id": "529408bc-2c22-488e-ac6e-43e20b70b716",
+                                        "memberName": {
+                                          "id": "8296ea11-5e90-46e8-b48e-809db78a3e13",
+                                          "isPlaceholder": false,
+                                          "string": "value"
+                                        }
+                                      },
+                                      "type": "memberExpression"
+                                    },
+                                    "id": "45d37f8e-4e33-4593-9576-0f5a552cd104"
+                                  },
+                                  "type": "functionCallExpression"
+                                },
+                                "id": "f6819172-b743-4b82-8ce6-6cbf94f6c45e",
+                                "label": "fontFamily"
+                              },
+                              "type": "argument"
+                            },
+                            {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "arguments": [
+                                      {
+                                        "data": {
+                                          "expression": {
+                                            "data": {
+                                              "id": "decf4d18-5716-43de-ae0c-9f0a5661d5cb",
+                                              "literal": {
+                                                "data": {
+                                                  "id": "22dda493-bfe7-459f-9dc5-640dc7aed9f5",
+                                                  "value": 28
+                                                },
+                                                "type": "number"
+                                              }
+                                            },
+                                            "type": "literalExpression"
+                                          },
+                                          "id": "5127c55b-b3ff-4769-b924-ce50478189a5",
+                                          "label": null
+                                        },
+                                        "type": "argument"
+                                      },
+                                      {
+                                        "data": {
+                                          "id": "c5f230c0-2f19-498d-a3e9-2df963af8b85"
+                                        },
+                                        "type": "placeholder"
+                                      }
+                                    ],
+                                    "expression": {
+                                      "data": {
+                                        "expression": {
+                                          "data": {
+                                            "id": "21f15c0d-3855-4a05-9ecf-8b93fe29777c",
+                                            "identifier": {
+                                              "id": "419605b1-1f34-400a-bbca-ec711d0e52b9",
+                                              "isPlaceholder": false,
+                                              "string": "Optional"
+                                            }
+                                          },
+                                          "type": "identifierExpression"
+                                        },
+                                        "id": "5cfc45f2-c902-45ea-a4f6-6031f33bd34d",
+                                        "memberName": {
+                                          "id": "5fe35924-f248-43e3-bcf9-e70038d02a14",
+                                          "isPlaceholder": false,
+                                          "string": "value"
+                                        }
+                                      },
+                                      "type": "memberExpression"
+                                    },
+                                    "id": "f7c0dc50-a072-4148-9e45-77ad86c13987"
+                                  },
+                                  "type": "functionCallExpression"
+                                },
+                                "id": "9bd9b55c-e1ed-4f84-ae26-689d58231449",
+                                "label": "fontSize"
+                              },
+                              "type": "argument"
+                            },
+                            {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "expression": {
+                                      "data": {
+                                        "id": "c68816c4-2dd3-4ded-852c-2a86a2e3dd94",
+                                        "identifier": {
+                                          "id": "2c803862-3ab9-40dd-a454-f1dce9594514",
+                                          "isPlaceholder": false,
+                                          "string": "FontWeight"
+                                        }
+                                      },
+                                      "type": "identifierExpression"
+                                    },
+                                    "id": "195fcc6f-913c-4074-b392-e2ff7633cc9d",
+                                    "memberName": {
+                                      "id": "ceefe2a3-461c-4ada-9b35-80a4d05d6006",
+                                      "isPlaceholder": false,
+                                      "string": "w700"
+                                    }
+                                  },
+                                  "type": "memberExpression"
+                                },
+                                "id": "d287f038-99b0-49c4-b3b5-fc90c77478c6",
+                                "label": "fontWeight"
+                              },
+                              "type": "argument"
+                            },
+                            {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "arguments": [
+                                      {
+                                        "data": {
+                                          "expression": {
+                                            "data": {
+                                              "id": "a4a48c9f-5388-4793-a938-a98c8eb6c01f",
+                                              "literal": {
+                                                "data": {
+                                                  "id": "08089763-70f6-4eec-bba7-c73e4a078071",
+                                                  "value": "teal"
+                                                },
+                                                "type": "color"
+                                              }
+                                            },
+                                            "type": "literalExpression"
+                                          },
+                                          "id": "797a9582-c6eb-4df0-84cd-b7d777958563",
+                                          "label": null
+                                        },
+                                        "type": "argument"
+                                      },
+                                      {
+                                        "data": {
+                                          "id": "b7f4ef64-98e9-4c20-8780-f2d1eef71c07"
+                                        },
+                                        "type": "placeholder"
+                                      }
+                                    ],
+                                    "expression": {
+                                      "data": {
+                                        "expression": {
+                                          "data": {
+                                            "id": "a2a2c027-431f-45ef-b568-c8d910501608",
+                                            "identifier": {
+                                              "id": "35247fa8-b6f8-46f3-b71f-136f4d02f1c4",
+                                              "isPlaceholder": false,
+                                              "string": "Optional"
+                                            }
+                                          },
+                                          "type": "identifierExpression"
+                                        },
+                                        "id": "443bf5db-2033-42f9-b86a-477f9dcac40f",
+                                        "memberName": {
+                                          "id": "0a158203-b46f-48ed-aaf7-c9969c205518",
+                                          "isPlaceholder": false,
+                                          "string": "value"
+                                        }
+                                      },
+                                      "type": "memberExpression"
+                                    },
+                                    "id": "1690e6e1-24df-4bbc-8535-fa7172e9626d"
+                                  },
+                                  "type": "functionCallExpression"
+                                },
+                                "id": "f6288253-0825-4bbd-a513-dc7b9ee57f01",
+                                "label": "color"
+                              },
+                              "type": "argument"
+                            },
+                            {
+                              "data": {
+                                "id": "19188073-575b-49e2-9d74-3ecb1aa8654e"
+                              },
+                              "type": "placeholder"
+                            }
+                          ],
+                          "expression": {
+                            "data": {
+                              "id": "681a22a0-7cfa-4fde-9d64-5e6957c8ca83",
+                              "identifier": {
+                                "id": "1fb94187-9337-4e97-b90c-636a4bfdf949",
+                                "isPlaceholder": false,
+                                "string": "TextStyle"
+                              }
+                            },
+                            "type": "identifierExpression"
+                          },
+                          "id": "bf2aeed2-f40a-4024-b9a0-f2d573894051"
+                        },
+                        "type": "functionCallExpression"
+                      },
+                      "name": {
+                        "id": "a6860b68-3eb0-4c3c-8d2f-c89f0ef9713a",
+                        "name": "heading1"
+                      }
+                    },
+                    "type": "variable"
+                  },
+                  {
+                    "data": {
+                      "id": "254216d6-521c-4498-a7cd-3d3802b88f13"
+                    },
+                    "type": "placeholder"
+                  }
+                ],
+                "id": "3cb295c4-4b78-43d2-9e79-9c9fbb90b547"
+              },
+              "type": "topLevelDeclarations"
+            }
+          }
+        }
+      ]
+    },
+    "Colors.md": {
+      "children": [
+        {
+          "type": "heading",
+          "data": {
+            "depth": 1,
+            "children": [
+              {
+                "type": "text",
+                "data": {
+                  "value": "Colors"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "code",
+          "data": {
+            "lang": "tokens",
+            "meta": null,
+            "value": "let primary: Color = #color(css: \"#45CBFF\")",
+            "parsed": {
+              "data": {
+                "declarations": [
+                  {
+                    "data": {
+                      "annotation": {
+                        "data": {
+                          "genericArguments": [],
+                          "id": "33960d6f-3002-476e-9929-ba609cbddf6b",
+                          "identifier": {
+                            "id": "58c2b00d-d0d9-4aa5-89a6-c13769506de4",
+                            "isPlaceholder": false,
+                            "string": "Color"
+                          }
+                        },
+                        "type": "typeIdentifier"
+                      },
+                      "id": "caf8ddc0-052d-4cc8-bc36-3a1ab6a6a234",
+                      "initializer": {
+                        "data": {
+                          "id": "7651fccd-5414-4db8-aba8-ad2e3c4a1f3b",
+                          "literal": {
+                            "data": {
+                              "id": "ac020749-3e92-466e-bf7e-ab132469eeba",
+                              "value": "#45CBFF"
+                            },
+                            "type": "color"
+                          }
+                        },
+                        "type": "literalExpression"
+                      },
+                      "name": {
+                        "id": "bd546621-9e20-4fbf-a5ee-b8acc07935c5",
+                        "name": "primary"
+                      }
+                    },
+                    "type": "variable"
+                  },
+                  {
+                    "data": {
+                      "id": "d9d27cb8-7642-4d05-be6b-a58be0973edb"
+                    },
+                    "type": "placeholder"
+                  }
+                ],
+                "id": "ee8cf049-bea4-4154-ba00-b667b51afb61"
+              },
+              "type": "topLevelDeclarations"
+            }
+          }
+        },
+        {
+          "type": "code",
+          "data": {
+            "lang": "tokens",
+            "meta": null,
+            "value": "let accent: Color = primary",
+            "parsed": {
+              "data": {
+                "declarations": [
+                  {
+                    "data": {
+                      "annotation": {
+                        "data": {
+                          "genericArguments": [],
+                          "id": "7e4e13ab-04d7-44d1-bf1c-8270fd9b73a1",
+                          "identifier": {
+                            "id": "34e8fada-bcc1-44f8-8955-104d23e83d4e",
+                            "isPlaceholder": false,
+                            "string": "Color"
+                          }
+                        },
+                        "type": "typeIdentifier"
+                      },
+                      "id": "4d234316-7284-4e4b-b1e5-b067b7787101",
+                      "initializer": {
+                        "data": {
+                          "id": "7e73ca5f-8a06-45bd-8610-3e106b07436e",
+                          "identifier": {
+                            "id": "fe61d948-ef53-48e6-901e-ab1b0ebf3872",
+                            "isPlaceholder": false,
+                            "string": "primary"
+                          }
+                        },
+                        "type": "identifierExpression"
+                      },
+                      "name": {
+                        "id": "2f2f23f3-9321-4fac-b2a2-8bc75ffea14b",
+                        "name": "accent"
+                      }
+                    },
+                    "type": "variable"
+                  },
+                  {
+                    "data": {
+                      "id": "2ae02ee0-7516-41cc-ae6d-7858117864e9"
+                    },
+                    "type": "placeholder"
+                  }
+                ],
+                "id": "25eea69b-4192-4768-b6ae-2bb1eba14b9c"
+              },
+              "type": "topLevelDeclarations"
+            }
+          }
+        },
+        {
+          "type": "code",
+          "data": {
+            "lang": "tokens",
+            "meta": null,
+            "value": "let testSaturate: Color = Color.saturate(color: accent, factor: 0.3)",
+            "parsed": {
+              "data": {
+                "declarations": [
+                  {
+                    "data": {
+                      "annotation": {
+                        "data": {
+                          "genericArguments": [],
+                          "id": "670bb6dd-5dde-43d0-be34-9d06b99378b6",
+                          "identifier": {
+                            "id": "42918e78-d0f4-43a1-a7b4-3a47c0ef0bfc",
+                            "isPlaceholder": false,
+                            "string": "Color"
+                          }
+                        },
+                        "type": "typeIdentifier"
+                      },
+                      "id": "8fe3e13c-54fa-47e6-b008-ee540d59b6b1",
+                      "initializer": {
+                        "data": {
+                          "arguments": [
+                            {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "id": "564d90c8-21fa-4f7a-b5b8-31daef4d58b5",
+                                    "identifier": {
+                                      "id": "b9c5b2c7-f0b6-49da-9e89-dbb49749a012",
+                                      "isPlaceholder": false,
+                                      "string": "accent"
+                                    }
+                                  },
+                                  "type": "identifierExpression"
+                                },
+                                "id": "e7fddcbd-1b8d-401b-aa51-8f6623128f66",
+                                "label": "color"
+                              },
+                              "type": "argument"
+                            },
+                            {
+                              "data": {
+                                "expression": {
+                                  "data": {
+                                    "id": "3a24e978-a986-4151-94a1-0ee56015dd16",
+                                    "literal": {
+                                      "data": {
+                                        "id": "6e2391c4-1c19-43c6-834c-49d7bb0a7d86",
+                                        "value": 0.3
+                                      },
+                                      "type": "number"
+                                    }
+                                  },
+                                  "type": "literalExpression"
+                                },
+                                "id": "a4aa03e3-4944-402e-9592-7ab9a4f18852",
+                                "label": "factor"
+                              },
+                              "type": "argument"
+                            },
+                            {
+                              "data": {
+                                "id": "fed6e276-fa68-4935-bf5f-b7dc7f26119d"
+                              },
+                              "type": "placeholder"
+                            }
+                          ],
+                          "expression": {
+                            "data": {
+                              "expression": {
+                                "data": {
+                                  "id": "6fc45fce-a5f9-4c99-99dd-89a46b50e20d",
+                                  "identifier": {
+                                    "id": "a6aa7198-b0f9-4e24-a836-7f598e213868",
+                                    "isPlaceholder": false,
+                                    "string": "Color"
+                                  }
+                                },
+                                "type": "identifierExpression"
+                              },
+                              "id": "81b2bc4b-dd24-47da-a798-f96b45215cc3",
+                              "memberName": {
+                                "id": "59774021-37f2-477b-9483-7d059a7a54d7",
+                                "isPlaceholder": false,
+                                "string": "saturate"
+                              }
+                            },
+                            "type": "memberExpression"
+                          },
+                          "id": "57b851a4-1430-4075-a7f9-b5992ed50dfd"
+                        },
+                        "type": "functionCallExpression"
+                      },
+                      "name": {
+                        "id": "ebab622f-ab24-4c2c-ad18-6440e84bf955",
+                        "name": "testSaturate"
+                      }
+                    },
+                    "type": "variable"
+                  },
+                  {
+                    "data": {
+                      "id": "6848a7cb-533d-418b-a678-f88a76389f01"
+                    },
+                    "type": "placeholder"
+                  }
+                ],
+                "id": "aa7a065e-31fc-4ce7-b7c7-46657b690ea8"
+              },
+              "type": "topLevelDeclarations"
+            }
+          }
+        }
+      ]
     },
     "README.md": {
-      "children": [{
-        "type": "heading",
-        "data": {
-          "depth": 1,
-          "children": [{
-            "type": "text",
-            "data": {
-              "value": "Flat Tokens"
-            }
-          }]
+      "children": [
+        {
+          "type": "heading",
+          "data": {
+            "depth": 1,
+            "children": [
+              {
+                "type": "text",
+                "data": {
+                  "value": "Flat Tokens"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "paragraph",
+          "data": {
+            "children": [
+              {
+                "type": "text",
+                "data": {
+                  "value": "This is an example workspace for testing token generation."
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "heading",
+          "data": {
+            "depth": 3,
+            "children": [
+              {
+                "type": "text",
+                "data": {
+                  "value": "Pages"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "page",
+          "data": {
+            "value": "Colors",
+            "url": "Colors.md"
+          }
+        },
+        {
+          "type": "page",
+          "data": {
+            "value": "TextStyles",
+            "url": "TextStyles.md"
+          }
+        },
+        {
+          "type": "page",
+          "data": {
+            "value": "Shadows",
+            "url": "Shadows.md"
+          }
         }
-      }, {
-        "type": "paragraph",
-        "data": {
-          "children": [{
-            "type": "text",
-            "data": {
-              "value": "This is an example workspace for testing token generation."
-            }
-          }]
-        }
-      }, {
-        "type": "heading",
-        "data": {
-          "depth": 3,
-          "children": [{
-            "type": "text",
-            "data": {
-              "value": "Pages"
-            }
-          }]
-        }
-      }, {
-        "type": "page",
-        "data": {
-          "value": "Colors",
-          "url": "Colors.md"
-        }
-      }, {
-        "type": "page",
-        "data": {
-          "value": "TextStyles",
-          "url": "TextStyles.md"
-        }
-      }, {
-        "type": "page",
-        "data": {
-          "value": "Shadows",
-          "url": "Shadows.md"
-        }
-      }]
+      ]
     }
   },
   "version": "0.1.5"
