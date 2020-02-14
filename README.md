@@ -20,9 +20,9 @@ You may also install locally to your current project if you prefer, by removing 
 
 ### Commands
 
-For each command, you'll choose a code generation `target`: `swift`, `js`, or `xml`.
+For each command, you'll choose a code generation `format`: `swift`, `js`, `tokens`, or `documentation`.
 
-Each target as a specific set of options.
+Each format as a specific set of options.
 
 In the case of `js`, the `--framework` option can have a few values:
 
@@ -32,14 +32,14 @@ In the case of `js`, the `--framework` option can have a few values:
 
 ### Examples
 
-Here are a handful of examples. You can check out the scripts section of the `package.json` to see more targets/frameworks -- there is a `snapshot` command for each compiler target.
+Here are a handful of examples. You can check out the scripts section of the `package.json` to see more formats/frameworks -- there is a `snapshot` command for each compiler target.
 
 #### Generate workspace
 
 This will generate the colors, text styles, shadows, custom types, and all components, writing them to `output-directory` in the same structure as the input workspace directory.
 
 ```bash
-lona convert [path-to-workspace-directory] --target=js --output=[output-directory]
+lona convert [path-to-workspace-directory] --format=js --output=[output-directory]
 ```
 
 #### Generate single file
@@ -47,7 +47,7 @@ lona convert [path-to-workspace-directory] --target=js --output=[output-director
 This will output the generated file code to `stdout`.
 
 ```bash
-lona convert [path-to-file] --target=js
+lona convert [path-to-file] --format=js
 ```
 
 ## Contributing
