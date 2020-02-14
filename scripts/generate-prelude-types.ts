@@ -6,7 +6,7 @@
  */
 import * as fs from 'fs'
 import * as path from 'path'
-import upperFirst from 'lodash.upperFirst'
+import upperFirst from 'lodash.upperfirst'
 
 import * as LogicAST from '../src/helpers/logic-ast'
 import { build } from '../src/helpers/logic-scope'

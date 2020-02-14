@@ -1,5 +1,7 @@
 # Lona Compiler
 
+![Build and Test](https://github.com/Lona/compiler/workflows/Build%20and%20Test/badge.svg)
+
 The Lona Compiler is a CLI tool for generating cross-platform UI code from JSON definitions.
 
 The Lona Compiler is published on `npm` as `@lona/compiler`.
