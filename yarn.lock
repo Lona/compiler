@@ -334,10 +334,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@lona/serialization@0.0.18-pre-11":
-  version "0.0.18-pre-11"
-  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.0.18-pre-11.tgz#11096406701f5d87b226bd49f7bf444b6ba3c14d"
-  integrity sha512-CrZ77UQ0EC/FY1tlAuEVdJ6pz1AoMDA20mLQdrfvsXdO6AzMC5u4EP6V0JbrH7o2U3Uv9KwD+8qrRFUg3fEB4w==
+"@lona/serialization@0.0.18-pre-12":
+  version "0.0.18-pre-12"
+  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.0.18-pre-12.tgz#67b90c8a5031b3872cf65289a7dacd52bb5ce510"
+  integrity sha512-jAuFA7q2rf7M0yhOXoZFaYTn7jWvvY2lR/VolxavGH9nIsxia928v6XXabVm3idNG35LvuZAIPdrYAmYSF6UJQ==
   dependencies:
     "@mdx-js/mdx" "^1.5.0"
     json-stable-stringify "^1.0.1"

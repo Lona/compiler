@@ -152,23 +152,22 @@ export const evaluate = (
   reporter: Reporter,
   context_: EvaluationContext = makeEmpty(scopeContext, rootNode, reporter)
 ): EvaluationContext | undefined => {
-  const context = LogicAST.subNodes(node).reduce<EvaluationContext | undefined>(
-    (prev, subNode) => {
-      if (!prev) {
-        return undefined
-      }
-      return evaluate(
-        subNode,
-        rootNode,
-        scopeContext,
-        unificationContext,
-        substitution,
-        reporter,
-        prev
-      )
-    },
-    context_
-  )
+  const context = LogicAST.AST.subNodes(node).reduce<
+    EvaluationContext | undefined
+  >((prev, subNode) => {
+    if (!prev) {
+      return undefined
+    }
+    return evaluate(
+      subNode,
+      rootNode,
+      scopeContext,
+      unificationContext,
+      substitution,
+      reporter,
+      prev
+    )
+  }, context_)
 
   if (!context) {
     return undefined
