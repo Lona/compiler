@@ -40,6 +40,5 @@ jobs:
           else
             # Uncommitted changes
             git status --porcelain
-            git status
             exit 1
           fi
