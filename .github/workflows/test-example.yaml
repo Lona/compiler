@@ -23,3 +23,6 @@ jobs:
 
       # check that the examples didn't change
       - run: git diff-index --quiet HEAD
+
+      - run: git status
+        if: failure()
