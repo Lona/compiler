@@ -1,5 +1,5 @@
 import { generate as generateEvaluationContext } from '../evaluation-context'
-import config from './__fixtures__/base-config.json'
+import config from './__fixtures__/base-config'
 
 describe("Evaluation context helper", () => {
     test("Assert sample workspace config parses correctly", () => {

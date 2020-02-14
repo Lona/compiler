@@ -53,7 +53,10 @@ export type HardcodedMap<T, U extends any[]> = {
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
-    Shadow: (node: LogicAST.FunctionCallExpression, ...args: U) => T | undefined
+    'Shadow': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
     'FontWeight.ultraLight': (
       node: LogicAST.FunctionCallExpression,
       ...args: U
@@ -90,7 +93,7 @@ export type HardcodedMap<T, U extends any[]> = {
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
-    TextStyle: (
+    'TextStyle': (
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
@@ -194,7 +197,10 @@ export const createStandardLibraryResolver = <T, U extends any[]>(
       .join('.')
 
     if (isHardcodedMapCall.memberExpression(path, hardcodedMap)) {
-      matchedHardcodedNode = hardcodedMap.memberExpression[path](node, ...args)
+      matchedHardcodedNode = hardcodedMap.memberExpression[path](
+        node,
+        ...args
+      )
     }
   }
 

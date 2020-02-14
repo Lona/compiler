@@ -768,7 +768,7 @@
         "data": {
           "lang": "tokens",
           "meta": null,
-          "value": "let heading1: TextStyle = TextStyle(fontFamily: Optional.value('Helvetica'), fontSize: Optional.value(28), fontWeight: FontWeight.w700, color: Optional.value(#color(css: 'teal')))",
+          "value": "let heading1: TextStyle = TextStyle(fontFamily: Optional.value(\"Helvetica\"), fontSize: Optional.value(28), fontWeight: FontWeight.w700, color: Optional.value(#color(css: \"teal\")))",
           "parsed": {
             "data": {
               "declarations": [{
@@ -1050,7 +1050,7 @@
         "data": {
           "lang": "tokens",
           "meta": null,
-          "value": "let primary: Color = #color(css: '#45CBFF')",
+          "value": "let primary: Color = #color(css: \"#45CBFF\")",
           "parsed": {
             "data": {
               "declarations": [{
