@@ -11,3 +11,6 @@ lib
 .vscode
 node_modules
 yarn-error.log
+
+# testing output
+coverage

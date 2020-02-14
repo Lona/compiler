@@ -20,7 +20,8 @@
     "snapshot:tokens": "ts-node src/bin.ts convert ./examples/workspace --format=tokens > ./examples/generated/tokens.json",
     "snapshot:documentation": "ts-node src/bin.ts convert ./examples/workspace --format=documentation > ./examples/generated/documentation.json",
     "snapshot:swift": "ts-node src/bin.ts convert ./examples/workspace --format=swift --output=./examples/generated/swift",
-    "snapshot:js": "ts-node src/bin.ts convert ./examples/workspace --format=js --output=./examples/generated/js"
+    "snapshot:js": "ts-node src/bin.ts convert ./examples/workspace --format=js --output=./examples/generated/js",
+    "test": "jest --env=node --colors --coverage test"
   },
   "repository": "https://github.com/Lona/compiler",
   "author": "Mathieu Dutour",
@@ -41,6 +42,7 @@
   "devDependencies": {
     "@types/color": "^3.0.1",
     "@types/glob": "^7.1.1",
+    "@types/jest": "^25.1.2",
     "@types/lodash.camelcase": "^4.3.6",
     "@types/lodash.intersection": "^4.4.6",
     "@types/lodash.isequal": "^4.5.5",
@@ -49,7 +51,8 @@
     "@types/lodash.upperfirst": "^4.3.6",
     "@types/node": "^13.1.6",
     "@types/prettier": "^1.19.0",
-    "jest": "^24.9.0",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.0",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.4"
   },
@@ -58,8 +61,5 @@
     "singleQuote": true,
     "trailingComma": "es5",
     "semi": false
-  },
-  "jest": {
-    "testEnvironment": "node"
   }
 }
