@@ -11,6 +11,6 @@ describe('Evaluation context helper', () => {
       error: jest.fn(),
     }
     const result = generateEvaluationContext(config as Config, reporter)
-    expect(result).toBeTruthy()
+    expect(result).toMatchSnapshot()
   })
 })
