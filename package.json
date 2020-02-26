@@ -30,7 +30,7 @@
   "author": "Mathieu Dutour",
   "license": "MIT",
   "dependencies": {
-    "@lona/serialization": "0.0.18-pre-12",
+    "@lona/serialization": "^0.1.0",
     "color": "^3.1.2",
     "glob": "^7.1.6",
     "lodash.camelcase": "^4.3.0",
@@ -45,17 +45,19 @@
   "devDependencies": {
     "@types/color": "^3.0.1",
     "@types/glob": "^7.1.1",
+    "@types/jest": "^25.1.3",
     "@types/lodash.camelcase": "^4.3.6",
     "@types/lodash.intersection": "^4.4.6",
     "@types/lodash.isequal": "^4.5.5",
     "@types/lodash.lowerfirst": "^4.3.6",
     "@types/lodash.snakecase": "^4.1.6",
     "@types/lodash.upperfirst": "^4.3.6",
-    "@types/node": "^13.1.6",
+    "@types/node": "^13.7.6",
     "@types/prettier": "^1.19.0",
-    "jest": "^24.9.0",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.1",
     "ts-node": "^8.6.2",
-    "typescript": "^3.7.4"
+    "typescript": "^3.8.2"
   },
   "prettier": {
     "proseWrap": "never",
@@ -64,6 +66,7 @@
     "semi": false
   },
   "jest": {
+    "preset": "ts-jest",
     "testEnvironment": "node"
   }
 }
