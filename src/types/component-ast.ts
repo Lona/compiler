@@ -319,6 +319,7 @@ export function convertDeprecatedLogicAST(
         type: 'literalExpression',
         data: {
           id: uuid(),
+          // @ts-ignore
           literal: node.value,
         },
       }
