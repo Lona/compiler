@@ -1,18 +1,10 @@
-import path from 'path'
 import { LogicAST } from '@lona/serialization'
 import lowerFirst from 'lodash.lowerfirst'
 import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
 import { nonNullable } from '../../utils'
 import * as JSAST from './js-ast'
 import { enumName } from './format'
-
-function resolveImportPath(from: string, to: string) {
-  const relativePath = path
-    .relative(path.dirname(from), to)
-    .replace(path.extname(to), '')
-
-  return relativePath.indexOf('.') === 0 ? relativePath : `./${relativePath}`
-}
+import { resolveImportPath } from './utils'
 
 type LogicGenerationContext = {
   isStatic: boolean
