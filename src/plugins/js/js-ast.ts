@@ -72,7 +72,7 @@ type PropertySignature = {
 /* JS */
 type ImportDeclaration = {
   source: string
-  specifiers: JSNode[]
+  specifiers: { type: 'ImportSpecifier'; data: ImportSpecifier }[]
 }
 type ImportSpecifier = {
   imported: string
@@ -162,8 +162,6 @@ export type JSNode =
   | { type: 'Literal'; data: Literal }
   | { type: 'Identifier'; data: string[] }
   | { type: 'ImportDeclaration'; data: ImportDeclaration }
-  | { type: 'ImportSpecifier'; data: ImportSpecifier }
-  | { type: 'ImportDefaultSpecifier'; data: string }
   | { type: 'ClassDeclaration'; data: ClassDeclaration }
   | { type: 'MethodDefinition'; data: MethodDefinition }
   | { type: 'FunctionExpression'; data: FunctionExpression }
@@ -182,8 +180,10 @@ export type JSNode =
   | { type: 'IfStatement'; data: IfStatement }
   | { type: 'ConditionalExpression'; data: ConditionalExpression }
   | { type: 'Property'; data: Property }
-  | { type: 'ExportDefaultDeclaration'; data: JSNode }
-  | { type: 'ExportNamedDeclaration'; data: JSNode }
+  | {
+      type: 'ExportNamedDeclaration'
+      data: { type: 'AssignmentExpression'; data: AssignmentExpression }
+    }
   | { type: 'Block'; data: JSNode[] }
   | { type: 'Program'; data: JSNode[] }
   | { type: 'LineEndComment'; data: LineEndComment }
@@ -199,7 +199,6 @@ export type JSNode =
 //   | Identifier(_)
 //   | ImportDeclaration(_)
 //   | ImportSpecifier(_)
-//   | ImportDefaultSpecifier(_) => f(node)
 //   | JSXExpressionContainer(value) =>
 //     f(JSXExpressionContainer(value |> map(f)))
 //   | JSXSpreadAttribute(value) => JSXSpreadAttribute(f(value))

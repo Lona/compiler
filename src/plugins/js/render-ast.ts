@@ -60,6 +60,11 @@ const smartPath = (path: string[], pathNode: string) =>
     ? `['${pathNode}']`
     : builders.concat([builders.softline, '.', pathNode])
 
+let counter = 0
+const importName = () => {
+  return `__lona_import_${counter++}`
+}
+
 function render(ast: JSAST.JSNode, options: Options): Doc {
   switch (ast.type) {
     case 'InterfaceDeclaration':
@@ -83,7 +88,7 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
     case 'Literal':
       return renderLiteral(ast.data, options)
     case 'VariableDeclaration':
-      return group(['let ', render(ast.data, options)])
+      return group(['var ', render(ast.data, options)])
     case 'AssignmentExpression':
       return builders.fill([
         group([render(ast.data.left, options), builders.line, '=']),
@@ -160,46 +165,47 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
         builders.line,
         ')',
       ])
-    case 'ImportDefaultSpecifier':
-      return ast.data
-    case 'ImportSpecifier':
-      return ast.data.local
-        ? `${ast.data.imported} as ${ast.data.local}`
-        : ast.data.imported
     case 'ImportDeclaration': {
-      const defaultSpecifiers = ast.data.specifiers.filter(
-        x => x.type === 'ImportDefaultSpecifier'
-      )
       const specifiers = ast.data.specifiers.filter(
         x => x.type === 'ImportSpecifier'
       )
 
-      const namedImports = group([
-        '{',
-        builders.line,
-        join(
-          specifiers.map(x => render(x, options)),
-          ', '
+      if (specifiers.length <= 0) {
+        return ''
+      }
+
+      const tempImportName = importName()
+
+      const namedImports = join(
+        specifiers.map(x =>
+          group([
+            'var',
+            ' ',
+            x.data.local || x.data.imported,
+            ' ',
+            '=',
+            ' ',
+            `${tempImportName}.${x.data.imported}`,
+            ';',
+          ])
         ),
-        builders.line,
-        '}',
-      ])
-      const imports = group(
-        join(
-          defaultSpecifiers
-            .map(x => render(x, options))
-            .concat(specifiers.length > 0 ? namedImports : []),
-          ', '
-        )
+        builders.line
       )
 
       return group([
-        'import',
-        ' ',
-        imports,
-        ' ',
-        'from',
-        indent([builders.line, `"${ast.data.source}"`]),
+        group([
+          'var',
+          ' ',
+          tempImportName,
+          ' ',
+          '=',
+          ' ',
+          builders.fill(['require', '(', `"${ast.data.source}"`, ')']),
+          ';',
+        ]),
+        builders.hardline,
+        group(namedImports),
+        builders.line,
       ])
     }
     case 'ClassDeclaration': {
@@ -359,14 +365,20 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
       }
       return group([render(ast.data.key, options), maybeValue])
     }
-    case 'ExportDefaultDeclaration':
-      return builders.concat([
-        'export default ',
-        render(ast.data, options),
-        ';',
-      ])
     case 'ExportNamedDeclaration':
-      return builders.concat(['export ', render(ast.data, options), ';'])
+      return group([
+        group(['var ', render(ast.data, options), ';']),
+        builders.hardline,
+        group([
+          'module.exports.',
+          render(ast.data.data.left, options),
+          ' ',
+          '=',
+          ' ',
+          render(ast.data.data.left, options),
+          ';',
+        ]),
+      ])
     case 'Program':
       return join(
         ast.data.map(x => render(x, options)),

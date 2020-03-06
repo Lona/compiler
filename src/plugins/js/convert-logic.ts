@@ -373,10 +373,14 @@ const declaration = (
         }
       )
 
-      if (context.isTopLevel) {
+      if (
+        context.isTopLevel &&
+        variable.type === 'VariableDeclaration' &&
+        variable.data.type === 'AssignmentExpression'
+      ) {
         return {
           type: 'ExportNamedDeclaration',
-          data: variable,
+          data: variable.data,
         }
       }
 
@@ -427,10 +431,14 @@ const declaration = (
         initialValue
       )
 
-      if (context.isTopLevel) {
+      if (
+        context.isTopLevel &&
+        variable.type === 'VariableDeclaration' &&
+        variable.data.type === 'AssignmentExpression'
+      ) {
         return {
           type: 'ExportNamedDeclaration',
-          data: variable,
+          data: variable.data,
         }
       }
 
