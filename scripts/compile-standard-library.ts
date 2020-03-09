@@ -12,6 +12,8 @@ const preludeLibs = fs.readdirSync(preludePath)
 
 const outputPath = path.join(__dirname, '../static/logic')
 
+fs.mkdirSync(outputPath, { recursive: true })
+
 preludeLibs.forEach(x => {
   fs.writeFileSync(
     path.join(outputPath, x),
