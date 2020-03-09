@@ -247,48 +247,6 @@ const statement = (
     case 'declaration':
       return declaration(node.data.content, context)
     case 'branch': {
-      if (
-        node.data.condition.type === 'binaryExpression' &&
-        node.data.condition.data.op.type === 'isNotEqualTo' &&
-        node.data.condition.data.right.type === 'literalExpression' &&
-        node.data.condition.data.right.data.literal.type === 'none' &&
-        node.data.block.length >= 1 &&
-        node.data.block[0].type === 'expression' &&
-        node.data.block[0].data.expression.type === 'binaryExpression' &&
-        node.data.block[0].data.expression.data.op.type === 'setEqualTo' &&
-        isEqual(
-          node.data.condition.data.left,
-          node.data.block[0].data.expression.data.right
-        ) &&
-        node.data.block[0].data.expression.data.left.type ===
-          'identifierExpression'
-      ) {
-        const [_assignment, ...rest] = node.data.block
-        return {
-          type: 'IfStatement',
-          data: {
-            condition: {
-              type: 'OptionalBindingCondition',
-              data: {
-                const: true,
-                pattern: {
-                  type: 'IdentifierPattern',
-                  data: {
-                    identifier: {
-                      type: 'SwiftIdentifier',
-                      data:
-                        node.data.block[0].data.expression.data.left.data
-                          .identifier.string,
-                    },
-                  },
-                },
-                init: expression(node.data.condition.data.left, context),
-              },
-            },
-            block: rest.map(x => statement(x, context)),
-          },
-        }
-      }
       return {
         type: 'IfStatement',
         data: {

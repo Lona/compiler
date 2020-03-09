@@ -292,10 +292,6 @@ export const evaluate = (
 
       break
     }
-    case 'binaryExpression': {
-      reporter.error('TODO: ' + node.type)
-      break
-    }
     case 'functionCallExpression': {
       const { expression, arguments: args } = node.data
       let functionType = unificationContext.nodes[expression.data.id]

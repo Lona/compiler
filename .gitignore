@@ -7,6 +7,7 @@
 
 # build folders
 lib
+static/logic
 
 .vscode
 node_modules

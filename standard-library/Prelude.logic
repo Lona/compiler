@@ -1,0 +1,107 @@
+/*
+ * # Boolean
+ *
+ * A type that represents `true` and `false` values.
+ *
+ * Booleans are frequently used to represent things that can be in only 2 states: **on/off**, **enabled/disabled**, **yes/no**, etc.
+ */
+struct Boolean {
+
+}
+
+enum Boolean {
+  func or(a: Boolean, b: Boolean): Boolean {
+
+  }
+  func and(a: Boolean, b: Boolean): Boolean {
+
+  }
+}
+
+/*
+ * # Number
+ *
+ * A rational number. This can be a whole number, like `42`, or a decimal number, like `3.14`.
+ *
+ * This number is represented internally as a floating point number.
+ *
+ * ## Example
+ *
+ * We can declare a number variable to use elsewhere in our app:
+ *
+ * ```logic
+ * <Declarations>
+ *   <Variable name="padding" type="Number" value="12"/>
+ * </Declarations>
+ * ```
+ *
+ * ## Generating Code
+ *
+ * This will be converted to a **CGFloat** in Swift.
+ */
+struct Number {
+
+}
+
+enum Number {
+  /*
+   * # Range
+   *
+   * Create an array of numbers from `from` to `to`.
+   *
+   * The numbers will be created by starting at `from` and adding the `by` value repeatedly until it is greater than or equal to `to`.
+   */
+  func range(from: Number, to: Number, by: Number): Array<Number> {
+
+  }
+}
+
+/*
+ * # String
+ *
+ * A `String` is a sequence of characters, such as `h` or `e`, put together to form text such as `hello`.
+ *
+ * ## Example
+ *
+ * We might want to declare a greeting variable as a `String`:
+ *
+ * ```logic
+ * <Declarations>
+ *   <Variable name="greeting" type="String" value="Hello, world"/>
+ * </Declarations>
+ * ```
+ */
+struct String {
+
+}
+
+enum String {
+  func concat(a: String, b: String): String {
+
+  }
+}
+
+/*
+ * # Array
+ *
+ * A generic type representing a sequence of elements. Each element must be the same type.
+ */
+struct Array<Element> {
+
+}
+
+enum Array {
+  func at<T>(array: Array<T>, index: Number): T {
+
+  }
+}
+
+/*
+ * # Optional
+ *
+ * A generic type representing a value that may or may not exist.
+ */
+enum Optional<Wrapped> {
+  case value(Wrapped)
+  case none()
+}
