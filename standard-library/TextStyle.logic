@@ -66,7 +66,7 @@ enum FontWeight {
   case black()
 }
 
-enum FontWeight {
+extension FontWeight {
   static let w100: FontWeight = FontWeight.ultraLight()
   static let w200: FontWeight = FontWeight.thin()
   static let w300: FontWeight = FontWeight.light()

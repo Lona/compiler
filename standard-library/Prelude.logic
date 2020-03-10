@@ -9,7 +9,7 @@ struct Boolean {
 
 }
 
-enum Boolean {
+extension Boolean {
   func or(a: Boolean, b: Boolean): Boolean {}
   func and(a: Boolean, b: Boolean): Boolean {}
 }
@@ -39,7 +39,7 @@ struct Number {
 
 }
 
-enum Number {
+extension Number {
   /*
    * # Range
    *
@@ -69,7 +69,7 @@ struct String {
 
 }
 
-enum String {
+extension String {
   func concat(a: String, b: String): String {}
 }
 
@@ -82,7 +82,7 @@ struct Array<Element> {
 
 }
 
-enum Array {
+extension Array {
   func at<T>(array: Array<T>, index: Number): T {}
 }
 

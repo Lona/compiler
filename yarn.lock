@@ -432,10 +432,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@lona/serialization@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.2.0.tgz#8e9b23e9f4976e0a250ef9c28446ff399083cae9"
-  integrity sha512-yWoP8UUcJcxfY39hhkLK8J/r5UlQzC4uf/ajmMJ/wbX1JjxTL5qnIrhmVGfHxCvnhLbt8USalwpdib1titTEgg==
+"@lona/serialization@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.2.1.tgz#9fdce27c4331b257db87bc16fa81fa9749cb63cf"
+  integrity sha512-MimtoqMFvzjvMrvRWMmub7KbLJLdge4JFjwkN4AhGYwaJ5PPl7hOPJVr2mV74n4KcuoINrkz6lT+9x0sUDtQhw==
   dependencies:
     "@mdx-js/mdx" "^1.5.0"
     ajv "^6.12.0"

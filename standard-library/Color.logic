@@ -19,7 +19,7 @@ struct Color {
   let value: String = ""
 }
 
-enum Color {
+extension Color {
   func setHue(color: Color, hue: Number): Color {}
   /*
    * # Set Saturation

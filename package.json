@@ -1,6 +1,6 @@
 {
   "name": "@lona/compiler",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Lona cross-platform code compiler",
   "main": "lib/index.js",
   "bin": {
@@ -31,7 +31,7 @@
   "author": "Mathieu Dutour",
   "license": "MIT",
   "dependencies": {
-    "@lona/serialization": "^0.2.0",
+    "@lona/serialization": "^0.2.1",
     "color": "^3.1.2",
     "glob": "^7.1.6",
     "lodash.camelcase": "^4.3.0",
