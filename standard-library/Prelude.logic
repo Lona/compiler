@@ -10,12 +10,8 @@ struct Boolean {
 }
 
 enum Boolean {
-  func or(a: Boolean, b: Boolean): Boolean {
-
-  }
-  func and(a: Boolean, b: Boolean): Boolean {
-
-  }
+  func or(a: Boolean, b: Boolean): Boolean {}
+  func and(a: Boolean, b: Boolean): Boolean {}
 }
 
 /*
@@ -51,9 +47,7 @@ enum Number {
    *
    * The numbers will be created by starting at `from` and adding the `by` value repeatedly until it is greater than or equal to `to`.
    */
-  func range(from: Number, to: Number, by: Number): Array<Number> {
-
-  }
+  func range(from: Number, to: Number, by: Number): Array<Number> {}
 }
 
 /*
@@ -76,9 +70,7 @@ struct String {
 }
 
 enum String {
-  func concat(a: String, b: String): String {
-
-  }
+  func concat(a: String, b: String): String {}
 }
 
 /*
@@ -91,9 +83,7 @@ struct Array<Element> {
 }
 
 enum Array {
-  func at<T>(array: Array<T>, index: Number): T {
-
-  }
+  func at<T>(array: Array<T>, index: Number): T {}
 }
 
 /*
