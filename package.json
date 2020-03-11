@@ -31,7 +31,7 @@
   "author": "Mathieu Dutour",
   "license": "MIT",
   "dependencies": {
-    "@lona/serialization": "^0.2.1",
+    "@lona/serialization": "^0.2.6",
     "color": "^3.1.2",
     "glob": "^7.1.6",
     "lodash.camelcase": "^4.3.0",
@@ -41,6 +41,7 @@
     "lodash.snakecase": "^4.1.1",
     "lodash.upperfirst": "^4.3.1",
     "prettier": "^1.19.1",
+    "uuid": "^7.0.2",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
@@ -55,6 +56,7 @@
     "@types/lodash.upperfirst": "^4.3.6",
     "@types/node": "^13.7.6",
     "@types/prettier": "^1.19.0",
+    "@types/uuid": "^7.0.0",
     "jest": "^25.1.0",
     "ts-jest": "^25.2.1",
     "ts-node": "^8.6.2",
