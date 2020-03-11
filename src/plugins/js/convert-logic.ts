@@ -1,7 +1,7 @@
 import { LogicAST } from '@lona/serialization'
 import lowerFirst from 'lodash.lowerfirst'
 import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
-import { nonNullable } from '../../utils'
+import { nonNullable, typeNever } from '../../utils'
 import * as JSAST from './js-ast'
 import { enumName } from './format'
 import { resolveImportPath } from './utils'
@@ -322,15 +322,30 @@ const statement = (
   if (potentialHandled) {
     return potentialHandled
   }
-  if (node.type === 'declaration') {
-    return declaration(node.data.content, context)
-  }
-  if (node.type === 'placeholder') {
-    return { type: 'Empty' }
-  }
 
-  context.helpers.reporter.warn(`Unhandled statement type "${node.type}"`)
-  return { type: 'Empty' }
+  switch (node.type) {
+    case 'branch': {
+      // TODO:
+      return { type: 'Empty' }
+    }
+    case 'declaration':
+      return declaration(node.data.content, context)
+    case 'expression':
+      return expression(node.data.expression, context)
+    case 'loop': {
+      // TODO:
+      return { type: 'Empty' }
+    }
+    case 'return': {
+      return { type: 'Return', data: expression(node.data.expression, context) }
+    }
+    case 'placeholder':
+      return { type: 'Empty' }
+    default: {
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
+    }
+  }
 }
 
 const declaration = (
@@ -348,6 +363,10 @@ const declaration = (
   switch (node.type) {
     case 'importDeclaration':
       return { type: 'Empty' }
+    case 'function': {
+      // TODO:
+      return { type: 'Empty' }
+    }
     case 'namespace': {
       const newContext = { ...context, isTopLevel: false, isStatic: true }
       const variable = createVariableOrProperty(
@@ -479,7 +498,7 @@ const declaration = (
     case 'placeholder':
       return { type: 'Empty' }
     default: {
-      context.helpers.reporter.warn(`Unhandled declaration type "${node.type}"`)
+      typeNever(node, context.helpers.reporter.warn)
       return { type: 'Empty' }
     }
   }
@@ -677,12 +696,21 @@ const expression = (
 
       return standard
     }
+    case 'assignmentExpression': {
+      return {
+        type: 'AssignmentExpression',
+        data: {
+          left: expression(node.data.left, context),
+          right: expression(node.data.right, context),
+        },
+      }
+    }
     case 'placeholder': {
       context.helpers.reporter.warn('Placeholder expression remaining')
       return { type: 'Empty' }
     }
     default: {
-      context.helpers.reporter.warn(`Unhandled expression type "${node.type}"`)
+      typeNever(node, context.helpers.reporter.warn)
       return { type: 'Empty' }
     }
   }
@@ -741,6 +769,10 @@ const literal = (
             .map(x => expression(x, context)),
         },
       }
+    }
+    default: {
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
     }
   }
 }

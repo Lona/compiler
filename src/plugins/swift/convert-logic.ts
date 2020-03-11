@@ -1,8 +1,7 @@
 import { LogicAST } from '@lona/serialization'
-import isEqual from 'lodash.isequal'
 
 import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
-import { nonNullable } from '../../utils'
+import { nonNullable, typeNever } from '../../utils'
 import * as SwiftAST from './swift-ast'
 
 type LogicGenerationContext = {
@@ -215,7 +214,7 @@ export default function convert(
 
   if (!program) {
     helpers.reporter.warn(`Unhandled syntaxNode type "${node.type}"`)
-    return { type: 'Empty', data: undefined }
+    return { type: 'Empty' }
   }
 
   return {
@@ -243,7 +242,7 @@ const statement = (
 
   switch (node.type) {
     case 'placeholder':
-      return { type: 'Empty', data: undefined }
+      return { type: 'Empty' }
     case 'declaration':
       return declaration(node.data.content, context)
     case 'branch': {
@@ -255,9 +254,20 @@ const statement = (
         },
       }
     }
+    case 'expression':
+      return expression(node.data.expression, context)
+    case 'loop': {
+      //TODO:
+      return { type: 'Empty' }
+    }
+    case 'return':
+      return {
+        type: 'ReturnStatement',
+        data: expression(node.data.expression, context),
+      }
     default: {
-      context.helpers.reporter.warn(`Unhandled statement type "${node.type}"`)
-      return { type: 'Empty', data: undefined }
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
     }
   }
 }
@@ -282,7 +292,7 @@ const declaration = (
   }
   switch (node.type) {
     case 'importDeclaration': {
-      return { type: 'Empty', data: undefined }
+      return { type: 'Empty' }
     }
     case 'namespace': {
       const newContext = { ...context, isStatic: true }
@@ -438,11 +448,15 @@ const declaration = (
       }
     }
     case 'placeholder': {
-      return { type: 'Empty', data: undefined }
+      return { type: 'Empty' }
+    }
+    case 'function': {
+      // TODO:
+      return { type: 'Empty' }
     }
     default: {
-      context.helpers.reporter.warn(`Unhandled declaration type "${node.type}"`)
-      return { type: 'Empty', data: undefined }
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
     }
   }
 }
@@ -504,11 +518,20 @@ const expression = (
     }
     case 'placeholder': {
       context.helpers.reporter.warn('Placeholder expression remaining')
-      return { type: 'Empty', data: undefined }
+      return { type: 'Empty' }
     }
+    case 'assignmentExpression':
+      return {
+        type: 'BinaryExpression',
+        data: {
+          left: expression(node.data.left, context),
+          operator: '=',
+          right: expression(node.data.right, context),
+        },
+      }
     default: {
-      context.helpers.reporter.warn(`Unhandled expression type "${node.type}"`)
-      return { type: 'Empty', data: undefined }
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
     }
   }
 }
@@ -567,6 +590,10 @@ const literal = (
         },
       }
     }
+    default: {
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
+    }
   }
 }
 
@@ -615,8 +642,12 @@ const typeAnnotation = (
       context.helpers.reporter.warn('Type placeholder remaining in file')
       return { type: 'TypeName', data: '_' }
     }
+    case 'functionType': {
+      // TODO:
+      return { type: 'TypeName', data: '_' }
+    }
     default: {
-      context.helpers.reporter.warn(`Unhandled type annotation "${node.type}"`)
+      typeNever(node, context.helpers.reporter.warn)
       return { type: 'TypeName', data: '_' }
     }
   }
@@ -637,6 +668,10 @@ const genericParameter = (
       context.helpers.reporter.warn(
         'Generic type placeholder remaining in file'
       )
+      return { type: 'TypeName', data: '_' }
+    }
+    default: {
+      typeNever(node, context.helpers.reporter.warn)
       return { type: 'TypeName', data: '_' }
     }
   }

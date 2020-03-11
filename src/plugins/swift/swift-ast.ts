@@ -336,7 +336,7 @@ export type SwiftNode =
         init: SwiftNode
       }
     }
-  | { type: 'Empty'; data: undefined }
+  | { type: 'Empty' }
   | { type: 'LineComment'; data: string }
   | { type: 'DocComment'; data: string }
   | {
