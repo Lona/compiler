@@ -117,7 +117,7 @@ const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
         node.data.arguments[1].type !== 'argument'
       ) {
         throw new Error(
-          'The first 2 arguments of `Array.at` need to be a value'
+          'The first 2 arguments of `String.concat` need to be a value'
         )
       }
       // TODO:
@@ -250,15 +250,24 @@ const statement = (
         type: 'IfStatement',
         data: {
           condition: expression(node.data.condition, context),
-          block: node.data.block.map(x => statement(x, context)),
+          block: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
         },
       }
     }
     case 'expression':
       return expression(node.data.expression, context)
     case 'loop': {
-      //TODO:
-      return { type: 'Empty' }
+      return {
+        type: 'WhileStatement',
+        data: {
+          condition: expression(node.data.expression, context),
+          block: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
+        },
+      }
     }
     case 'return':
       return {
@@ -408,9 +417,9 @@ const declaration = (
         data: {
           name: node.data.name.name,
           isIndirect: true,
-          inherits: node.data.genericParameters.map(x =>
-            genericParameter(x, context)
-          ),
+          inherits: node.data.genericParameters
+            .filter(x => x.type !== 'placeholder')
+            .map(x => genericParameter(x, context)),
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
           body: node.data.cases
             .map(x => {
@@ -451,8 +460,42 @@ const declaration = (
       return { type: 'Empty' }
     }
     case 'function': {
-      // TODO:
-      return { type: 'Empty' }
+      return {
+        type: 'FunctionDeclaration',
+        data: {
+          name: node.data.name.name,
+          // TODO:
+          attributes: [],
+          modifiers: [],
+          parameters: node.data.parameters
+            .map<SwiftAST.SwiftNode | undefined>(x => {
+              if (x.type === 'placeholder') {
+                return undefined
+              }
+
+              return {
+                type: 'Parameter',
+                data: {
+                  localName: x.data.localName.name,
+                  annotation: typeAnnotation(x.data.annotation, context),
+                  defaultValue:
+                    x.data.defaultValue && x.data.defaultValue.type !== 'none'
+                      ? expression(x.data.defaultValue.data.expression, context)
+                      : undefined,
+                },
+              }
+            })
+            .filter(nonNullable),
+          result:
+            node.data.returnType.type !== 'placeholder'
+              ? typeAnnotation(node.data.returnType, context)
+              : undefined,
+          body: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
+          throws: false,
+        },
+      }
     }
     default: {
       typeNever(node, context.helpers.reporter.warn)
@@ -643,8 +686,18 @@ const typeAnnotation = (
       return { type: 'TypeName', data: '_' }
     }
     case 'functionType': {
-      // TODO:
-      return { type: 'TypeName', data: '_' }
+      return {
+        type: 'FunctionType',
+        data: {
+          arguments: node.data.argumentTypes
+            .filter(x => x.type !== 'placeholder')
+            .map(x => typeAnnotation(x, context)),
+          returnType:
+            node.data.returnType.type !== 'placeholder'
+              ? typeAnnotation(node.data.returnType, context)
+              : undefined,
+        },
+      }
     }
     default: {
       typeNever(node, context.helpers.reporter.warn)

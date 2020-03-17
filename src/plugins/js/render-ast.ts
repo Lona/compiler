@@ -7,7 +7,7 @@ import {
   Doc,
   print,
 } from '../../utils/printer'
-import { assertNever } from '../../utils'
+import { assertNever, typeNever } from '../../utils'
 
 import * as JSAST from './js-ast'
 
@@ -145,6 +145,20 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
         ifPart,
         ' else ',
         renderBlockBody(ast.data.alternate, true, options),
+      ])
+    }
+    case 'WhileStatement': {
+      return builders.concat([
+        group([
+          'while (',
+          indent([
+            builders.softline,
+            render(ast.data.test, options),
+            builders.softline,
+            ') ',
+          ]),
+        ]),
+        renderBlockBody(ast.data.body, true, options),
       ])
     }
     case 'ConditionalExpression':
@@ -389,10 +403,11 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
         render(ast.data.line, options),
         builders.lineSuffix(` // ${ast.data.comment}`),
       ])
+    case 'Unknown':
     case 'Empty':
       return ''
     default: {
-      // TODO: assert never
+      typeNever(ast, options.reporter.warn)
       return ''
     }
   }

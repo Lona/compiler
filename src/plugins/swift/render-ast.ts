@@ -8,6 +8,7 @@ import {
   Doc,
   print,
 } from '../../utils/printer'
+import { typeNever, assertNever } from '../../utils'
 
 import * as SwiftAST from './swift-ast'
 
@@ -838,6 +839,10 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
         ),
         builders.hardline,
       ])
+    default: {
+      typeNever(ast, options.reporter.warn)
+      return ''
+    }
   }
 }
 
@@ -874,6 +879,9 @@ function renderLiteral(node: SwiftAST.Literal, options: Options): Doc {
       )
 
       return group(['[', indent([maybeLine, body]), maybeLine, ']'])
+    }
+    default: {
+      assertNever(node)
     }
   }
 }
@@ -954,6 +962,9 @@ function renderTypeAnnotation(
           ' & '
         )
       )
+    default: {
+      assertNever(node)
+    }
   }
 }
 
@@ -1002,6 +1013,9 @@ function renderPattern(node: SwiftAST.Pattern, options: Options): Doc {
         stringWithSafeIdentifier(node.data.caseName),
         maybePattern,
       ])
+    }
+    default: {
+      assertNever(node)
     }
   }
 }
@@ -1089,6 +1103,9 @@ function renderInitializerBlock(
         builders.hardline,
         '}',
       ])
+    }
+    default: {
+      assertNever(node)
     }
   }
 }

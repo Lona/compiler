@@ -128,6 +128,10 @@ type IfStatement = {
   consequent: JSNode[]
   alternate: JSNode[]
 }
+type WhileStatement = {
+  test: JSNode
+  body: JSNode[]
+}
 type ConditionalExpression = {
   test: JSNode
   consequent: JSNode
@@ -178,13 +182,13 @@ export type JSNode =
   | { type: 'BinaryExpression'; data: BinaryExpression }
   | { type: 'UnaryExpression'; data: UnaryExpression }
   | { type: 'IfStatement'; data: IfStatement }
+  | { type: 'WhileStatement'; data: WhileStatement }
   | { type: 'ConditionalExpression'; data: ConditionalExpression }
   | { type: 'Property'; data: Property }
   | {
       type: 'ExportNamedDeclaration'
       data: { type: 'AssignmentExpression'; data: AssignmentExpression }
     }
-  | { type: 'Block'; data: JSNode[] }
   | { type: 'Program'; data: JSNode[] }
   | { type: 'LineEndComment'; data: LineEndComment }
   | { type: 'Empty' }

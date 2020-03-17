@@ -173,7 +173,7 @@ const hardcoded: HardcodedMap<JSAST.JSNode, [LogicGenerationContext]> = {
         node.data.arguments[1].type !== 'argument'
       ) {
         throw new Error(
-          'The first 2 arguments of `Array.at` need to be a value'
+          'The first 2 arguments of `String.concat` need to be a value'
         )
       }
       // TODO:
@@ -325,16 +325,31 @@ const statement = (
 
   switch (node.type) {
     case 'branch': {
-      // TODO:
-      return { type: 'Empty' }
+      return {
+        type: 'IfStatement',
+        data: {
+          test: expression(node.data.condition, context),
+          consequent: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
+          alternate: [],
+        },
+      }
     }
     case 'declaration':
       return declaration(node.data.content, context)
     case 'expression':
       return expression(node.data.expression, context)
     case 'loop': {
-      // TODO:
-      return { type: 'Empty' }
+      return {
+        type: 'WhileStatement',
+        data: {
+          test: expression(node.data.expression, context),
+          body: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
+        },
+      }
     }
     case 'return': {
       return { type: 'Return', data: expression(node.data.expression, context) }
@@ -364,8 +379,39 @@ const declaration = (
     case 'importDeclaration':
       return { type: 'Empty' }
     case 'function': {
-      // TODO:
-      return { type: 'Empty' }
+      return {
+        type: 'FunctionExpression',
+        data: {
+          id: node.data.name.name,
+          params: node.data.parameters
+            .map<JSAST.JSNode | undefined>(x => {
+              if (x.type !== 'parameter') {
+                return undefined
+              }
+              const identifier = {
+                type: 'Identifier' as const,
+                data: [x.data.localName.name],
+              }
+              if (!x.data.defaultValue || x.data.defaultValue.type === 'none') {
+                return identifier
+              }
+              return {
+                type: 'AssignmentExpression',
+                data: {
+                  left: identifier,
+                  right: expression(
+                    x.data.defaultValue.data.expression,
+                    context
+                  ),
+                },
+              }
+            })
+            .filter(nonNullable),
+          body: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
+        },
+      }
     }
     case 'namespace': {
       const newContext = { ...context, isTopLevel: false, isStatic: true }
