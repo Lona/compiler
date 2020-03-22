@@ -1,5 +1,8 @@
-export let primary = "#45CBFF";
+var primary = "#45CBFF";
+module.exports.primary = primary;
 
-export let accent = primary;
+var accent = primary;
+module.exports.accent = accent;
 
-export let testsaturate = "#29D7FF";
+var testsaturate = "#29D7FF";
+module.exports.testsaturate = testsaturate;

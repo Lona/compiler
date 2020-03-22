@@ -1,18 +1,10 @@
-import path from 'path'
 import { LogicAST } from '@lona/serialization'
 import lowerFirst from 'lodash.lowerfirst'
 import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
-import { nonNullable } from '../../utils'
+import { nonNullable, typeNever } from '../../utils'
 import * as JSAST from './js-ast'
 import { enumName } from './format'
-
-function resolveImportPath(from: string, to: string) {
-  const relativePath = path
-    .relative(path.dirname(from), to)
-    .replace(path.extname(to), '')
-
-  return relativePath.indexOf('.') === 0 ? relativePath : `./${relativePath}`
-}
+import { resolveImportPath } from './utils'
 
 type LogicGenerationContext = {
   isStatic: boolean
@@ -181,7 +173,7 @@ const hardcoded: HardcodedMap<JSAST.JSNode, [LogicGenerationContext]> = {
         node.data.arguments[1].type !== 'argument'
       ) {
         throw new Error(
-          'The first 2 arguments of `Array.at` need to be a value'
+          'The first 2 arguments of `String.concat` need to be a value'
         )
       }
       // TODO:
@@ -330,15 +322,45 @@ const statement = (
   if (potentialHandled) {
     return potentialHandled
   }
-  if (node.type === 'declaration') {
-    return declaration(node.data.content, context)
-  }
-  if (node.type === 'placeholder') {
-    return { type: 'Empty' }
-  }
 
-  context.helpers.reporter.warn(`Unhandled statement type "${node.type}"`)
-  return { type: 'Empty' }
+  switch (node.type) {
+    case 'branch': {
+      return {
+        type: 'IfStatement',
+        data: {
+          test: expression(node.data.condition, context),
+          consequent: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
+          alternate: [],
+        },
+      }
+    }
+    case 'declaration':
+      return declaration(node.data.content, context)
+    case 'expression':
+      return expression(node.data.expression, context)
+    case 'loop': {
+      return {
+        type: 'WhileStatement',
+        data: {
+          test: expression(node.data.expression, context),
+          body: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
+        },
+      }
+    }
+    case 'return': {
+      return { type: 'Return', data: expression(node.data.expression, context) }
+    }
+    case 'placeholder':
+      return { type: 'Empty' }
+    default: {
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
+    }
+  }
 }
 
 const declaration = (
@@ -356,6 +378,41 @@ const declaration = (
   switch (node.type) {
     case 'importDeclaration':
       return { type: 'Empty' }
+    case 'function': {
+      return {
+        type: 'FunctionExpression',
+        data: {
+          id: node.data.name.name,
+          params: node.data.parameters
+            .map<JSAST.JSNode | undefined>(x => {
+              if (x.type !== 'parameter') {
+                return undefined
+              }
+              const identifier = {
+                type: 'Identifier' as const,
+                data: [x.data.localName.name],
+              }
+              if (!x.data.defaultValue || x.data.defaultValue.type === 'none') {
+                return identifier
+              }
+              return {
+                type: 'AssignmentExpression',
+                data: {
+                  left: identifier,
+                  right: expression(
+                    x.data.defaultValue.data.expression,
+                    context
+                  ),
+                },
+              }
+            })
+            .filter(nonNullable),
+          body: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
+        },
+      }
+    }
     case 'namespace': {
       const newContext = { ...context, isTopLevel: false, isStatic: true }
       const variable = createVariableOrProperty(
@@ -373,10 +430,14 @@ const declaration = (
         }
       )
 
-      if (context.isTopLevel) {
+      if (
+        context.isTopLevel &&
+        variable.type === 'VariableDeclaration' &&
+        variable.data.type === 'AssignmentExpression'
+      ) {
         return {
           type: 'ExportNamedDeclaration',
-          data: variable,
+          data: variable.data,
         }
       }
 
@@ -427,10 +488,14 @@ const declaration = (
         initialValue
       )
 
-      if (context.isTopLevel) {
+      if (
+        context.isTopLevel &&
+        variable.type === 'VariableDeclaration' &&
+        variable.data.type === 'AssignmentExpression'
+      ) {
         return {
           type: 'ExportNamedDeclaration',
-          data: variable,
+          data: variable.data,
         }
       }
 
@@ -479,7 +544,7 @@ const declaration = (
     case 'placeholder':
       return { type: 'Empty' }
     default: {
-      context.helpers.reporter.warn(`Unhandled declaration type "${node.type}"`)
+      typeNever(node, context.helpers.reporter.warn)
       return { type: 'Empty' }
     }
   }
@@ -677,12 +742,21 @@ const expression = (
 
       return standard
     }
+    case 'assignmentExpression': {
+      return {
+        type: 'AssignmentExpression',
+        data: {
+          left: expression(node.data.left, context),
+          right: expression(node.data.right, context),
+        },
+      }
+    }
     case 'placeholder': {
       context.helpers.reporter.warn('Placeholder expression remaining')
       return { type: 'Empty' }
     }
     default: {
-      context.helpers.reporter.warn(`Unhandled expression type "${node.type}"`)
+      typeNever(node, context.helpers.reporter.warn)
       return { type: 'Empty' }
     }
   }
@@ -741,6 +815,10 @@ const literal = (
             .map(x => expression(x, context)),
         },
       }
+    }
+    default: {
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
     }
   }
 }

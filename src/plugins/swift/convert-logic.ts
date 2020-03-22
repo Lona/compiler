@@ -1,8 +1,7 @@
 import { LogicAST } from '@lona/serialization'
-import isEqual from 'lodash.isequal'
 
 import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
-import { nonNullable } from '../../utils'
+import { nonNullable, typeNever } from '../../utils'
 import * as SwiftAST from './swift-ast'
 
 type LogicGenerationContext = {
@@ -118,7 +117,7 @@ const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
         node.data.arguments[1].type !== 'argument'
       ) {
         throw new Error(
-          'The first 2 arguments of `Array.at` need to be a value'
+          'The first 2 arguments of `String.concat` need to be a value'
         )
       }
       // TODO:
@@ -215,7 +214,7 @@ export default function convert(
 
   if (!program) {
     helpers.reporter.warn(`Unhandled syntaxNode type "${node.type}"`)
-    return { type: 'Empty', data: undefined }
+    return { type: 'Empty' }
   }
 
   return {
@@ -243,63 +242,41 @@ const statement = (
 
   switch (node.type) {
     case 'placeholder':
-      return { type: 'Empty', data: undefined }
+      return { type: 'Empty' }
     case 'declaration':
       return declaration(node.data.content, context)
     case 'branch': {
-      if (
-        node.data.condition.type === 'binaryExpression' &&
-        node.data.condition.data.op.type === 'isNotEqualTo' &&
-        node.data.condition.data.right.type === 'literalExpression' &&
-        node.data.condition.data.right.data.literal.type === 'none' &&
-        node.data.block.length >= 1 &&
-        node.data.block[0].type === 'expression' &&
-        node.data.block[0].data.expression.type === 'binaryExpression' &&
-        node.data.block[0].data.expression.data.op.type === 'setEqualTo' &&
-        isEqual(
-          node.data.condition.data.left,
-          node.data.block[0].data.expression.data.right
-        ) &&
-        node.data.block[0].data.expression.data.left.type ===
-          'identifierExpression'
-      ) {
-        const [_assignment, ...rest] = node.data.block
-        return {
-          type: 'IfStatement',
-          data: {
-            condition: {
-              type: 'OptionalBindingCondition',
-              data: {
-                const: true,
-                pattern: {
-                  type: 'IdentifierPattern',
-                  data: {
-                    identifier: {
-                      type: 'SwiftIdentifier',
-                      data:
-                        node.data.block[0].data.expression.data.left.data
-                          .identifier.string,
-                    },
-                  },
-                },
-                init: expression(node.data.condition.data.left, context),
-              },
-            },
-            block: rest.map(x => statement(x, context)),
-          },
-        }
-      }
       return {
         type: 'IfStatement',
         data: {
           condition: expression(node.data.condition, context),
-          block: node.data.block.map(x => statement(x, context)),
+          block: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
         },
       }
     }
+    case 'expression':
+      return expression(node.data.expression, context)
+    case 'loop': {
+      return {
+        type: 'WhileStatement',
+        data: {
+          condition: expression(node.data.expression, context),
+          block: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
+        },
+      }
+    }
+    case 'return':
+      return {
+        type: 'ReturnStatement',
+        data: expression(node.data.expression, context),
+      }
     default: {
-      context.helpers.reporter.warn(`Unhandled statement type "${node.type}"`)
-      return { type: 'Empty', data: undefined }
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
     }
   }
 }
@@ -324,7 +301,7 @@ const declaration = (
   }
   switch (node.type) {
     case 'importDeclaration': {
-      return { type: 'Empty', data: undefined }
+      return { type: 'Empty' }
     }
     case 'namespace': {
       const newContext = { ...context, isStatic: true }
@@ -440,9 +417,9 @@ const declaration = (
         data: {
           name: node.data.name.name,
           isIndirect: true,
-          inherits: node.data.genericParameters.map(x =>
-            genericParameter(x, context)
-          ),
+          inherits: node.data.genericParameters
+            .filter(x => x.type !== 'placeholder')
+            .map(x => genericParameter(x, context)),
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
           body: node.data.cases
             .map(x => {
@@ -480,11 +457,49 @@ const declaration = (
       }
     }
     case 'placeholder': {
-      return { type: 'Empty', data: undefined }
+      return { type: 'Empty' }
+    }
+    case 'function': {
+      return {
+        type: 'FunctionDeclaration',
+        data: {
+          name: node.data.name.name,
+          // TODO:
+          attributes: [],
+          modifiers: [],
+          parameters: node.data.parameters
+            .map<SwiftAST.SwiftNode | undefined>(x => {
+              if (x.type === 'placeholder') {
+                return undefined
+              }
+
+              return {
+                type: 'Parameter',
+                data: {
+                  localName: x.data.localName.name,
+                  annotation: typeAnnotation(x.data.annotation, context),
+                  defaultValue:
+                    x.data.defaultValue && x.data.defaultValue.type !== 'none'
+                      ? expression(x.data.defaultValue.data.expression, context)
+                      : undefined,
+                },
+              }
+            })
+            .filter(nonNullable),
+          result:
+            node.data.returnType.type !== 'placeholder'
+              ? typeAnnotation(node.data.returnType, context)
+              : undefined,
+          body: node.data.block
+            .filter(x => x.type !== 'placeholder')
+            .map(x => statement(x, context)),
+          throws: false,
+        },
+      }
     }
     default: {
-      context.helpers.reporter.warn(`Unhandled declaration type "${node.type}"`)
-      return { type: 'Empty', data: undefined }
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
     }
   }
 }
@@ -546,11 +561,20 @@ const expression = (
     }
     case 'placeholder': {
       context.helpers.reporter.warn('Placeholder expression remaining')
-      return { type: 'Empty', data: undefined }
+      return { type: 'Empty' }
     }
+    case 'assignmentExpression':
+      return {
+        type: 'BinaryExpression',
+        data: {
+          left: expression(node.data.left, context),
+          operator: '=',
+          right: expression(node.data.right, context),
+        },
+      }
     default: {
-      context.helpers.reporter.warn(`Unhandled expression type "${node.type}"`)
-      return { type: 'Empty', data: undefined }
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
     }
   }
 }
@@ -609,6 +633,10 @@ const literal = (
         },
       }
     }
+    default: {
+      typeNever(node, context.helpers.reporter.warn)
+      return { type: 'Empty' }
+    }
   }
 }
 
@@ -657,8 +685,22 @@ const typeAnnotation = (
       context.helpers.reporter.warn('Type placeholder remaining in file')
       return { type: 'TypeName', data: '_' }
     }
+    case 'functionType': {
+      return {
+        type: 'FunctionType',
+        data: {
+          arguments: node.data.argumentTypes
+            .filter(x => x.type !== 'placeholder')
+            .map(x => typeAnnotation(x, context)),
+          returnType:
+            node.data.returnType.type !== 'placeholder'
+              ? typeAnnotation(node.data.returnType, context)
+              : undefined,
+        },
+      }
+    }
     default: {
-      context.helpers.reporter.warn(`Unhandled type annotation "${node.type}"`)
+      typeNever(node, context.helpers.reporter.warn)
       return { type: 'TypeName', data: '_' }
     }
   }
@@ -679,6 +721,10 @@ const genericParameter = (
       context.helpers.reporter.warn(
         'Generic type placeholder remaining in file'
       )
+      return { type: 'TypeName', data: '_' }
+    }
+    default: {
+      typeNever(node, context.helpers.reporter.warn)
       return { type: 'TypeName', data: '_' }
     }
   }

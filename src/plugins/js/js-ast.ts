@@ -72,7 +72,7 @@ type PropertySignature = {
 /* JS */
 type ImportDeclaration = {
   source: string
-  specifiers: JSNode[]
+  specifiers: { type: 'ImportSpecifier'; data: ImportSpecifier }[]
 }
 type ImportSpecifier = {
   imported: string
@@ -128,6 +128,10 @@ type IfStatement = {
   consequent: JSNode[]
   alternate: JSNode[]
 }
+type WhileStatement = {
+  test: JSNode
+  body: JSNode[]
+}
 type ConditionalExpression = {
   test: JSNode
   consequent: JSNode
@@ -162,8 +166,6 @@ export type JSNode =
   | { type: 'Literal'; data: Literal }
   | { type: 'Identifier'; data: string[] }
   | { type: 'ImportDeclaration'; data: ImportDeclaration }
-  | { type: 'ImportSpecifier'; data: ImportSpecifier }
-  | { type: 'ImportDefaultSpecifier'; data: string }
   | { type: 'ClassDeclaration'; data: ClassDeclaration }
   | { type: 'MethodDefinition'; data: MethodDefinition }
   | { type: 'FunctionExpression'; data: FunctionExpression }
@@ -180,11 +182,13 @@ export type JSNode =
   | { type: 'BinaryExpression'; data: BinaryExpression }
   | { type: 'UnaryExpression'; data: UnaryExpression }
   | { type: 'IfStatement'; data: IfStatement }
+  | { type: 'WhileStatement'; data: WhileStatement }
   | { type: 'ConditionalExpression'; data: ConditionalExpression }
   | { type: 'Property'; data: Property }
-  | { type: 'ExportDefaultDeclaration'; data: JSNode }
-  | { type: 'ExportNamedDeclaration'; data: JSNode }
-  | { type: 'Block'; data: JSNode[] }
+  | {
+      type: 'ExportNamedDeclaration'
+      data: { type: 'AssignmentExpression'; data: AssignmentExpression }
+    }
   | { type: 'Program'; data: JSNode[] }
   | { type: 'LineEndComment'; data: LineEndComment }
   | { type: 'Empty' }
@@ -199,7 +203,6 @@ export type JSNode =
 //   | Identifier(_)
 //   | ImportDeclaration(_)
 //   | ImportSpecifier(_)
-//   | ImportDefaultSpecifier(_) => f(node)
 //   | JSXExpressionContainer(value) =>
 //     f(JSXExpressionContainer(value |> map(f)))
 //   | JSXSpreadAttribute(value) => JSXSpreadAttribute(f(value))

@@ -5,12 +5,11 @@ import { Helpers } from '../../helpers'
 import convertLogic from './convert-logic'
 import renderJS from './render-ast'
 import * as JSAST from './js-ast'
+import { resolveImportPath } from './utils'
 
 export const parseFile = async (
   filePath: string,
-  helpers: Helpers & {
-    emitFile?: (filePath: string, data: string) => Promise<void>
-  },
+  helpers: Helpers,
   options: {
     [key: string]: unknown
   }
@@ -46,6 +45,8 @@ export const parseWorkspace = async (
     [key: string]: unknown
   }
 ): Promise<void> => {
+  const imports: string[] = []
+
   await Promise.all(
     helpers.config.logicPaths
       .concat(helpers.config.documentPaths)
@@ -59,8 +60,30 @@ export const parseWorkspace = async (
         )
         const outputPath = path.join(path.dirname(filePath), `${name}.js`)
 
+        imports.push(outputPath)
+
         await helpers.fs.writeFile(outputPath, swiftContent)
       })
+  )
+
+  await helpers.fs.writeFile(
+    './index.js',
+    `${imports
+      .map(
+        (x, i) => `var __lona_import_${i} = require("${resolveImportPath(
+          './index.js',
+          x
+        )}");
+Object.keys(__lona_import_${i}).forEach(function (key) {
+  Object.defineProperty(module.exports, key, {
+    enumerable: true,
+    get: function get() {
+      return __lona_import_${i}[key];
+    }
+  });
+})`
+      )
+      .join('\n\n')}`
   )
 
   // await helpers.fs.copyDir(

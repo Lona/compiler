@@ -1,4 +1,4 @@
-export let heading1 = {
+var heading1 = {
   fontName: undefined,
   fontFamily: "Helvetica",
   fontWeight: 700,
@@ -7,3 +7,4 @@ export let heading1 = {
   letterSpacing: undefined,
   color: "teal"
 };
+module.exports.heading1 = heading1;

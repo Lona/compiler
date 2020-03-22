@@ -1,6 +1,6 @@
 {
   "name": "@lona/compiler",
-  "version": "0.1.6",
+  "version": "0.1.9",
   "description": "Lona cross-platform code compiler",
   "main": "lib/index.js",
   "bin": {
@@ -12,9 +12,10 @@
   ],
   "types": "lib/index.d.ts",
   "scripts": {
+    "build:standard-library": "ts-node ./scripts/compile-standard-library.ts",
     "build:src": "tsc --declaration",
     "build:types": "ts-node ./scripts/generate-prelude-types.ts",
-    "build": "rm -rf ./lib && npm run build:types && npm run build:src",
+    "build": "rm -rf ./lib && npm run build:standard-library && npm run build:types && npm run build:src",
     "prepublishOnly": "npm run build",
     "test": "jest --env=node --colors --coverage test",
     "typecheck": "tsc --project tsconfig.json",
@@ -33,7 +34,7 @@
   "author": "Mathieu Dutour",
   "license": "MIT",
   "dependencies": {
-    "@lona/serialization": "0.0.18-pre-12",
+    "@lona/serialization": "^0.2.6",
     "color": "^3.1.2",
     "glob": "^7.1.6",
     "lodash.camelcase": "^4.3.0",
@@ -43,29 +44,35 @@
     "lodash.snakecase": "^4.1.1",
     "lodash.upperfirst": "^4.3.1",
     "prettier": "^1.19.1",
+    "uuid": "^7.0.2",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
     "@types/color": "^3.0.1",
     "@types/glob": "^7.1.1",
-    "@types/jest": "^25.1.2",
+    "@types/jest": "^25.1.3",
     "@types/lodash.camelcase": "^4.3.6",
     "@types/lodash.intersection": "^4.4.6",
     "@types/lodash.isequal": "^4.5.5",
     "@types/lodash.lowerfirst": "^4.3.6",
     "@types/lodash.snakecase": "^4.1.6",
     "@types/lodash.upperfirst": "^4.3.6",
-    "@types/node": "^13.1.6",
+    "@types/node": "^13.7.6",
     "@types/prettier": "^1.19.0",
+    "@types/uuid": "^7.0.0",
     "jest": "^25.1.0",
-    "ts-jest": "^25.2.0",
+    "ts-jest": "^25.2.1",
     "ts-node": "^8.6.2",
-    "typescript": "^3.7.4"
+    "typescript": "^3.8.2"
   },
   "prettier": {
     "proseWrap": "never",
     "singleQuote": true,
     "trailingComma": "es5",
     "semi": false
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
   }
 }

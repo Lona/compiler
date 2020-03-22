@@ -1,0 +1,133 @@
+import Prelude
+
+import Color
+
+/*
+ * # Font Weight
+ *
+ * Font thickness.
+ *
+ * An individual font may support multiple weights. However, specifying a weight that isn't supported will generally result in the **regular (400)** weight being displayed.
+ */
+enum FontWeight {
+  /*
+   * # Ultra Light
+   *
+   * The lightest font weight, representing **100**.
+   */
+  case ultraLight()
+  /*
+   * # Thin
+   *
+   * A font weight, representing **200**.
+   */
+  case thin()
+  /*
+   * # Light
+   *
+   * A font weight, representing **300**.
+   */
+  case light()
+  /*
+   * # Regular
+   *
+   * A font weight, representing **400**.
+   */
+  case regular()
+  /*
+   * # Medium
+   *
+   * A font weight, representing **500**.
+   */
+  case medium()
+  /*
+   * # Semibold
+   *
+   * A font weight, representing **600**.
+   */
+  case semibold()
+  /*
+   * # Bold
+   *
+   * A font weight, representing **700**.
+   */
+  case bold()
+  /*
+   * # Heavy
+   *
+   * A font weight, representing **800**.
+   */
+  case heavy()
+  /*
+   * # Black
+   *
+   * The heaviest font weight, representing **900**.
+   */
+  case black()
+}
+
+extension FontWeight {
+  static let w100: FontWeight = FontWeight.ultraLight()
+  static let w200: FontWeight = FontWeight.thin()
+  static let w300: FontWeight = FontWeight.light()
+  static let w400: FontWeight = FontWeight.regular()
+  static let w500: FontWeight = FontWeight.medium()
+  static let w600: FontWeight = FontWeight.semibold()
+  static let w700: FontWeight = FontWeight.bold()
+  static let w800: FontWeight = FontWeight.heavy()
+  static let w900: FontWeight = FontWeight.black()
+}
+
+/*
+ * I> Press enter to create a new Text Style.
+ *
+ * # Text Style
+ *
+ * This represents a specific configuration of text parameters such as font and color.
+ */
+struct TextStyle {
+  /*
+   * W> This parameter is not supported on the web.
+   *
+   * # Font Name
+   *
+   * The exact name of a font file, e.g. "Helvetica-Oblique". Generally, you should use the `fontFamily` parameter where possible instead.
+   */
+  let fontName: Optional<String> = Optional.none()
+  /*
+   * # Font Family
+   *
+   * The family name of the font - for example, "Times" or "Helvetica."
+   */
+  let fontFamily: Optional<String> = Optional.none()
+  /*
+   * # Font Weight
+   *
+   * The thickness of a font, ranging from `black` to `ultraLight`. The default value is `regular`.
+   */
+  let fontWeight: FontWeight = FontWeight.regular()
+  /*
+   * # Font Size
+   *
+   * The size of the font, measured in pixels.
+   */
+  let fontSize: Optional<Number> = Optional.none()
+  /*
+   * # Line Height
+   *
+   * The line height, measured in pixels. The default is `none`, in which case the text style will default to the system-calculated line height.
+   */
+  let lineHeight: Optional<Number> = Optional.none()
+  /*
+   * # Letter Spacing
+   *
+   * Increase or decrease the kerning (spacing between characters). The default is `none`, which uses the font's built-in kerning.
+   */
+  let letterSpacing: Optional<Number> = Optional.none()
+  /*
+   * # Color
+   *
+   * The color of the text.
+   */
+  let color: Optional<Color> = Optional.none()
+}
