@@ -5,6 +5,8 @@ import { convert } from './convert'
 
 export { ConvertedWorkspace, ConvertedFile }
 
+export const format = 'tokens'
+
 export const parseFile = async (
   filePath: string,
   helpers: Helpers

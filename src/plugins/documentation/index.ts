@@ -6,6 +6,8 @@ import { findChildPages } from './utils'
 
 export { ConvertedWorkspace, ConvertedFile }
 
+export const format = 'documentation'
+
 export const parseFile = async (
   filePath: string,
   helpers: Helpers

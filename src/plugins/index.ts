@@ -1,6 +1,7 @@
 import { Helpers } from '../helpers'
 
 export type Plugin = {
+  format: string
   parseFile(
     filePath: string,
     helpers: Helpers,

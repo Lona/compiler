@@ -7,6 +7,8 @@ import renderJS from './render-ast'
 import * as JSAST from './js-ast'
 import { resolveImportPath } from './utils'
 
+export const format = 'js'
+
 export const parseFile = async (
   filePath: string,
   helpers: Helpers,

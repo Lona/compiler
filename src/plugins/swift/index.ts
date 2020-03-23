@@ -6,6 +6,8 @@ import convertLogic from './convert-logic'
 import renderSwift from './render-ast'
 import * as SwiftAST from './swift-ast'
 
+export const format = 'swift'
+
 export const parseFile = async (
   filePath: string,
   helpers: Helpers & {

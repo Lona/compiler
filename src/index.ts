@@ -33,11 +33,12 @@ export const convertFile = async (
     )
   }
 
-  return formatter.parseFile(
-    path.relative(workspace, filePath),
-    await Helpers(workspace),
-    options || {}
-  )
+  const helpers = await Helpers(workspace)
+
+  return formatter.parseFile(path.relative(workspace, filePath), helpers, {
+    ...((helpers.config.format || {})[formatter.format] || {}),
+    ...(options || {}),
+  })
 }
 
 export const convertWorkspace = async (
@@ -48,11 +49,12 @@ export const convertWorkspace = async (
     [argName: string]: unknown
   }
 ) => {
-  return formatter.parseWorkspace(
-    workspacePath,
-    await Helpers(workspacePath, outputPath),
-    options || {}
-  )
+  const helpers = await Helpers(workspacePath, outputPath)
+
+  return formatter.parseWorkspace(workspacePath, helpers, {
+    ...((helpers.config.format || {})[formatter.format] || {}),
+    ...(options || {}),
+  })
 }
 
 export const convert = async (
