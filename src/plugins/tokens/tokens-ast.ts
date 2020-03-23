@@ -71,18 +71,10 @@ export type Token = {
   value: TextStyleTokenValue | ShadowTokenValue | ColorTokenValue
 }
 
-export type ConvertedFileContents =
-  | {
-      type: 'flatTokens'
-      value: Array<Token>
-    }
-  | {
-      type: 'documentationPage'
-      value: {
-        mdxString: string
-        children: Array<string>
-      }
-    }
+export type ConvertedFileContents = {
+  type: 'flatTokens'
+  value: Array<Token>
+}
 
 export interface ConvertedFile {
   inputPath: string

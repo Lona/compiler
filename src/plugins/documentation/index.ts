@@ -1,8 +1,10 @@
 import * as path from 'path'
 import { Helpers } from '../../helpers'
-import { ConvertedWorkspace, ConvertedFile } from '../tokens/tokens-ast'
+import { ConvertedWorkspace, ConvertedFile } from './documentation-ast'
 import { convert } from './convert'
 import { findChildPages } from './utils'
+
+export { ConvertedWorkspace, ConvertedFile }
 
 export const format = 'documentation'
 
