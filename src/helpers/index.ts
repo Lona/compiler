@@ -94,13 +94,6 @@ export type Helpers = {
   }
 }
 
-export type PreludeFlags = {
-  [id: string]:
-    | LogicAST.RecordDeclaration
-    | LogicAST.EnumerationDeclaration
-    | LogicAST.NamespaceDeclaration
-}
-
 export default async (
   workspacePath: string,
   outputPath?: unknown,
