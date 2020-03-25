@@ -20,7 +20,7 @@ struct Color {
 }
 
 extension Color {
-  func setHue(color: Color, hue: Number): Color {}
+  func setHue(color: Color, hue: Number) -> Color {}
   /*
    * # Set Saturation
    *
@@ -30,9 +30,9 @@ extension Color {
    *
    *                The base color to adjust.
    */
-  func setSaturation(color: Color, saturation: Number): Color {}
-  func setLightness(color: Color, lightness: Number): Color {}
-  func fromHSL(hue: Number, saturation: Number, lightness: Number): Color {}
+  func setSaturation(color: Color, saturation: Number) -> Color {}
+  func setLightness(color: Color, lightness: Number) -> Color {}
+  func fromHSL(hue: Number, saturation: Number, lightness: Number) -> Color {}
   /*
    * # Saturate
    *
@@ -45,5 +45,5 @@ extension Color {
    *
    *                 This value will be multiplied with the current saturation value.
    */
-  func saturate(color: Color, factor: Number): Color {}
+  func saturate(color: Color, factor: Number) -> Color {}
 }
