@@ -1,6 +1,6 @@
 {
   "name": "@lona/compiler",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Lona cross-platform code compiler",
   "main": "lib/index.js",
   "bin": {
