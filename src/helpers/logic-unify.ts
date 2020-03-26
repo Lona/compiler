@@ -4,7 +4,6 @@ import * as LogicScope from './logic-scope'
 import * as LogicTraversal from './logic-traversal'
 import { Reporter } from './reporter'
 import { ShallowMap, assertNever, nonNullable } from '../utils'
-import { ReturnStatement } from '@lona/serialization/build/types/logic-ast'
 
 type FunctionArgument = {
   label?: string
@@ -443,7 +442,7 @@ export const makeUnificationContext = (
         } else {
           const returnStatement = node.data.block.find(
             x => x.type === 'return'
-          ) as ReturnStatement
+          ) as LogicAST.AST.ReturnStatement
           const returnType = returnStatement
             ? result.nodes[returnStatement.data.expression.data.id]
             : undefined
