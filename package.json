@@ -25,7 +25,9 @@
     "snapshot:tokens": "node lib/bin.js convert ./examples/workspace --format=tokens > ./examples/generated/tokens.json",
     "snapshot:documentation": "node lib/bin.js convert ./examples/workspace --format=documentation > ./examples/generated/documentation.json",
     "snapshot:swift": "node lib/bin.js convert ./examples/workspace --format=swift --output=./examples/generated/swift",
-    "snapshot:js": "node lib/bin.js convert ./examples/workspace --format=js --output=./examples/generated/js"
+    "snapshot:js": "node lib/bin.js convert ./examples/workspace --format=js --output=./examples/generated/js",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "repository": "https://github.com/Lona/compiler",
   "author": "Mathieu Dutour",

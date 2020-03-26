@@ -29,6 +29,9 @@ jobs:
       # build to check everything is ok
       - run: yarn build
 
+      # run all the tests
+      - run: yarn test
+
       # run all the examples
       - run: yarn snapshot
 

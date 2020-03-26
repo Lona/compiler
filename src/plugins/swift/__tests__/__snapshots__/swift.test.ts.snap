@@ -1,0 +1,99 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Swift Example 1 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public indirect struct Optional: Wrapped {
+  case value(Wrapped)
+  case none
+}
+"
+`;
+
+exports[`Swift Example 2 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+func add(a: T, b: T = 0) -> T {}
+func add(a: T, b: T = 0) -> T {
+  print(text: a)
+}
+func add() -> T {}
+"
+`;
+
+exports[`Swift Example 3 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+
+"
+`;
+
+exports[`Swift Example 4 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public indirect struct Boolean {
+  func or(a: Bool, b: Bool) -> Bool {}
+  func and(a: Bool, b: Bool) -> Bool {}
+}
+"
+`;
+
+exports[`Swift Example 5 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public struct ThemedColor: Equatable {
+  public init(
+    light: Color = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
+    dark: Color = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1))
+  {
+    self.light = light
+    self.dark = dark
+  }
+  public let light: Color = Color(named: \\"light\\")!
+  public let dark: Color = Color(named: \\"dark\\")!
+}
+"
+`;
+
+exports[`Swift Example 6 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public let x: Array = [42]
+"
+`;

@@ -837,7 +837,6 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
           ast.data.statements.map(x => render(x, options)),
           [builders.hardline]
         ),
-        builders.hardline,
       ])
     default: {
       typeNever(ast, options.reporter.warn)

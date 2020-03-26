@@ -4,6 +4,7 @@ import * as LogicScope from './logic-scope'
 import * as LogicTraversal from './logic-traversal'
 import { Reporter } from './reporter'
 import { ShallowMap, assertNever, nonNullable } from '../utils'
+import { ReturnStatement } from '@lona/serialization/build/types/logic-ast'
 
 type FunctionArgument = {
   label?: string
@@ -84,6 +85,7 @@ export const array = (typeUnification: Unification): Constant => ({
 type Contraint = {
   head: Unification
   tail: Unification
+  origin?: any
 }
 
 class LogicNameGenerator {
@@ -265,303 +267,410 @@ export const makeUnificationContext = (
   ): UnificationContext => {
     config.needsRevisitAfterTraversingChildren = true
 
-    if (node.type === 'branch' && config._isRevisit) {
-      result.nodes[node.data.condition.data.id] = bool
-    }
-
-    if (node.type === 'record' && !config._isRevisit) {
-      const genericNames = node.data.genericParameters
-        .map(param =>
-          param.type === 'parameter' ? param.data.name.name : undefined
-        )
-        .filter(nonNullable)
-      const genericsInScope = genericNames.map(x => [
-        x,
-        result.typeNameGenerator.next(),
-      ])
-      const universalTypes = genericNames.map<Unification>((x, i) => ({
-        type: 'generic',
-        name: genericsInScope[i][1],
-      }))
-
-      let parameterTypes: FunctionArgument[] = []
-
-      node.data.declarations.forEach(declaration => {
-        if (declaration.type !== 'variable' || !declaration.data.annotation) {
-          return
+    switch (node.type) {
+      case 'branch': {
+        if (!config._isRevisit) {
+          // the condition needs to be a Boolean
+          result.nodes[node.data.condition.data.id] = bool
         }
-        const { annotation, name } = declaration.data
-        const annotationType = unificationType(
-          [],
-          () => result.typeNameGenerator.next(),
-          annotation
-        )
-        parameterTypes.unshift({
-          label: name.name,
-          type: annotationType,
-        })
-
-        result.nodes[name.id] = annotationType
-        result.patternTypes[name.id] = annotationType
-      })
-
-      const returnType: Unification = {
-        type: 'constant',
-        name: node.data.name.name,
-        parameters: universalTypes,
+        break
       }
-      const functionType: Unification = {
-        type: 'function',
-        returnType,
-        arguments: parameterTypes,
-      }
-
-      result.nodes[node.data.name.id] = functionType
-      result.patternTypes[node.data.name.id] = functionType
-    }
-
-    if (node.type === 'enumeration' && !config._isRevisit) {
-      const genericNames = node.data.genericParameters
-        .map(param =>
-          param.type === 'parameter' ? param.data.name.name : undefined
-        )
-        .filter(nonNullable)
-      const genericsInScope: [string, string][] = genericNames.map(x => [
-        x,
-        result.typeNameGenerator.next(),
-      ])
-      const universalTypes = genericNames.map<Unification>((x, i) => ({
-        type: 'generic',
-        name: genericsInScope[i][1],
-      }))
-
-      const returnType: Unification = {
-        type: 'constant',
-        name: node.data.name.name,
-        parameters: universalTypes,
-      }
-
-      node.data.cases.forEach(enumCase => {
-        if (enumCase.type === 'placeholder') {
-          return
+      case 'loop': {
+        if (!config._isRevisit) {
+          // the condition needs to be a Boolean
+          result.nodes[node.data.expression.data.id] = bool
         }
-        const parameterTypes = enumCase.data.associatedValueTypes
-          .map(annotation => {
-            if (annotation.type === 'placeholder') {
+        break
+      }
+      case 'record': {
+        if (!config._isRevisit) {
+          // a record is a function with itself as a return type, and a few parameters
+
+          const genericNames = node.data.genericParameters
+            .map(param =>
+              param.type === 'parameter' ? param.data.name.name : undefined
+            )
+            .filter(nonNullable)
+          const genericsInScope = genericNames.map(x => [
+            x,
+            result.typeNameGenerator.next(),
+          ])
+          const universalTypes = genericNames.map<Unification>((x, i) => ({
+            type: 'generic',
+            name: genericsInScope[i][1],
+          }))
+
+          let parameterTypes: FunctionArgument[] = []
+
+          node.data.declarations.forEach(declaration => {
+            if (
+              declaration.type !== 'variable' ||
+              !declaration.data.annotation
+            ) {
               return
             }
-            return {
-              label: undefined,
-              type: unificationType(
-                genericsInScope,
-                () => result.typeNameGenerator.next(),
-                annotation
-              ),
-            }
+            const { annotation, name } = declaration.data
+            const annotationType = unificationType(
+              [],
+              () => result.typeNameGenerator.next(),
+              annotation
+            )
+            parameterTypes.unshift({
+              label: name.name,
+              type: annotationType,
+            })
+
+            result.nodes[name.id] = annotationType
+            result.patternTypes[name.id] = annotationType
           })
-          .filter(nonNullable)
-        const functionType: Unification = {
-          type: 'function',
-          returnType,
-          arguments: parameterTypes,
-        }
 
-        result.nodes[enumCase.data.name.id] = functionType
-        result.patternTypes[enumCase.data.name.id] = functionType
-      })
-
-      /* Not used for unification, but used for convenience in evaluation */
-      result.nodes[node.data.name.id] = returnType
-      result.patternTypes[node.data.name.id] = returnType
-    }
-
-    if (node.type === 'function' && !config._isRevisit) {
-      const genericNames = node.data.genericParameters
-        .map(param =>
-          param.type === 'parameter' ? param.data.name.name : undefined
-        )
-        .filter(nonNullable)
-      const genericsInScope: [string, string][] = genericNames.map(x => [
-        x,
-        result.typeNameGenerator.next(),
-      ])
-
-      let parameterTypes: FunctionArgument[] = []
-
-      node.data.parameters.forEach(param => {
-        if (param.type === 'placeholder') {
-          return
-        }
-        const { name, id } = param.data.localName
-        let annotationType = unificationType(
-          [],
-          () => result.typeNameGenerator.next(),
-          param.data.annotation
-        )
-        parameterTypes.unshift({ label: name, type: annotationType })
-
-        result.nodes[id] = annotationType
-        result.patternTypes[id] = annotationType
-      })
-
-      let returnType = unificationType(
-        genericsInScope,
-        () => result.typeNameGenerator.next(),
-        node.data.returnType
-      )
-      let functionType: Unification = {
-        type: 'function',
-        returnType,
-        arguments: parameterTypes,
-      }
-
-      result.nodes[node.data.name.id] = functionType
-      result.patternTypes[node.data.name.id] = functionType
-    }
-
-    if (node.type === 'variable' && config._isRevisit) {
-      if (
-        !node.data.initializer ||
-        !node.data.annotation ||
-        node.data.annotation.type === 'placeholder'
-      ) {
-        config.ignoreChildren = true
-      } else {
-        const annotationType = unificationType(
-          [],
-          () => result.typeNameGenerator.next(),
-          node.data.annotation
-        )
-        const initializerId = node.data.initializer.data.id
-        const initializerType = result.nodes[initializerId]
-
-        if (initializerType) {
-          result.constraints.push({
-            head: annotationType,
-            tail: initializerType,
-          })
-        } else {
-          reporter.error(
-            `WARNING: No initializer type for ${node.data.name.name} (${initializerId})`
-          )
-        }
-
-        result.patternTypes[node.data.name.id] = annotationType
-      }
-    }
-
-    if (node.type === 'placeholder' && config._isRevisit) {
-      result.nodes[node.data.id] = {
-        type: 'variable',
-        value: result.typeNameGenerator.next(),
-      }
-    }
-    if (node.type === 'identifierExpression' && config._isRevisit) {
-      let type = specificIdentifierType(
-        scopeContext,
-        result,
-        node.data.identifier.id
-      )
-
-      result.nodes[node.data.id] = type
-      result.nodes[node.data.identifier.id] = type
-    }
-    if (node.type === 'functionCallExpression' && config._isRevisit) {
-      const calleeType = result.nodes[node.data.expression.data.id]
-
-      /* Unify against these to enforce a function type */
-
-      const placeholderReturnType: Unification = {
-        type: 'variable',
-        value: result.typeNameGenerator.next(),
-      }
-
-      const placeholderArgTypes = node.data.arguments
-        .map<FunctionArgument | undefined>(arg => {
-          if (arg.type === 'placeholder') {
-            return
+          const returnType: Unification = {
+            type: 'constant',
+            name: node.data.name.name,
+            parameters: universalTypes,
           }
-          return {
-            label: arg.data.label,
-            type: {
+          const functionType: Unification = {
+            type: 'function',
+            returnType,
+            arguments: parameterTypes,
+          }
+
+          result.nodes[node.data.name.id] = functionType
+          result.patternTypes[node.data.name.id] = functionType
+        }
+        break
+      }
+      case 'enumeration': {
+        if (!config._isRevisit) {
+          const genericNames = node.data.genericParameters
+            .map(param =>
+              param.type === 'parameter' ? param.data.name.name : undefined
+            )
+            .filter(nonNullable)
+          const genericsInScope: [string, string][] = genericNames.map(x => [
+            x,
+            result.typeNameGenerator.next(),
+          ])
+          const universalTypes = genericNames.map<Unification>((x, i) => ({
+            type: 'generic',
+            name: genericsInScope[i][1],
+          }))
+
+          const returnType: Unification = {
+            type: 'constant',
+            name: node.data.name.name,
+            parameters: universalTypes,
+          }
+
+          node.data.cases.forEach(enumCase => {
+            if (enumCase.type === 'placeholder') {
+              return
+            }
+            const parameterTypes = enumCase.data.associatedValueTypes
+              .map(annotation => {
+                if (annotation.type === 'placeholder') {
+                  return
+                }
+                return {
+                  label: undefined,
+                  type: unificationType(
+                    genericsInScope,
+                    () => result.typeNameGenerator.next(),
+                    annotation
+                  ),
+                }
+              })
+              .filter(nonNullable)
+            const functionType: Unification = {
+              type: 'function',
+              returnType,
+              arguments: parameterTypes,
+            }
+
+            result.nodes[enumCase.data.name.id] = functionType
+            result.patternTypes[enumCase.data.name.id] = functionType
+          })
+
+          /* Not used for unification, but used for convenience in evaluation */
+          result.nodes[node.data.name.id] = returnType
+          result.patternTypes[node.data.name.id] = returnType
+        }
+        break
+      }
+      case 'function': {
+        if (!config._isRevisit) {
+          const genericNames = node.data.genericParameters
+            .map(param =>
+              param.type === 'parameter' ? param.data.name.name : undefined
+            )
+            .filter(nonNullable)
+          const genericsInScope: [string, string][] = genericNames.map(x => [
+            x,
+            result.typeNameGenerator.next(),
+          ])
+
+          let parameterTypes: FunctionArgument[] = []
+
+          node.data.parameters.forEach(param => {
+            if (param.type === 'placeholder') {
+              return
+            }
+            const { name, id } = param.data.localName
+            let annotationType = unificationType(
+              [],
+              () => result.typeNameGenerator.next(),
+              param.data.annotation
+            )
+            parameterTypes.unshift({ label: name, type: annotationType })
+
+            result.nodes[id] = annotationType
+            result.patternTypes[id] = annotationType
+          })
+
+          let returnType = unificationType(
+            genericsInScope,
+            () => result.typeNameGenerator.next(),
+            node.data.returnType
+          )
+          let functionType: Unification = {
+            type: 'function',
+            returnType,
+            arguments: parameterTypes,
+          }
+
+          result.nodes[node.data.name.id] = functionType
+          result.patternTypes[node.data.name.id] = functionType
+        } else {
+          const returnStatement = node.data.block.find(
+            x => x.type === 'return'
+          ) as ReturnStatement
+          const returnType = returnStatement
+            ? result.nodes[returnStatement.data.expression.data.id]
+            : undefined
+          const functionType = result.nodes[node.data.name.id]
+
+          if (returnType && functionType.type === 'function') {
+            result.constraints.push({
+              head: functionType.returnType,
+              tail: returnType,
+              origin: node,
+            })
+          }
+        }
+        break
+      }
+      case 'variable': {
+        if (config._isRevisit) {
+          if (
+            !node.data.initializer ||
+            !node.data.annotation ||
+            node.data.annotation.type === 'placeholder'
+          ) {
+            config.ignoreChildren = true
+          } else {
+            const annotationType = unificationType(
+              [],
+              () => result.typeNameGenerator.next(),
+              node.data.annotation
+            )
+            const initializerId = node.data.initializer.data.id
+            const initializerType = result.nodes[initializerId]
+
+            if (initializerType) {
+              result.constraints.push({
+                head: annotationType,
+                tail: initializerType,
+                origin: node,
+              })
+            } else {
+              reporter.error(
+                `WARNING: No initializer type for ${node.data.name.name} (${initializerId})`
+              )
+            }
+
+            result.patternTypes[node.data.name.id] = annotationType
+          }
+        }
+        break
+      }
+      case 'placeholder': {
+        if (config._isRevisit) {
+          result.nodes[node.data.id] = {
+            type: 'variable',
+            value: result.typeNameGenerator.next(),
+          }
+        }
+        break
+      }
+      case 'identifierExpression': {
+        if (config._isRevisit) {
+          let type = specificIdentifierType(
+            scopeContext,
+            result,
+            node.data.identifier.id
+          )
+
+          result.nodes[node.data.id] = type
+          result.nodes[node.data.identifier.id] = type
+        }
+        break
+      }
+      case 'functionCallExpression': {
+        if (config._isRevisit) {
+          const calleeType = result.nodes[node.data.expression.data.id]
+
+          /* Unify against these to enforce a function type */
+
+          const placeholderReturnType: Unification = {
+            type: 'variable',
+            value: result.typeNameGenerator.next(),
+          }
+
+          const placeholderArgTypes = node.data.arguments
+            .map<FunctionArgument | undefined>(arg => {
+              if (arg.type === 'placeholder') {
+                return
+              }
+              return {
+                label: arg.data.label,
+                type: {
+                  type: 'variable',
+                  value: result.typeNameGenerator.next(),
+                },
+              }
+            })
+            .filter(nonNullable)
+
+          const placeholderFunctionType: Unification = {
+            type: 'function',
+            returnType: placeholderReturnType,
+            arguments: placeholderArgTypes,
+          }
+
+          result.constraints.push({
+            head: calleeType,
+            tail: placeholderFunctionType,
+            origin: node,
+          })
+
+          result.nodes[node.data.id] = placeholderReturnType
+
+          let argumentValues = node.data.arguments
+            .map(arg =>
+              arg.type === 'placeholder' ? undefined : arg.data.expression
+            )
+            .filter(nonNullable)
+
+          const constraints = placeholderArgTypes.map((argType, i) => ({
+            head: argType.type,
+            tail: result.nodes[argumentValues[i].data.id],
+            origin: node,
+          }))
+
+          result.constraints = result.constraints.concat(constraints)
+        }
+        break
+      }
+      case 'memberExpression': {
+        if (!config._isRevisit) {
+          config.ignoreChildren = true
+        } else {
+          const type = specificIdentifierType(
+            scopeContext,
+            result,
+            node.data.id
+          )
+          result.nodes[node.data.id] = type
+        }
+        break
+      }
+      case 'literalExpression': {
+        if (config._isRevisit) {
+          result.nodes[node.data.id] = result.nodes[node.data.literal.data.id]
+        }
+        break
+      }
+      case 'none': {
+        if (config._isRevisit) {
+          result.nodes[node.data.id] = unit
+        }
+        break
+      }
+      case 'boolean': {
+        if (config._isRevisit) {
+          result.nodes[node.data.id] = bool
+        }
+        break
+      }
+      case 'number': {
+        if (config._isRevisit) {
+          result.nodes[node.data.id] = number
+        }
+        break
+      }
+      case 'string': {
+        if (config._isRevisit) {
+          result.nodes[node.data.id] = string
+        }
+        break
+      }
+      case 'color': {
+        if (config._isRevisit) {
+          result.nodes[node.data.id] = color
+        }
+        break
+      }
+      case 'array': {
+        if (config._isRevisit) {
+          const elementType: Unification = {
+            type: 'variable',
+            value: result.typeNameGenerator.next(),
+          }
+          result.nodes[node.data.id] = {
+            type: 'constant',
+            name: 'Array',
+            parameters: [elementType],
+          }
+
+          const constraints = node.data.value.map(expression => ({
+            head: elementType,
+            tail: result.nodes[expression.data.id] || {
               type: 'variable',
               value: result.typeNameGenerator.next(),
             },
-          }
-        })
-        .filter(nonNullable)
+            origin: node,
+          }))
 
-      const placeholderFunctionType: Unification = {
-        type: 'function',
-        returnType: placeholderReturnType,
-        arguments: placeholderArgTypes,
+          result.constraints = result.constraints.concat(constraints)
+        }
+        break
       }
-
-      result.constraints.push({
-        head: calleeType,
-        tail: placeholderFunctionType,
-      })
-
-      result.nodes[node.data.id] = placeholderReturnType
-
-      let argumentValues = node.data.arguments
-        .map(arg =>
-          arg.type === 'placeholder' ? undefined : arg.data.expression
-        )
-        .filter(nonNullable)
-
-      const constraints = placeholderArgTypes.map((argType, i) => ({
-        head: argType.type,
-        tail: result.nodes[argumentValues[i].data.id],
-        origin: node,
-      }))
-
-      result.constraints = result.constraints.concat(constraints)
-    }
-    if (node.type === 'memberExpression') {
-      if (!config._isRevisit) {
-        config.ignoreChildren = true
-      } else {
-        let type = specificIdentifierType(scopeContext, result, node.data.id)
-
-        result.nodes[node.data.id] = type
+      case 'return': {
+        // already handled in the revisit of the function declaration
+        break
       }
-    }
-    if (node.type === 'literalExpression' && config._isRevisit) {
-      result.nodes[node.data.id] = result.nodes[node.data.literal.data.id]
-    }
-
-    /* TODO: Binary expression */
-
-    if (node.type === 'boolean' && config._isRevisit) {
-      result.nodes[node.data.id] = bool
-    }
-    if (node.type === 'number' && config._isRevisit) {
-      result.nodes[node.data.id] = number
-    }
-    if (node.type === 'string' && config._isRevisit) {
-      result.nodes[node.data.id] = string
-    }
-    if (node.type === 'color' && config._isRevisit) {
-      result.nodes[node.data.id] = color
-    }
-    if (node.type === 'array' && config._isRevisit) {
-      const elementType: Unification = {
-        type: 'variable',
-        value: result.typeNameGenerator.next(),
+      case 'parameter': {
+        // already handled in the function call
+        break
       }
-      result.nodes[node.data.id] = elementType
-
-      const constraints = node.data.value.map(expression => ({
-        head: elementType,
-        tail: result.nodes[expression.data.id] || {
-          type: 'variable',
-          value: result.typeNameGenerator.next(),
-        },
-        origin: node,
-      }))
-
-      result.constraints = result.constraints.concat(constraints)
+      case 'functionType':
+      case 'typeIdentifier':
+      case 'declaration':
+      case 'importDeclaration':
+      case 'namespace':
+      case 'assignmentExpression':
+      case 'program':
+      case 'enumerationCase':
+      case 'value':
+      case 'topLevelDeclarations':
+      case 'topLevelParameters':
+      case 'argument':
+      case 'expression': {
+        break
+      }
+      default: {
+        assertNever(node)
+      }
     }
 
     return result
@@ -612,6 +721,7 @@ export const unify = (
           constraints.push({
             head: a.type,
             tail: tailArguments[i].type,
+            origin: constraint,
           })
         })
       } else {
@@ -640,6 +750,7 @@ export const unify = (
           constraints.push({
             head: headArgumentType.type,
             tail: tailArgumentType.type,
+            origin: constraint,
           })
         })
       }
@@ -647,25 +758,27 @@ export const unify = (
       constraints.push({
         head: head.returnType,
         tail: tail.returnType,
+        origin: constraint,
       })
     } else if (head.type === 'constant' && tail.type === 'constant') {
       if (head.name !== tail.name) {
-        reporter.error(head, tail)
+        reporter.error(JSON.stringify(constraint, null, '  '))
         throw new Error(
-          `[UnificationError] [NameMismatch] ${head.name} ${tail.name}`
+          `[UnificationError] [NameMismatch] ${head.name} <> ${tail.name}`
         )
       }
       const headParameters = head.parameters
       const tailParameters = tail.parameters
       if (headParameters.length !== tailParameters.length) {
         throw new Error(
-          `[UnificationError] [GenericArgumentsCountMismatch] ${head} ${tail}`
+          `[UnificationError] [GenericArgumentsCountMismatch] ${head} <> ${tail}`
         )
       }
       headParameters.forEach((a, i) => {
         constraints.push({
           head: a,
           tail: tailParameters[i],
+          origin: constraint,
         })
       })
     } else if (head.type === 'generic' || tail.type === 'generic') {
