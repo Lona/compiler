@@ -9,7 +9,7 @@ function readDir(x: string) {
     .map(y => path.join(__dirname, '../../../../', x, y))
 }
 
-describe('Swift', () => {
+describe('JS', () => {
   const files = readDir('fixtures/declaration')
     .concat(readDir('fixtures/expression'))
     .concat(readDir('fixtures/literal'))

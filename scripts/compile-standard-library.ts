@@ -22,7 +22,10 @@ preludeLibs.forEach(x => {
         JSON.parse(
           serialization.convertLogic(
             fs.readFileSync(path.join(preludePath, x), 'utf8'),
-            serialization.SERIALIZATION_FORMAT.JSON
+            serialization.SERIALIZATION_FORMAT.JSON,
+            {
+              filePath: x,
+            }
           )
         )
       ),

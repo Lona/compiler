@@ -209,19 +209,32 @@ export function declarationPathTo(
   if (!path) {
     return []
   }
-  return path.filter(LogicAST.isDeclaration).map(x => {
-    switch (x.type) {
-      case 'variable':
-      case 'function':
-      case 'enumeration':
-      case 'namespace':
-      case 'record':
-      case 'importDeclaration': {
-        return x.data.name.name
-      }
-      case 'placeholder': {
+  return path
+    .map(x => {
+      if (!('type' in x)) {
         return ''
       }
-    }
-  })
+      switch (x.type) {
+        case 'variable':
+        case 'function':
+        case 'enumeration':
+        case 'namespace':
+        case 'record':
+        case 'importDeclaration': {
+          return x.data.name.name
+        }
+        case 'argument': {
+          return x.data.label || ''
+        }
+        case 'parameter': {
+          if ('localName' in x.data) {
+            return x.data.localName.name
+          }
+          return x.data.name.name
+        }
+        default:
+          return ''
+      }
+    })
+    .filter(x => !!x)
 }

@@ -2,7 +2,7 @@
 func add<T>(a: T, b: T = 0) -> T {}
 
 func add<T>(a: T, b: T = 0) -> T {
-  print(text: a)
+  return Number.add(a: a, b: b)
 }
 
 func add() -> T {}

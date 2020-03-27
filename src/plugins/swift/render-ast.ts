@@ -705,7 +705,7 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
       ])
     }
     case 'ReturnStatement':
-      return group(['return', ast.data ? render(ast.data, options) : ''])
+      return group(['return ', ast.data ? render(ast.data, options) : ''])
     case 'FunctionCallArgument':
       return ast.data.name
         ? group([

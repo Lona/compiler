@@ -245,9 +245,11 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
       /* TODO: o.id */
       const parameterList = join(
         ast.data.params.map(x => render(x, options)),
-        builders.line
+        [',', builders.line]
       )
       return group([
+        'function ',
+        ast.data.id || '',
         '(',
         parameterList,
         ') ',
@@ -257,7 +259,7 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
     case 'ArrowFunctionExpression': {
       const parameterList = join(
         ast.data.params.map(x => render(x, options)),
-        builders.line
+        [',', builders.line]
       )
 
       if (ast.data.body.length === 1 && ast.data.body[0].type === 'Return') {
@@ -272,10 +274,9 @@ function render(ast: JSAST.JSNode, options: Options): Doc {
           ])
         }
         return builders.concat([
-          group(['(', parameterList, ') => (']),
+          group(['(', parameterList, ') =>']),
           indent([builders.line, render(ast.data.body[0].data, options)]),
           builders.line,
-          ')',
         ])
       }
 

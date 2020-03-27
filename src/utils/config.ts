@@ -70,7 +70,9 @@ export async function load(
         .map(x =>
           fs
             .readFile(x)
-            .then(data => serialization.decodeLogic(data))
+            .then(data =>
+              serialization.decodeLogic(data, undefined, { filePath: x })
+            )
             .then(ast => {
               logicFiles[x] = ast
             })
@@ -79,7 +81,7 @@ export async function load(
           documentPaths.map(x =>
             fs
               .readFile(x)
-              .then(data => serialization.decodeDocument(data))
+              .then(data => serialization.decodeDocument(data, undefined, x))
               .then(ast => {
                 componentFiles[x] = ast
                 logicFiles[x] = serialization.extractProgramFromAST(ast)

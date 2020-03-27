@@ -379,46 +379,67 @@ const declaration = (
     case 'importDeclaration':
       return { type: 'Empty' }
     case 'function': {
-      return {
-        type: 'FunctionExpression',
-        data: {
-          id: node.data.name.name,
-          params: node.data.parameters
-            .map<JSAST.JSNode | undefined>(x => {
-              if (x.type !== 'parameter') {
-                return undefined
-              }
-              const identifier = {
-                type: 'Identifier' as const,
-                data: [x.data.localName.name],
-              }
-              if (!x.data.defaultValue || x.data.defaultValue.type === 'none') {
-                return identifier
-              }
-              return {
-                type: 'AssignmentExpression',
-                data: {
-                  left: identifier,
-                  right: expression(
-                    x.data.defaultValue.data.expression,
-                    context
-                  ),
-                },
-              }
-            })
-            .filter(nonNullable),
-          body: node.data.block
-            .filter(x => x.type !== 'placeholder')
-            .map(x => statement(x, context)),
-        },
+      const newContext = { ...context, isTopLevel: false, isStatic: true }
+      const variable = createVariableOrProperty(
+        context.isStatic,
+        false,
+        lowerFirst(node.data.name.name),
+        {
+          type: 'ArrowFunctionExpression',
+          data: {
+            params: node.data.parameters
+              .map<JSAST.JSNode | undefined>(x => {
+                if (x.type !== 'parameter') {
+                  return undefined
+                }
+                const identifier = {
+                  type: 'Identifier' as const,
+                  data: [x.data.localName.name],
+                }
+                if (
+                  !x.data.defaultValue ||
+                  x.data.defaultValue.type === 'none'
+                ) {
+                  return identifier
+                }
+                return {
+                  type: 'AssignmentExpression',
+                  data: {
+                    left: identifier,
+                    right: expression(
+                      x.data.defaultValue.data.expression,
+                      newContext
+                    ),
+                  },
+                }
+              })
+              .filter(nonNullable),
+            body: node.data.block
+              .filter(x => x.type !== 'placeholder')
+              .map(x => statement(x, newContext)),
+          },
+        }
+      )
+
+      if (
+        context.isTopLevel &&
+        variable.type === 'VariableDeclaration' &&
+        variable.data.type === 'AssignmentExpression'
+      ) {
+        return {
+          type: 'ExportNamedDeclaration',
+          data: variable.data,
+        }
       }
+
+      return variable
     }
     case 'namespace': {
       const newContext = { ...context, isTopLevel: false, isStatic: true }
       const variable = createVariableOrProperty(
         context.isStatic,
         false,
-        node.data.name.name.toLowerCase(),
+        lowerFirst(node.data.name.name),
         {
           type: 'Literal',
           data: {
@@ -484,7 +505,7 @@ const declaration = (
       const variable = createVariableOrProperty(
         context.isStatic,
         isDynamic,
-        node.data.name.name.toLowerCase(),
+        lowerFirst(node.data.name.name),
         initialValue
       )
 
@@ -573,37 +594,37 @@ const expression = (
         type: 'Identifier',
         data: [lowerFirst(node.data.identifier.string)],
       }
-      const patternId = context.helpers.evaluationContext?.getPattern(
-        node.data.identifier.id
-      )
+      // const patternId = context.helpers.evaluationContext?.getPattern(
+      //   node.data.identifier.id
+      // )
 
-      if (!patternId) {
-        if (isFromOtherFile) {
-          context.importIdentifier(standard.data[0], isFromOtherFile)
-        }
-        return standard
-      }
-
-      const pattern = context.helpers.ast.traversal.declarationPathTo(
-        context.rootNode,
-        patternId
-      )
-
-      if (!pattern.length) {
-        if (isFromOtherFile) {
-          context.importIdentifier(standard.data[0], isFromOtherFile)
-        }
-        return standard
-      }
-
+      // if (!patternId) {
       if (isFromOtherFile) {
-        context.importIdentifier(lowerFirst(pattern[0]), isFromOtherFile)
+        context.importIdentifier(standard.data[0], isFromOtherFile)
       }
+      return standard
+      // }
 
-      return {
-        type: 'Identifier',
-        data: pattern.map(lowerFirst),
-      }
+      // const pattern = context.helpers.ast.traversal.declarationPathTo(
+      //   context.rootNode,
+      //   patternId
+      // )
+
+      // if (!pattern.length) {
+      //   if (isFromOtherFile) {
+      //     context.importIdentifier(standard.data[0], isFromOtherFile)
+      //   }
+      //   return standard
+      // }
+
+      // if (isFromOtherFile) {
+      //   context.importIdentifier(lowerFirst(pattern[0]), isFromOtherFile)
+      // }
+
+      // return {
+      //   type: 'Identifier',
+      //   data: pattern.map(lowerFirst),
+      // }
     }
     case 'literalExpression':
       return literal(node.data.literal, context)
@@ -619,11 +640,11 @@ const expression = (
       const validArguments = node.data.arguments.filter(
         x => x.type !== 'placeholder'
       )
-      const standard: JSAST.JSNode = {
+      const standard = (): JSAST.JSNode => ({
         type: 'CallExpression',
         data: {
           callee: expression(node.data.expression, context),
-          arguments: node.data.arguments
+          arguments: validArguments
             .map(x =>
               x.type === 'placeholder'
                 ? undefined
@@ -631,7 +652,7 @@ const expression = (
             )
             .filter(nonNullable),
         },
-      }
+      })
 
       const lastIdentifier =
         node.data.expression.type === 'identifierExpression'
@@ -641,7 +662,7 @@ const expression = (
           : undefined
 
       if (!lastIdentifier) {
-        return standard
+        return standard()
       }
 
       /* Does the identifier point to a defined pattern? */
@@ -656,7 +677,7 @@ const expression = (
       const patternId = identifierPatternId || expressionPatternId
 
       if (!patternId || !context.helpers.evaluationContext) {
-        return standard
+        return standard()
       }
 
       const parent = context.helpers.ast.traversal.findParentNode(
@@ -665,9 +686,10 @@ const expression = (
       )
 
       if (!parent) {
-        return standard
+        return standard()
       }
 
+      // initialization of a record
       if (
         'type' in parent &&
         parent.type === 'declaration' &&
@@ -715,6 +737,7 @@ const expression = (
         }
       }
 
+      // initialization of an enum
       if (
         'type' in parent &&
         parent.type === 'declaration' &&
@@ -740,7 +763,7 @@ const expression = (
         }
       }
 
-      return standard
+      return standard()
     }
     case 'assignmentExpression': {
       return {
