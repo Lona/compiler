@@ -259,7 +259,7 @@ export const makeUnificationContext = (
   reporter: Reporter,
   initialContext: UnificationContext = makeEmptyContext()
 ): UnificationContext => {
-  let build = (
+  const build = (
     result: UnificationContext,
     node: LogicAST.AST.SyntaxNode,
     config: LogicTraversal.TraversalConfig

@@ -11,6 +11,7 @@ import upperFirst from 'lodash.upperfirst'
 import * as LogicAST from '../src/helpers/logic-ast'
 import { build } from '../src/helpers/logic-scope'
 import { defaultReporter } from '../src/helpers/reporter'
+import { STANDARD_LIBRARY } from '../src/helpers/evaluation-context'
 
 const preludePath = path.join(__dirname, '../static/logic')
 const preludeLibs = fs.readdirSync(preludePath)
@@ -25,7 +26,7 @@ const libraryFiles: LogicAST.AST.Program[] = preludeLibs.map(
 const preludeProgram = LogicAST.joinPrograms(libraryFiles)
 
 const scopeContext = build(
-  [{ node: preludeProgram, in: 'standard library' }],
+  [{ node: preludeProgram, in: STANDARD_LIBRARY }],
   defaultReporter
 )
 
