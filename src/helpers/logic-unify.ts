@@ -440,21 +440,24 @@ export const makeUnificationContext = (
           result.nodes[node.data.name.id] = functionType
           result.patternTypes[node.data.name.id] = functionType
         } else {
-          const returnStatement = node.data.block.find(
-            x => x.type === 'return'
-          ) as LogicAST.AST.ReturnStatement
-          const returnType = returnStatement
-            ? result.nodes[returnStatement.data.expression.data.id]
-            : undefined
-          const functionType = result.nodes[node.data.name.id]
-
-          if (returnType && functionType.type === 'function') {
-            result.constraints.push({
-              head: functionType.returnType,
-              tail: returnType,
-              origin: node,
-            })
-          }
+          // const returnStatements = node.data.block.filter(
+          //   x => x.type === 'return'
+          // ) as LogicAST.AST.ReturnStatement[]
+          // const functionType = result.nodes[node.data.name.id]
+          // if (functionType.type === 'function') {
+          //   returnStatements.forEach(returnStatement => {
+          //     const returnType = returnStatement
+          //       ? result.nodes[returnStatement.data.expression.data.id]
+          //       : undefined
+          //     if (returnType) {
+          //       result.constraints.push({
+          //         head: functionType.returnType,
+          //         tail: returnType,
+          //         origin: node,
+          //       })
+          //     }
+          //   })
+          // }
         }
         break
       }
@@ -781,6 +784,7 @@ export const unify = (
         })
       })
     } else if (head.type === 'generic' || tail.type === 'generic') {
+      reporter.error(JSON.stringify(constraint, null, '  '))
       reporter.error('tried to unify generics (problem?)', head, tail)
     } else if (head.type === 'variable') {
       substitution.set(head, tail)

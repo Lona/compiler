@@ -54,7 +54,9 @@ export function makeProgram(
   return undefined
 }
 
-export function getPattern(node: LogicAST.SyntaxNode): LogicAST.Pattern | void {
+export function getPattern(
+  node: LogicAST.SyntaxNode
+): LogicAST.Pattern | undefined {
   if (
     node.type === 'variable' ||
     node.type === 'enumeration' ||
@@ -77,7 +79,7 @@ export function getPattern(node: LogicAST.SyntaxNode): LogicAST.Pattern | void {
 
 export function getIdentifier(
   node: LogicAST.SyntaxNode
-): LogicAST.Identifier | void {
+): LogicAST.Identifier | undefined {
   if (node.type === 'identifierExpression' || node.type === 'typeIdentifier') {
     return node.data.identifier
   }
@@ -157,18 +159,14 @@ function pathTo(
     return [identifier]
   }
 
-  return LogicAST.subNodes(rootNode).reduce<
-    (LogicAST.SyntaxNode | LogicAST.Pattern | LogicAST.Identifier)[] | undefined
-  >((prev, item) => {
-    if (prev) {
-      return prev
-    }
+  for (let item of LogicAST.subNodes(rootNode)) {
     const subPath = pathTo(item, id)
     if (subPath) {
       return [rootNode, ...subPath]
     }
-    return undefined
-  }, undefined)
+  }
+
+  return undefined
 }
 
 export function findNode(

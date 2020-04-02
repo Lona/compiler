@@ -128,6 +128,11 @@ func functionCall(a: CGFloat) -> CGFloat {
     dark: #colorLiteral(red: 0.5019607843137255, green: 0, blue: 0.5019607843137255, alpha: 1))
   Optional.none()
 }
+func colorIdentity(a: Color) -> Color {
+  return a
+}
+public let pinkWithDetour: Color = colorIdentity(a:
+#colorLiteral(red: 1, green: 0.7529411764705882, blue: 0.796078431372549, alpha: 1))
 "
 `;
 

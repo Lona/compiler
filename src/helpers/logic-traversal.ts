@@ -31,6 +31,9 @@ function reduceChildren<T>(
   initialResult: T,
   config: TraversalConfig
 ): T {
+  if (!LogicAST.AST.subNodes(node)) {
+    console.log(node)
+  }
   return LogicAST.AST.subNodes(node).reduce<T>((prev, x) => {
     if (config.stopTraversal) {
       return prev

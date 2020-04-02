@@ -49,6 +49,10 @@ exports[`JS Example expression/functionCall.md 1`] = `
   optional.none()
 };
 module.exports.functionCall = functionCall;
+var colorIdentity = (a) => a ;
+module.exports.colorIdentity = colorIdentity;
+var pinkWithDetour = colorIdentity(\\"pink\\");
+module.exports.pinkWithDetour = pinkWithDetour;
 "
 `;
 

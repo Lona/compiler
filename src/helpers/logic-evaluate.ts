@@ -18,7 +18,11 @@ export type Memory =
   | {
       type: 'function'
       value:
-        | { type: 'path'; value: string[] }
+        | {
+            type: 'path'
+            value: string[]
+            evaluate: (...args: Value[]) => Value | undefined
+          }
         | {
             type: 'recordInit'
             value: { [key: string]: [LogicUnify.Unification, Value | void] }
@@ -29,6 +33,21 @@ export type Memory =
 export type Value = {
   type: LogicUnify.Unification
   memory: Memory
+}
+
+function evaluateIsTrue(
+  context: EvaluationContext,
+  expression: LogicAST.AST.Expression
+) {
+  const condition = context.evaluate(expression.data.id)
+  return (
+    (condition &&
+      condition.type.type === 'constant' &&
+      condition.type.name === 'Boolean' &&
+      condition.memory.type === 'bool' &&
+      condition.memory.value) ||
+    false
+  )
 }
 
 type Thunk = {
@@ -135,6 +154,17 @@ export class EvaluationContext {
     const result = thunk.f(resolvedDependencies as Value[])
     this.values[uuid] = result
     return result
+  }
+
+  copy() {
+    const newContext = new EvaluationContext(
+      this.scopeContext,
+      this.rootNode,
+      this.reporter
+    )
+    newContext.thunks = { ...this.thunks }
+    newContext.values = { ...this.values }
+    return newContext
   }
 }
 
@@ -361,7 +391,15 @@ export const evaluate = (
               }
             }
 
-            // this is a custom function that we have no idea what it is
+            // we have a custom function
+            // let's try to evaluate it
+            const value = functionValue.memory.value.evaluate(...functionArgs)
+
+            if (value) {
+              return value
+            }
+
+            // we tried and we have no idea what it is
             // so let's warn about it and ignore it
             reporter.error(
               `Failed to evaluate "${node.data.id}": Unknown function ${functionName}`
@@ -445,7 +483,7 @@ export const evaluate = (
       break
     }
     case 'function': {
-      const { name } = node.data
+      const { name, block, parameters } = node.data
       const type = unificationContext.patternTypes[name.id]
       const fullPath = LogicAST.declarationPathTo(rootNode, node.data.id)
 
@@ -453,6 +491,7 @@ export const evaluate = (
         reporter.error('Unknown function type')
         break
       }
+
       context.addValue(name.id, {
         type,
         memory: {
@@ -460,6 +499,57 @@ export const evaluate = (
           value: {
             type: 'path',
             value: fullPath,
+            evaluate(...args: Value[]) {
+              const newContext = context.copy()
+              parameters.forEach((p, i) => {
+                newContext.addValue(p.data.id, args[i])
+                if (p.type === 'parameter') {
+                  newContext.addValue(p.data.localName.id, args[i])
+                }
+              })
+
+              function evaluateBlock(
+                block: LogicAST.AST.Statement[]
+              ): Value | undefined {
+                for (let statement of block) {
+                  switch (statement.type) {
+                    case 'branch': {
+                      if (
+                        evaluateIsTrue(newContext, statement.data.condition)
+                      ) {
+                        const res = evaluateBlock(statement.data.block)
+                        if (res) {
+                          return res
+                        }
+                      }
+                      break
+                    }
+                    case 'placeholder':
+                    case 'expression':
+                    case 'declaration': {
+                      break
+                    }
+                    case 'loop': {
+                      while (
+                        evaluateIsTrue(newContext, statement.data.expression)
+                      ) {
+                        const res = evaluateBlock(statement.data.block)
+                        if (res) {
+                          return res
+                        }
+                      }
+                    }
+                    case 'return': {
+                      return newContext.evaluate(
+                        statement.data.expression.data.id
+                      )
+                    }
+                  }
+                }
+              }
+
+              return evaluateBlock(block)
+            },
           },
         },
       })
@@ -580,11 +670,11 @@ export const evaluate = (
     case 'namespace':
     case 'importDeclaration':
     case 'placeholder':
-    case 'return':
-    case 'loop':
+    case 'return': // handled in 'function'
+    case 'loop': // handled in 'function'
+    case 'branch': // handled in 'function'
     case 'expression':
-    case 'declaration':
-    case 'branch': {
+    case 'declaration': {
       break
     }
     default: {
