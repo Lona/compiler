@@ -705,7 +705,7 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
       ])
     }
     case 'ReturnStatement':
-      return group(['return', ast.data ? render(ast.data, options) : ''])
+      return group(['return ', ast.data ? render(ast.data, options) : ''])
     case 'FunctionCallArgument':
       return ast.data.name
         ? group([
@@ -837,7 +837,6 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
           ast.data.statements.map(x => render(x, options)),
           [builders.hardline]
         ),
-        builders.hardline,
       ])
     default: {
       typeNever(ast, options.reporter.warn)

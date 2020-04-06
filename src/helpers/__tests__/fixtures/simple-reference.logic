@@ -1,0 +1,2 @@
+let a: String = "foo"
+let b: String = a

@@ -97,9 +97,13 @@ export type Helpers = {
 export default async (
   workspacePath: string,
   outputPath?: unknown,
-  _reporter?: Reporter
+
+  // dependencies injection for testing
+  _reporter?: Reporter,
+  _fsWrapper?: FSWrapper
 ): Promise<Helpers> => {
-  const fsWrapper = createFSWrapper(workspacePath, outputPath)
+  const fsWrapper = _fsWrapper || createFSWrapper(workspacePath, outputPath)
+  const reporter = _reporter || defaultReporter
 
   const config = await Config.load(workspacePath, {
     forEvaluation: true,
@@ -107,8 +111,6 @@ export default async (
   })
 
   let cachedEvaluationContext: EvaluationContext | undefined
-
-  const reporter = _reporter || defaultReporter
 
   return {
     fs: fsWrapper,

@@ -1,0 +1,252 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Tokens Example declaration/enumeration.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "declaration/enumeration.md",
+  "name": "enumeration",
+  "outputPath": "declaration/enumeration.flat.json",
+}
+`;
+
+exports[`Tokens Example declaration/function.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "declaration/function.md",
+  "name": "function",
+  "outputPath": "declaration/function.flat.json",
+}
+`;
+
+exports[`Tokens Example declaration/import.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "declaration/import.md",
+  "name": "import",
+  "outputPath": "declaration/import.flat.json",
+}
+`;
+
+exports[`Tokens Example declaration/namespace.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "declaration/namespace.md",
+  "name": "namespace",
+  "outputPath": "declaration/namespace.flat.json",
+}
+`;
+
+exports[`Tokens Example declaration/record.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "declaration/record.md",
+  "name": "record",
+  "outputPath": "declaration/record.flat.json",
+}
+`;
+
+exports[`Tokens Example declaration/variable.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "declaration/variable.md",
+  "name": "variable",
+  "outputPath": "declaration/variable.flat.json",
+}
+`;
+
+exports[`Tokens Example expression/assignment.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "expression/assignment.md",
+  "name": "assignment",
+  "outputPath": "expression/assignment.flat.json",
+}
+`;
+
+exports[`Tokens Example expression/functionCall.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [
+      Object {
+        "qualifiedName": Array [
+          "pinkWithDetour",
+        ],
+        "value": Object {
+          "type": "color",
+          "value": Object {
+            "css": "pink",
+          },
+        },
+      },
+    ],
+  },
+  "inputPath": "expression/functionCall.md",
+  "name": "functionCall",
+  "outputPath": "expression/functionCall.flat.json",
+}
+`;
+
+exports[`Tokens Example expression/identifier.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "expression/identifier.md",
+  "name": "identifier",
+  "outputPath": "expression/identifier.flat.json",
+}
+`;
+
+exports[`Tokens Example expression/member.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "expression/member.md",
+  "name": "member",
+  "outputPath": "expression/member.flat.json",
+}
+`;
+
+exports[`Tokens Example literal/array.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "literal/array.md",
+  "name": "array",
+  "outputPath": "literal/array.flat.json",
+}
+`;
+
+exports[`Tokens Example literal/boolean.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "literal/boolean.md",
+  "name": "boolean",
+  "outputPath": "literal/boolean.flat.json",
+}
+`;
+
+exports[`Tokens Example literal/color.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [
+      Object {
+        "qualifiedName": Array [
+          "color",
+        ],
+        "value": Object {
+          "type": "color",
+          "value": Object {
+            "css": "pink",
+          },
+        },
+      },
+      Object {
+        "qualifiedName": Array [
+          "hexColor",
+        ],
+        "value": Object {
+          "type": "color",
+          "value": Object {
+            "css": "#123456",
+          },
+        },
+      },
+    ],
+  },
+  "inputPath": "literal/color.md",
+  "name": "color",
+  "outputPath": "literal/color.flat.json",
+}
+`;
+
+exports[`Tokens Example literal/number.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "literal/number.md",
+  "name": "number",
+  "outputPath": "literal/number.flat.json",
+}
+`;
+
+exports[`Tokens Example literal/string.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "literal/string.md",
+  "name": "string",
+  "outputPath": "literal/string.flat.json",
+}
+`;
+
+exports[`Tokens Example statement/branch.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "statement/branch.md",
+  "name": "branch",
+  "outputPath": "statement/branch.flat.json",
+}
+`;
+
+exports[`Tokens Example statement/loop.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "statement/loop.md",
+  "name": "loop",
+  "outputPath": "statement/loop.flat.json",
+}
+`;
+
+exports[`Tokens Example statement/return.md 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [],
+  },
+  "inputPath": "statement/return.md",
+  "name": "return",
+  "outputPath": "statement/return.flat.json",
+}
+`;

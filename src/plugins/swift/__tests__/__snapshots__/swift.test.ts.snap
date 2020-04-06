@@ -1,0 +1,288 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Swift Example declaration/enumeration.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public indirect struct Optional: Wrapped {
+  case value(Wrapped)
+  case none
+}
+"
+`;
+
+exports[`Swift Example declaration/function.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+func add(a: T, b: T = 0) -> T {}
+func add(a: T, b: T = 0) -> T {
+  return Number.add(a: a, b: b)
+}
+func add() -> T {}
+"
+`;
+
+exports[`Swift Example declaration/import.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+
+"
+`;
+
+exports[`Swift Example declaration/namespace.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public indirect struct Boolean {
+  func or(a: Bool, b: Bool) -> Bool {}
+  func and(a: Bool, b: Bool) -> Bool {}
+}
+"
+`;
+
+exports[`Swift Example declaration/record.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public struct ThemedColor: Equatable {
+  public init(
+    light: Color = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
+    dark: Color = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1))
+  {
+    self.light = light
+    self.dark = dark
+  }
+  public let light: Color = Color(named: \\"light\\")!
+  public let dark: Color = Color(named: \\"dark\\")!
+}
+"
+`;
+
+exports[`Swift Example declaration/variable.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public let x: Array = [42]
+"
+`;
+
+exports[`Swift Example expression/assignment.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+func assignment(a: CGFloat) -> CGFloat {
+  a = 10
+}
+"
+`;
+
+exports[`Swift Example expression/functionCall.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+func functionCall(a: CGFloat) -> CGFloat {
+  ThemedColor(
+    light: #colorLiteral(red: 1, green: 0.7529411764705882, blue: 0.796078431372549, alpha: 1),
+    dark: #colorLiteral(red: 0.5019607843137255, green: 0, blue: 0.5019607843137255, alpha: 1))
+  Optional.none()
+}
+func colorIdentity(a: Color) -> Color {
+  return a
+}
+public let pinkWithDetour: Color = colorIdentity(a:
+#colorLiteral(red: 1, green: 0.7529411764705882, blue: 0.796078431372549, alpha: 1))
+"
+`;
+
+exports[`Swift Example expression/identifier.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+func identifier(a: CGFloat) -> CGFloat {
+  a = x
+}
+"
+`;
+
+exports[`Swift Example expression/member.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+func member(a: CGFloat) -> CGFloat {
+  a = Colors.primary
+  a.test = Colors.primary
+}
+"
+`;
+
+exports[`Swift Example literal/array.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public let x: Array = [42, 35]
+"
+`;
+
+exports[`Swift Example literal/boolean.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public let trueBoolean: Bool = true
+public let falseBoolean: Bool = false
+"
+`;
+
+exports[`Swift Example literal/color.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public let color: Color = Color(named: \\"color\\")!
+public let hexColor: Color = Color(named: \\"hexColor\\")!
+"
+`;
+
+exports[`Swift Example literal/number.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public let positive: CGFloat = 1
+public let float: CGFloat = 0.1
+public let negative: CGFloat = -1
+"
+`;
+
+exports[`Swift Example literal/string.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+public let string: String = \\"hello\\"
+public let stringWithQuote: String = \\"Hello \\\\\\"world\\\\\\"\\"
+"
+`;
+
+exports[`Swift Example statement/branch.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+func branchStatement() -> CGFloat {
+  if true {
+    return 0
+  }
+  return 1
+}
+"
+`;
+
+exports[`Swift Example statement/loop.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+func loopStatement() -> CGFloat {
+  while false {
+    return 0
+  }
+}
+"
+`;
+
+exports[`Swift Example statement/return.md 1`] = `
+"import Foundation
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+  import UIKit
+#elseif os(macOS)
+  import AppKit
+#endif
+
+func returnStatement() -> CGFloat {
+  return 0
+}
+"
+`;

@@ -4,7 +4,7 @@ import { Reporter } from './reporter'
 import { ShallowMap } from '../utils/shallow-map'
 
 class ScopeStack<K extends string, V> {
-  private scopes: { [key: string]: V }[] = [{}]
+  public scopes: { [key: string]: V }[] = [{}]
 
   public get(k: K): V | void {
     return this.scopes.map(x => x[k]).filter(x => !!x)[0]
@@ -64,8 +64,6 @@ let setGenericParameters = (
   })
 
 export type ScopeContext = {
-  /* Values in these are never removed, even if a variable is out of scope */
-
   identifierToPattern: {
     [key: string]: { pattern: string; in: string }
   }
@@ -75,6 +73,7 @@ export type ScopeContext = {
       in: string
     }
   }
+  /* Values in these are never removed, even if a variable is out of scope */
   _patternToName: { [key: string]: string }
   _patternToTypeName: { [key: string]: string }
   /* This keeps track of the current scope */

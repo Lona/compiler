@@ -8,6 +8,8 @@ import * as LogicEvaluate from './logic-evaluate'
 import { Reporter } from './reporter'
 import { nonNullable } from '../utils'
 
+export const STANDARD_LIBRARY = 'standard library'
+
 export const generate = (config: Config, reporter: Reporter) => {
   const standardLibsPath = path.join(__dirname, '../../static/logic')
   const standardLibs = fs.readdirSync(standardLibsPath)
@@ -35,9 +37,7 @@ export const generate = (config: Config, reporter: Reporter) => {
     .filter(nonNullable)
 
   const scopeContext = LogicScope.build(
-    [{ node: standardLibsProgram, in: 'standard library' }].concat(
-      logicPrograms
-    ),
+    [{ node: standardLibsProgram, in: STANDARD_LIBRARY }].concat(logicPrograms),
     reporter
   )
 

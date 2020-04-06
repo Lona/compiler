@@ -5,6 +5,7 @@ import { isHardcodedMapCall } from './hardcoded-mapping'
 import { hardcoded } from './logic-evaluation-hardcoded-map'
 import { Reporter } from './reporter'
 import { nonNullable, ShallowMap, assertNever } from '../utils'
+import { STANDARD_LIBRARY } from './evaluation-context'
 
 export type Memory =
   | { type: 'unit' }
@@ -17,7 +18,11 @@ export type Memory =
   | {
       type: 'function'
       value:
-        | { type: 'path'; value: string[] }
+        | {
+            type: 'path'
+            value: string[]
+            evaluate: (...args: Value[]) => Value | undefined
+          }
         | {
             type: 'recordInit'
             value: { [key: string]: [LogicUnify.Unification, Value | void] }
@@ -28,6 +33,21 @@ export type Memory =
 export type Value = {
   type: LogicUnify.Unification
   memory: Memory
+}
+
+function evaluateIsTrue(
+  context: EvaluationContext,
+  expression: LogicAST.AST.Expression
+) {
+  const condition = context.evaluate(expression.data.id)
+  return (
+    (condition &&
+      condition.type.type === 'constant' &&
+      condition.type.name === 'Boolean' &&
+      condition.memory.type === 'bool' &&
+      condition.memory.value) ||
+    false
+  )
 }
 
 type Thunk = {
@@ -76,7 +96,7 @@ export class EvaluationContext {
 
   /** Whether the id references something from the Lona's standard library */
   isFromStandardLibrary(uuid: string): boolean {
-    return this.getOriginalFile(uuid) === 'standard library'
+    return this.getOriginalFile(uuid) === STANDARD_LIBRARY
   }
 
   /** Whether the id references something from another file,
@@ -86,7 +106,7 @@ export class EvaluationContext {
     if (
       otherFile &&
       otherFile !== currentFile &&
-      otherFile !== 'standard library'
+      otherFile !== STANDARD_LIBRARY
     ) {
       return otherFile
     }
@@ -135,6 +155,17 @@ export class EvaluationContext {
     this.values[uuid] = result
     return result
   }
+
+  copy() {
+    const newContext = new EvaluationContext(
+      this.scopeContext,
+      this.rootNode,
+      this.reporter
+    )
+    newContext.thunks = { ...this.thunks }
+    newContext.values = { ...this.values }
+    return newContext
+  }
 }
 
 const makeEmpty = (
@@ -173,9 +204,16 @@ export const evaluate = (
     return undefined
   }
 
-  /* TODO: handle statements */
-
   switch (node.type) {
+    case 'none': {
+      context.addValue(node.data.id, {
+        type: LogicUnify.unit,
+        memory: {
+          type: 'unit',
+        },
+      })
+      break
+    }
     case 'boolean': {
       const { value, id } = node.data
       context.addValue(id, {
@@ -353,7 +391,15 @@ export const evaluate = (
               }
             }
 
-            // this is a custom function that we have no idea what it is
+            // we have a custom function
+            // let's try to evaluate it
+            const value = functionValue.memory.value.evaluate(...functionArgs)
+
+            if (value) {
+              return value
+            }
+
+            // we tried and we have no idea what it is
             // so let's warn about it and ignore it
             reporter.error(
               `Failed to evaluate "${node.data.id}": Unknown function ${functionName}`
@@ -437,7 +483,7 @@ export const evaluate = (
       break
     }
     case 'function': {
-      const { name } = node.data
+      const { name, block, parameters } = node.data
       const type = unificationContext.patternTypes[name.id]
       const fullPath = LogicAST.declarationPathTo(rootNode, node.data.id)
 
@@ -445,6 +491,7 @@ export const evaluate = (
         reporter.error('Unknown function type')
         break
       }
+
       context.addValue(name.id, {
         type,
         memory: {
@@ -452,6 +499,57 @@ export const evaluate = (
           value: {
             type: 'path',
             value: fullPath,
+            evaluate(...args: Value[]) {
+              const newContext = context.copy()
+              parameters.forEach((p, i) => {
+                newContext.addValue(p.data.id, args[i])
+                if (p.type === 'parameter') {
+                  newContext.addValue(p.data.localName.id, args[i])
+                }
+              })
+
+              function evaluateBlock(
+                block: LogicAST.AST.Statement[]
+              ): Value | undefined {
+                for (let statement of block) {
+                  switch (statement.type) {
+                    case 'branch': {
+                      if (
+                        evaluateIsTrue(newContext, statement.data.condition)
+                      ) {
+                        const res = evaluateBlock(statement.data.block)
+                        if (res) {
+                          return res
+                        }
+                      }
+                      break
+                    }
+                    case 'placeholder':
+                    case 'expression':
+                    case 'declaration': {
+                      break
+                    }
+                    case 'loop': {
+                      while (
+                        evaluateIsTrue(newContext, statement.data.expression)
+                      ) {
+                        const res = evaluateBlock(statement.data.block)
+                        if (res) {
+                          return res
+                        }
+                      }
+                    }
+                    case 'return': {
+                      return newContext.evaluate(
+                        statement.data.expression.data.id
+                      )
+                    }
+                  }
+                }
+              }
+
+              return evaluateBlock(block)
+            },
           },
         },
       })
@@ -463,60 +561,61 @@ export const evaluate = (
       const type = unificationContext.patternTypes[name.id]
       if (!type) {
         reporter.error('Unknown record type')
-      } else {
-        const resolvedType = LogicUnify.substitute(substitution, type)
-        const dependencies = declarations
-          .map(x =>
-            x.type === 'variable' && x.data.initializer
-              ? x.data.initializer.data.id
-              : undefined
-          )
-          .filter(nonNullable)
-
-        context.add(name.id, {
-          label: 'Record declaration for ' + name.name,
-          dependencies,
-          f: values => {
-            const parameterTypes: {
-              [key: string]: [LogicUnify.Unification, Value | void]
-            } = {}
-            let index = 0
-
-            declarations.forEach(declaration => {
-              if (declaration.type !== 'variable') {
-                return
-              }
-              const parameterType =
-                unificationContext.patternTypes[declaration.data.name.id]
-              if (!parameterType) {
-                return
-              }
-
-              let initialValue: Value | void
-              if (declaration.data.initializer) {
-                initialValue = values[index]
-                index += 1
-              }
-
-              parameterTypes[declaration.data.name.name] = [
-                parameterType,
-                initialValue,
-              ]
-            })
-
-            return {
-              type: resolvedType,
-              memory: {
-                type: 'function',
-                value: {
-                  type: 'recordInit',
-                  value: parameterTypes,
-                },
-              },
-            }
-          },
-        })
+        break
       }
+      const resolvedType = LogicUnify.substitute(substitution, type)
+      const dependencies = declarations
+        .map(x =>
+          x.type === 'variable' && x.data.initializer
+            ? x.data.initializer.data.id
+            : undefined
+        )
+        .filter(nonNullable)
+
+      context.add(name.id, {
+        label: 'Record declaration for ' + name.name,
+        dependencies,
+        f: values => {
+          const parameterTypes: {
+            [key: string]: [LogicUnify.Unification, Value | void]
+          } = {}
+          let index = 0
+
+          declarations.forEach(declaration => {
+            if (declaration.type !== 'variable') {
+              return
+            }
+            const parameterType =
+              unificationContext.patternTypes[declaration.data.name.id]
+            if (!parameterType) {
+              return
+            }
+
+            let initialValue: Value | void
+            if (declaration.data.initializer) {
+              initialValue = values[index]
+              index += 1
+            }
+
+            parameterTypes[declaration.data.name.name] = [
+              parameterType,
+              initialValue,
+            ]
+          })
+
+          return {
+            type: resolvedType,
+            memory: {
+              type: 'function',
+              value: {
+                type: 'recordInit',
+                value: parameterTypes,
+              },
+            },
+          }
+        },
+      })
+
       break
     }
     case 'enumeration': {
@@ -545,6 +644,41 @@ export const evaluate = (
       })
 
       break
+    }
+    case 'assignmentExpression': {
+      context.add(node.data.left.data.id, {
+        label:
+          'Assignment for ' +
+          LogicAST.declarationPathTo(
+            context.rootNode,
+            node.data.left.data.id
+          ).join('.'),
+        dependencies: [node.data.right.data.id],
+        f: values => values[0],
+      })
+      break
+    }
+    case 'functionType':
+    case 'typeIdentifier':
+    case 'program':
+    case 'parameter':
+    case 'value':
+    case 'topLevelParameters':
+    case 'topLevelDeclarations':
+    case 'enumerationCase': // handled in 'enumeration'
+    case 'argument': // handled in 'functionCallExpression'
+    case 'namespace':
+    case 'importDeclaration':
+    case 'placeholder':
+    case 'return': // handled in 'function'
+    case 'loop': // handled in 'function'
+    case 'branch': // handled in 'function'
+    case 'expression':
+    case 'declaration': {
+      break
+    }
+    default: {
+      assertNever(node)
     }
   }
 
