@@ -1,5 +1,15 @@
 import { Plugin } from '../plugins'
 
+/**
+ * Support requiring both CommonJS `module.exports` and ES5 `export` modules
+ *
+ * @param path The path to `require`
+ */
+const requireInterop = (path: string): any => {
+  const obj = require(path)
+  return obj && obj.__esModule ? obj['default'] : obj
+}
+
 /** Look for a plugin in
  * - node_modules/@lona/compiler-FORMAT
  * - node_modules/lona-compiler-FORMAT
@@ -7,13 +17,13 @@ import { Plugin } from '../plugins'
  */
 export const findPlugin = (format: string): Plugin => {
   try {
-    return require(`@lona/compiler-${format}`)
+    return requireInterop(`@lona/compiler-${format}`)
   } catch (err) {
     try {
-      return require(`lona-compiler-${format}`)
+      return requireInterop(`lona-compiler-${format}`)
     } catch (err) {
       try {
-        return require(`../plugins/${format}`)
+        return requireInterop(`../plugins/${format}`)
       } catch (err) {
         console.error(err)
         throw new Error(`Could not find plugin ${format}`)
