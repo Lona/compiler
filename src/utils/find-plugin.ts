@@ -7,7 +7,7 @@ import { Plugin } from '../plugins'
  */
 const requireInterop = (path: string): any => {
   const obj = require(path)
-  return obj && obj.__esModule ? obj['default'] : obj
+  return obj && obj.__esModule && obj['default'] ? obj['default'] : obj
 }
 
 /** Look for a plugin in
