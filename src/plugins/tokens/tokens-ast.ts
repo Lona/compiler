@@ -51,24 +51,9 @@ export type TokenValue =
   | ShadowTokenValue
   | TextStyleTokenValue
 
-export type ColorToken = {
-  qualifiedName: Array<string>
-  value: ColorTokenValue
-}
-
-export type ShadowToken = {
-  qualifiedName: Array<string>
-  value: ShadowTokenValue
-}
-
-export type TextStyleToken = {
-  qualifiedName: Array<string>
-  value: TextStyleTokenValue
-}
-
 export type Token = {
   qualifiedName: Array<string>
-  value: TextStyleTokenValue | ShadowTokenValue | ColorTokenValue
+  value: TokenValue
 }
 
 export type ConvertedFileContents = {
