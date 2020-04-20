@@ -3,9 +3,9 @@
 exports[`Swift Example declaration/enumeration.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -19,9 +19,9 @@ public indirect struct Optional: Wrapped {
 exports[`Swift Example declaration/function.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -36,9 +36,9 @@ func add() -> T {}
 exports[`Swift Example declaration/import.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -49,9 +49,9 @@ exports[`Swift Example declaration/import.md 1`] = `
 exports[`Swift Example declaration/namespace.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -65,9 +65,9 @@ public indirect struct Boolean {
 exports[`Swift Example declaration/record.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -88,9 +88,9 @@ public struct ThemedColor: Equatable {
 exports[`Swift Example declaration/variable.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -101,9 +101,9 @@ public let x: Array = [42]
 exports[`Swift Example expression/assignment.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -116,9 +116,9 @@ func assignment(a: CGFloat) -> CGFloat {
 exports[`Swift Example expression/functionCall.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -139,9 +139,9 @@ public let pinkWithDetour: Color = colorIdentity(a:
 exports[`Swift Example expression/identifier.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -154,9 +154,9 @@ func identifier(a: CGFloat) -> CGFloat {
 exports[`Swift Example expression/member.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -170,9 +170,9 @@ func member(a: CGFloat) -> CGFloat {
 exports[`Swift Example literal/array.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -183,9 +183,9 @@ public let x: Array = [42, 35]
 exports[`Swift Example literal/boolean.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -197,9 +197,9 @@ public let falseBoolean: Bool = false
 exports[`Swift Example literal/color.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -211,9 +211,9 @@ public let hexColor: Color = Color(named: \\"hexColor\\")!
 exports[`Swift Example literal/number.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -226,9 +226,9 @@ public let negative: CGFloat = -1
 exports[`Swift Example literal/string.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -240,9 +240,9 @@ public let stringWithQuote: String = \\"Hello \\\\\\"world\\\\\\"\\"
 exports[`Swift Example statement/branch.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -258,9 +258,9 @@ func branchStatement() -> CGFloat {
 exports[`Swift Example statement/loop.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -275,9 +275,9 @@ func loopStatement() -> CGFloat {
 exports[`Swift Example statement/return.md 1`] = `
 "import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 

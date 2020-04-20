@@ -1,9 +1,9 @@
 import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
   public typealias Image = UIImage
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import Cocoa
   public typealias Image = NSImage
 #endif

@@ -1,9 +1,9 @@
 import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
   public typealias Color = UIColor
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import Cocoa
   public typealias Color = NSColor
 #endif

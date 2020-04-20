@@ -1,8 +1,8 @@
 import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(UIKit)
   import UIKit
-#elseif os(macOS)
+#elseif canImport(AppKit)
   import AppKit
 #endif
 
@@ -90,9 +90,9 @@ public class TextStyle {
   }()
 
   public lazy var font: Font = {
-    #if os(iOS) || os(tvOS) || os(watchOS)
+    #if canImport(UIKit)
       return Font(descriptor: fontDescriptor, size: fontSize)
-    #elseif os(macOS)
+    #elseif canImport(AppKit)
       // NSFont can return nil as opposed to UIFont
       return Font(descriptor: fontDescriptor, size: fontSize) ??
         Font.systemFont(ofSize: fontSize, weight: fontWeight)
