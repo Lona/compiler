@@ -33,10 +33,10 @@ yargs
   )
   .command(
     'convert [path]',
-    'Convert a file or workspace to a specific format',
+    'Convert a workspace to a specific format',
     cli => {
       cli.positional('path', {
-        describe: 'path to the Lona workspace or file',
+        describe: 'path to the Lona workspace',
         type: 'string',
         default: process.cwd(),
       })

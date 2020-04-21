@@ -42,14 +42,6 @@ This will generate the colors, text styles, shadows, custom types, and all compo
 lona convert [path-to-workspace-directory] --format=js --output=[output-directory]
 ```
 
-#### Generate single file
-
-This will output the generated file code to `stdout`.
-
-```bash
-lona convert [path-to-file] --format=js
-```
-
 ## Contributing
 
 To build the compiler from source, follow these steps.

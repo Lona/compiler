@@ -7,7 +7,7 @@ export { ConvertedWorkspace, ConvertedFile }
 
 export const format = 'tokens'
 
-export const parseFile = async (
+export const convertFile = async (
   filePath: string,
   helpers: Helpers
 ): Promise<ConvertedFile> => {
@@ -33,13 +33,30 @@ export const parseFile = async (
   return file
 }
 
-export const parseWorkspace = async (
+// depending on whether we have an output or not,
+// we return the tokens or write them to disk
+export function convertWorkspace(
+  workspacePath: string,
+  helpers: Helpers,
+  options: {
+    [key: string]: unknown
+  } & { output?: never }
+): Promise<ConvertedWorkspace>
+export function convertWorkspace(
+  workspacePath: string,
+  helpers: Helpers,
+  options: {
+    [key: string]: unknown
+  } & { output?: string }
+): Promise<void>
+
+export async function convertWorkspace(
   workspacePath: string,
   helpers: Helpers,
   options: {
     [key: string]: unknown
   }
-): Promise<ConvertedWorkspace | undefined> => {
+): Promise<ConvertedWorkspace | void> {
   let workspace: ConvertedWorkspace
 
   if (!helpers.evaluationContext) {
@@ -50,7 +67,7 @@ export const parseWorkspace = async (
       files: await Promise.all(
         helpers.config.logicPaths
           .concat(helpers.config.documentPaths)
-          .map(x => parseFile(x, helpers))
+          .map(x => convertFile(x, helpers))
       ),
       flatTokensSchemaVersion: '0.0.1',
     }
