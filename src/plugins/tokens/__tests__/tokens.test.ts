@@ -25,7 +25,7 @@ describe('Tokens', () => {
 
   files.forEach(filePath =>
     test(`Example ${filePath.split('fixtures/')[1]}`, async () => {
-      const output = await formatter.parseFile(
+      const output = await formatter.convertFile(
         path.relative(workspace, filePath),
         helpers
       )

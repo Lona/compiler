@@ -9,7 +9,7 @@ import { resolveImportPath } from './utils'
 
 export const format = 'js'
 
-export const parseFile = async (
+export const convertFile = async (
   filePath: string,
   helpers: Helpers,
   options: {
@@ -40,7 +40,7 @@ export const parseFile = async (
   return `${renderJS(jsAST, { outputFile, reporter: helpers.reporter })}`
 }
 
-export const parseWorkspace = async (
+export const convertWorkspace = async (
   workspacePath: string,
   helpers: Helpers,
   options: {
@@ -53,7 +53,7 @@ export const parseWorkspace = async (
     helpers.config.logicPaths
       .concat(helpers.config.documentPaths)
       .map(async filePath => {
-        const swiftContent = await parseFile(filePath, helpers, options)
+        const swiftContent = await convertFile(filePath, helpers, options)
         if (!swiftContent) {
           return
         }

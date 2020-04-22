@@ -15,14 +15,7 @@ A plugin is an object with a given [interface](../src/plugins/index.ts):
 ```ts
 type Plugin = {
   format: string
-  parseFile(
-    filePath: string,
-    helpers: Helpers,
-    options: {
-      [argName: string]: unknown
-    }
-  ): Promise<any>
-  parseWorkspace(
+  convertWorkspace(
     workspacePath: string,
     helpers: Helpers,
     options: {
@@ -60,7 +53,7 @@ It's up to you to structure your plugin as you want - but for the core plugins, 
 
 A plugin consists of 4 different parts:
 
-- the external API. `parseWorkspace` is very similar every time: loop through all the tokens and components files, call `parseFile` for each of them, and copy some static files to polyfill the standard library if any.
+- the external API. `convertWorkspace` is very similar every time: loop through all the tokens and components files, call a `convertFile` function for each of them, and copy some static files to polyfill the standard library if any.
 - the format AST. It is very likely that the AST of the target format will have some difference with the Logic AST.
 - A conversion between the Logic AST and the format AST. This includes a map between the logic standard library and the format AST.
 - A printer of the format AST. We use [prettier](https://prettier.io) to pretty print so the printer is really just a format AST to prettier AST conversion.
