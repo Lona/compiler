@@ -21,31 +21,30 @@ export const getConfig = async (workspacePath: string) => {
   return await config.load(resolvedPath)
 }
 
-export const convertWorkspace = async (
-  workspacePath: string,
-  outputPath: unknown,
-  formatter: Plugin,
-  options?: {
-    [argName: string]: unknown
-  }
-) => {
-  const helpers = await Helpers(workspacePath, outputPath)
-
-  return formatter.convertWorkspace(workspacePath, helpers, {
-    ...((helpers.config.format || {})[formatter.format] || {}),
-    ...(options || {}),
-  })
-}
-
-export const convert = async (
+export function convert(
   fileOrWorkspacePath: string,
   format: string,
   options?: {
     [argName: string]: unknown
   }
-) => {
-  const resolvedPath = path.resolve(fileOrWorkspacePath)
-  const formatter = findPlugin(format)
+): Promise<unknown>
+export function convert<ExpectedOptions, Result>(
+  fileOrWorkspacePath: string,
+  format: Plugin<ExpectedOptions, Result>,
+  options?: ExpectedOptions & { output?: string }
+): Promise<Result>
+
+export async function convert<ExpectedOptions, Result>(
+  workspacePath: string,
+  format: string | Plugin<ExpectedOptions, Result>,
+  options?: {
+    [argName: string]: unknown
+  }
+) {
+  const resolvedPath = path.resolve(workspacePath)
+
+  const formatter =
+    typeof format === 'string' ? findPlugin<ExpectedOptions>(format) : format
 
   if (!(await isWorkspacePath(resolvedPath))) {
     throw new Error(
@@ -53,10 +52,10 @@ export const convert = async (
     )
   }
 
-  return convertWorkspace(
-    resolvedPath,
-    (options || {}).output,
-    formatter,
-    options
-  )
+  const helpers = await Helpers(resolvedPath, (options || {}).output)
+
+  return formatter.convertWorkspace(workspacePath, helpers, {
+    ...((helpers.config.format || {})[formatter.format] || {}),
+    ...(options || {}),
+  })
 }

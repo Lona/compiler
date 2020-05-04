@@ -29,7 +29,7 @@ describe('Swift', () => {
         path.relative(workspace, filePath),
         helpers,
         {
-          ...((helpers.config.format || {})[formatter.format] || {}),
+          ...((helpers.config.format || {})[formatter.default.format] || {}),
         }
       )
       expect(output).toMatchSnapshot()

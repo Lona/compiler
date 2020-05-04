@@ -15,7 +15,9 @@ const requireInterop = (path: string): any => {
  * - node_modules/lona-compiler-FORMAT
  * - ../plugins/FORMAT
  */
-export const findPlugin = (format: string): Plugin => {
+export const findPlugin = <ExpectedOptions>(
+  format: string
+): Plugin<ExpectedOptions> => {
   try {
     return requireInterop(`@lona/compiler-${format}`)
   } catch (err) {
