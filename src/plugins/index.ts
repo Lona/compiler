@@ -1,6 +1,11 @@
 import { Helpers } from '../helpers'
 
-export type Plugin = {
+export interface Plugin<
+  ExpectedOptions extends { [argName: string]: any } = {
+    [argName: string]: unknown
+  },
+  T = unknown
+> {
   format: string
   convertWorkspace(
     workspacePath: string,
@@ -8,5 +13,5 @@ export type Plugin = {
     options: {
       [argName: string]: unknown
     }
-  ): Promise<any>
+  ): Promise<T>
 }

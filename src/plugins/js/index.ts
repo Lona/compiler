@@ -2,12 +2,11 @@ import * as path from 'path'
 import upperFirst from 'lodash.upperfirst'
 import camelCase from 'lodash.camelcase'
 import { Helpers } from '../../helpers'
+import { Plugin } from '../index'
 import convertLogic from './convert-logic'
 import renderJS from './render-ast'
 import * as JSAST from './js-ast'
 import { resolveImportPath } from './utils'
-
-export const format = 'js'
 
 export const convertFile = async (
   filePath: string,
@@ -40,7 +39,7 @@ export const convertFile = async (
   return `${renderJS(jsAST, { outputFile, reporter: helpers.reporter })}`
 }
 
-export const convertWorkspace = async (
+const convertWorkspace = async (
   workspacePath: string,
   helpers: Helpers,
   options: {
@@ -93,3 +92,12 @@ Object.keys(__lona_import_${i}).forEach(function (key) {
   //   './lona-helpers'
   // )
 }
+
+type ExpectedOptions = {
+  framework?: 'react' | 'react-native' | 'react-sketchapp'
+}
+const plugin: Plugin<ExpectedOptions, void> = {
+  format: 'js',
+  convertWorkspace,
+}
+export default plugin

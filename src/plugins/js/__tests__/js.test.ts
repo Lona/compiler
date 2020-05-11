@@ -29,7 +29,7 @@ describe('JS', () => {
         path.relative(workspace, filePath),
         helpers,
         {
-          ...((helpers.config.format || {})[formatter.format] || {}),
+          ...((helpers.config.format || {})[formatter.default.format] || {}),
         }
       )
 

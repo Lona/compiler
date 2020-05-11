@@ -1,12 +1,11 @@
 import * as path from 'path'
 import upperFirst from 'lodash.upperfirst'
 import camelCase from 'lodash.camelcase'
+import { Plugin } from '../index'
 import { Helpers } from '../../helpers'
 import convertLogic from './convert-logic'
 import renderSwift from './render-ast'
 import * as SwiftAST from './swift-ast'
-
-export const format = 'swift'
 
 export const convertFile = async (
   filePath: string,
@@ -49,7 +48,7 @@ export const convertFile = async (
 ${renderSwift(swiftAST, { outputFile, reporter: helpers.reporter })}`
 }
 
-export const convertWorkspace = async (
+const convertWorkspace = async (
   workspacePath: string,
   helpers: Helpers,
   options: {
@@ -78,3 +77,10 @@ export const convertWorkspace = async (
     './lona-helpers'
   )
 }
+
+type ExpectedOptions = {}
+const plugin: Plugin<ExpectedOptions, void> = {
+  format: 'swift',
+  convertWorkspace,
+}
+export default plugin

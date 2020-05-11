@@ -1,12 +1,11 @@
 import * as path from 'path'
 import { Helpers } from '../../helpers'
+import { Plugin } from '../index'
 import { ConvertedWorkspace, ConvertedFile } from './documentation-ast'
 import { convert } from './convert'
 import { findChildPages } from './utils'
 
 export { ConvertedWorkspace, ConvertedFile }
-
-export const format = 'documentation'
 
 export const convertFile = async (
   filePath: string,
@@ -41,14 +40,14 @@ export const convertFile = async (
 
 // depending on whether we have an output or not,
 // we return the doc or write it to disk
-export function convertWorkspace(
+function convertWorkspace(
   workspacePath: string,
   helpers: Helpers,
   options: {
     [key: string]: unknown
   } & { output?: never }
 ): Promise<ConvertedWorkspace>
-export function convertWorkspace(
+function convertWorkspace(
   workspacePath: string,
   helpers: Helpers,
   options: {
@@ -56,7 +55,7 @@ export function convertWorkspace(
   } & { output?: string }
 ): Promise<void>
 
-export async function convertWorkspace(
+async function convertWorkspace(
   workspacePath: string,
   helpers: Helpers,
   options: {
@@ -85,3 +84,9 @@ export async function convertWorkspace(
 
   await helpers.fs.writeFile('docs.json', JSON.stringify(workspace, null, '  '))
 }
+type ExpectedOptions = {}
+const plugin: Plugin<ExpectedOptions, ConvertedWorkspace | void> = {
+  format: 'documentation',
+  convertWorkspace,
+}
+export default plugin
