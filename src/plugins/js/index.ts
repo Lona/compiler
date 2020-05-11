@@ -96,7 +96,8 @@ Object.keys(__lona_import_${i}).forEach(function (key) {
 type ExpectedOptions = {
   framework?: 'react' | 'react-native' | 'react-sketchapp'
 }
-export default {
+const plugin: Plugin<ExpectedOptions, void> = {
   format: 'js',
   convertWorkspace,
-} as Plugin<ExpectedOptions, void>
+}
+export default plugin

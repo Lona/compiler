@@ -79,7 +79,8 @@ const convertWorkspace = async (
 }
 
 type ExpectedOptions = {}
-export default {
+const plugin: Plugin<ExpectedOptions, void> = {
   format: 'swift',
   convertWorkspace,
-} as Plugin<ExpectedOptions, void>
+}
+export default plugin

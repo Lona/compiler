@@ -6,7 +6,7 @@ import { convert } from './convert'
 
 export { ConvertedWorkspace, ConvertedFile }
 
-const convertFile = async (
+export const convertFile = async (
   filePath: string,
   helpers: Helpers
 ): Promise<ConvertedFile> => {
@@ -83,7 +83,8 @@ async function convertWorkspace(
 }
 
 type ExpectedOptions = {}
-export default {
+const plugin: Plugin<ExpectedOptions, ConvertedWorkspace | void> = {
   format: 'tokens',
   convertWorkspace,
-} as Plugin<ExpectedOptions, ConvertedWorkspace | void>
+}
+export default plugin

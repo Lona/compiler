@@ -84,9 +84,9 @@ async function convertWorkspace(
 
   await helpers.fs.writeFile('docs.json', JSON.stringify(workspace, null, '  '))
 }
-
 type ExpectedOptions = {}
-export default {
+const plugin: Plugin<ExpectedOptions, ConvertedWorkspace | void> = {
   format: 'documentation',
   convertWorkspace,
-} as Plugin<ExpectedOptions, ConvertedWorkspace | void>
+}
+export default plugin
