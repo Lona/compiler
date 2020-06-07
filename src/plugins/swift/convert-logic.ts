@@ -60,8 +60,67 @@ function evaluateColor(
   }
 }
 
+function notImplemented(
+  functionName: string,
+  node: LogicAST.SyntaxNode,
+  context: LogicGenerationContext
+): undefined {
+  throw new Error(`${functionName} not implemented`)
+}
+
 const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
   functionCallExpression: {
+    'TextAlign.left': notImplemented.bind(null, 'TextAlign.left'),
+    'TextAlign.center': notImplemented.bind(null, 'TextAlign.center'),
+    'TextAlign.right': notImplemented.bind(null, 'TextAlign.right'),
+    'DimensionSize.fixed': notImplemented.bind(null, 'DimensionSize.fixed'),
+    'DimensionSize.flexible': notImplemented.bind(
+      null,
+      'DimensionSize.flexible'
+    ),
+    Padding: notImplemented.bind(null, 'Padding'),
+    'Padding.size': notImplemented.bind(null, 'Padding.size'),
+    'ElementParameter.boolean': notImplemented.bind(
+      null,
+      'ElementParameter.boolean'
+    ),
+    'ElementParameter.number': notImplemented.bind(
+      null,
+      'ElementParameter.number'
+    ),
+    'ElementParameter.string': notImplemented.bind(
+      null,
+      'ElementParameter.string'
+    ),
+    'ElementParameter.color': notImplemented.bind(
+      null,
+      'ElementParameter.color'
+    ),
+    'ElementParameter.textStyle': notImplemented.bind(
+      null,
+      'ElementParameter.textStyle'
+    ),
+    'ElementParameter.elements': notImplemented.bind(
+      null,
+      'ElementParameter.elements'
+    ),
+    'ElementParameter.textAlign': notImplemented.bind(
+      null,
+      'ElementParameter.textAlign'
+    ),
+    'ElementParameter.dimension': notImplemented.bind(
+      null,
+      'ElementParameter.dimension'
+    ),
+    'ElementParameter.padding': notImplemented.bind(
+      null,
+      'ElementParameter.padding'
+    ),
+    Element: notImplemented.bind(null, 'Element'),
+    View: notImplemented.bind(null, 'View'),
+    Text: notImplemented.bind(null, 'Text'),
+    VerticalStack: notImplemented.bind(null, 'VerticalStack'),
+    HorizontalStack: notImplemented.bind(null, 'HorizontalStack'),
     'Color.saturate': evaluateColor,
     'Color.setHue': evaluateColor,
     'Color.setSaturation': evaluateColor,

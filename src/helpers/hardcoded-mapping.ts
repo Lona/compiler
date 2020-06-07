@@ -25,6 +25,90 @@ export type HardcodedMap<T, U extends any[]> = {
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
+    'TextAlign.left': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'TextAlign.center': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'TextAlign.right': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'DimensionSize.fixed': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'DimensionSize.flexible': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'Padding': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'Padding.size': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'ElementParameter.boolean': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'ElementParameter.number': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'ElementParameter.string': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'ElementParameter.color': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'ElementParameter.textStyle': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'ElementParameter.elements': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'ElementParameter.textAlign': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'ElementParameter.dimension': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'ElementParameter.padding': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'Element': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'View': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'Text': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'VerticalStack': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
+    'HorizontalStack': (
+      node: LogicAST.FunctionCallExpression,
+      ...args: U
+    ) => T | undefined
     'Boolean.or': (
       node: LogicAST.FunctionCallExpression,
       ...args: U
