@@ -12,7 +12,7 @@
   ],
   "types": "lib/index.d.ts",
   "scripts": {
-    "build:standard-library": "ts-node ./scripts/compile-standard-library.ts",
+    "build:standard-library": "rm -rf ./static/logic || true && ts-node ./scripts/compile-standard-library.ts",
     "build:src": "tsc --declaration",
     "build:types": "ts-node ./scripts/generate-prelude-types.ts",
     "build": "rm -rf ./lib && npm run build:standard-library && npm run build:types && npm run build:src",
