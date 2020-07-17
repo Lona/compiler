@@ -1,4 +1,4 @@
-import * as LogicAST from './logic-ast'
+import * as LogicAST from './logicAst'
 
 enum TraversalOrder {
   PreOrder = 'PreOrder',

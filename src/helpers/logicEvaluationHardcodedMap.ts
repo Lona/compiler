@@ -1,8 +1,8 @@
 import Color from 'color'
 
 import { HardcodedMap } from './index'
-import { Value } from './logic-evaluate'
-import { unit, string, bool, color, array, number } from './logic-unify'
+import { Value } from './logicEvaluate'
+import { unit, string, bool, color, array, number } from './logicUnify'
 
 const notImplemented: any = (functionName: string) => {
   throw new Error(`${functionName} not implemented`)

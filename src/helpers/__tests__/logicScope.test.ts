@@ -1,8 +1,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as serialization from '@lona/serialization'
-import * as LogicAST from '../logic-ast'
-import { build } from '../logic-scope'
+import * as LogicAST from '../logicAst'
+import { build } from '../logicScope'
 import { defaultReporter } from '../reporter'
 
 let id = 0

@@ -2,7 +2,7 @@ import { LogicAST } from '@lona/serialization'
 import lowerFirst from 'lodash.lowerfirst'
 import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
 import { nonNullable, typeNever } from '../../utils'
-import * as JSAST from './js-ast'
+import * as JSAST from './jsAst'
 import { enumName } from './format'
 import { resolveImportPath } from './utils'
 

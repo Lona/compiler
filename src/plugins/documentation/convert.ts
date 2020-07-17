@@ -2,7 +2,7 @@ import * as serialization from '@lona/serialization'
 
 import { Helpers } from '../../helpers'
 import { convertDeclaration } from '../tokens/convert'
-import { Token } from '../tokens/tokens-ast'
+import { Token } from '../tokens/tokensAst'
 import { nonNullable, assertNever } from '../../utils'
 
 let tokenNameElement = (kind: string, content: string) =>

@@ -2,7 +2,7 @@ import { LogicAST } from '@lona/serialization'
 
 import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
 import { nonNullable, typeNever } from '../../utils'
-import * as SwiftAST from './swift-ast'
+import * as SwiftAST from './swiftAst'
 
 type LogicGenerationContext = {
   isStatic: boolean

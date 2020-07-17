@@ -1,7 +1,7 @@
 import * as path from 'path'
 import { Helpers } from '../../helpers'
 import { Plugin } from '../index'
-import { ConvertedWorkspace, ConvertedFile } from './tokens-ast'
+import { ConvertedWorkspace, ConvertedFile } from './tokensAst'
 import { convert } from './convert'
 
 export { ConvertedWorkspace, ConvertedFile }

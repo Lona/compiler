@@ -1,7 +1,7 @@
 import * as path from 'path'
 import { Helpers } from '../../helpers'
 import { Plugin } from '../index'
-import { ConvertedWorkspace, ConvertedFile } from './documentation-ast'
+import { ConvertedWorkspace, ConvertedFile } from './documentationAst'
 import { convert } from './convert'
 import { findChildPages } from './utils'
 

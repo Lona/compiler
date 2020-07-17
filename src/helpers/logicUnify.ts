@@ -1,7 +1,7 @@
 import intersection from 'lodash.intersection'
-import * as LogicAST from './logic-ast'
-import * as LogicScope from './logic-scope'
-import * as LogicTraversal from './logic-traversal'
+import * as LogicAST from './logicAst'
+import * as LogicScope from './logicScope'
+import * as LogicTraversal from './logicTraversal'
 import { Reporter } from './reporter'
 import { ShallowMap, assertNever, nonNullable } from '../utils'
 

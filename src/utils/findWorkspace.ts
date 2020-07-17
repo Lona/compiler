@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { isWorkspacePath } from './is-workspace-path'
+import { isWorkspacePath } from './isWorkspacePath'
 
 export const findWorkspace = async (
   start: string

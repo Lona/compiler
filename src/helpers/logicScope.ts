@@ -1,7 +1,7 @@
-import * as LogicAST from './logic-ast'
-import * as LogicTraversal from './logic-traversal'
+import * as LogicAST from './logicAst'
+import * as LogicTraversal from './logicTraversal'
 import { Reporter } from './reporter'
-import { ShallowMap } from '../utils/shallow-map'
+import { ShallowMap } from '../utils/shallowMap'
 
 class ScopeStack<K extends string, V> {
   public scopes: { [key: string]: V }[] = [{}]

@@ -1,7 +1,7 @@
 // ⚠️ THIS FILE IS AUTO GENERATED. DO NOT MODIFY IT.
 
-import { AST as LogicAST, flattenedMemberExpression } from './logic-ast'
-import { EvaluationContext } from './logic-evaluate'
+import { AST as LogicAST, flattenedMemberExpression } from './logicAst'
+import { EvaluationContext } from './logicEvaluate'
 
 export type HardcodedMap<T, U extends any[]> = {
   functionCallExpression: {
@@ -45,7 +45,7 @@ export type HardcodedMap<T, U extends any[]> = {
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
-    'Padding': (
+    Padding: (
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
@@ -89,23 +89,17 @@ export type HardcodedMap<T, U extends any[]> = {
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
-    'Element': (
+    Element: (
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
-    'View': (
+    View: (node: LogicAST.FunctionCallExpression, ...args: U) => T | undefined
+    Text: (node: LogicAST.FunctionCallExpression, ...args: U) => T | undefined
+    VerticalStack: (
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
-    'Text': (
-      node: LogicAST.FunctionCallExpression,
-      ...args: U
-    ) => T | undefined
-    'VerticalStack': (
-      node: LogicAST.FunctionCallExpression,
-      ...args: U
-    ) => T | undefined
-    'HorizontalStack': (
+    HorizontalStack: (
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
@@ -137,10 +131,7 @@ export type HardcodedMap<T, U extends any[]> = {
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
-    'Shadow': (
-      node: LogicAST.FunctionCallExpression,
-      ...args: U
-    ) => T | undefined
+    Shadow: (node: LogicAST.FunctionCallExpression, ...args: U) => T | undefined
     'FontWeight.ultraLight': (
       node: LogicAST.FunctionCallExpression,
       ...args: U
@@ -177,7 +168,7 @@ export type HardcodedMap<T, U extends any[]> = {
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
-    'TextStyle': (
+    TextStyle: (
       node: LogicAST.FunctionCallExpression,
       ...args: U
     ) => T | undefined
@@ -281,10 +272,7 @@ export const createStandardLibraryResolver = <T, U extends any[]>(
       .join('.')
 
     if (isHardcodedMapCall.memberExpression(path, hardcodedMap)) {
-      matchedHardcodedNode = hardcodedMap.memberExpression[path](
-        node,
-        ...args
-      )
+      matchedHardcodedNode = hardcodedMap.memberExpression[path](node, ...args)
     }
   }
 

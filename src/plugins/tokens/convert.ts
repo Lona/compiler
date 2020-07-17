@@ -1,7 +1,7 @@
 import * as serialization from '@lona/serialization'
 import { Helpers } from '../../helpers'
-import { Token } from './tokens-ast'
-import * as TokenValue from './token-value'
+import { Token } from './tokensAst'
+import * as TokenValue from './tokenValue'
 import { nonNullable } from '../../utils'
 
 export const convertDeclaration = (

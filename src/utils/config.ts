@@ -2,7 +2,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as serialization from '@lona/serialization'
 
-import * as fileSearch from './file-search'
+import * as fileSearch from './fileSearch'
 
 type LonaJSON = {
   ignore: string[]

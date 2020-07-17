@@ -1,6 +1,6 @@
-import * as LogicEvaluate from '../../helpers/logic-evaluate'
-import * as LogicUnify from '../../helpers/logic-unify'
-import * as TokenAST from './tokens-ast'
+import * as LogicEvaluate from '../../helpers/logicEvaluate'
+import * as LogicUnify from '../../helpers/logicUnify'
+import * as TokenAST from './tokensAst'
 
 let getField = (key: string, fields: LogicEvaluate.Memory) => {
   if (fields.type !== 'record') {

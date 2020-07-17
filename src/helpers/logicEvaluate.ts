@@ -1,11 +1,11 @@
-import * as LogicUnify from './logic-unify'
-import * as LogicAST from './logic-ast'
-import * as LogicScope from './logic-scope'
-import { isHardcodedMapCall } from './hardcoded-mapping'
-import { hardcoded } from './logic-evaluation-hardcoded-map'
+import * as LogicUnify from './logicUnify'
+import * as LogicAST from './logicAst'
+import * as LogicScope from './logicScope'
+import { isHardcodedMapCall } from './hardcodedMapping'
+import { hardcoded } from './logicEvaluationHardcodedMap'
 import { Reporter } from './reporter'
 import { nonNullable, ShallowMap, assertNever } from '../utils'
-import { STANDARD_LIBRARY } from './evaluation-context'
+import { STANDARD_LIBRARY } from './evaluationContext'
 
 export type Memory =
   | { type: 'unit' }

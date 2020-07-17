@@ -9,7 +9,7 @@ import {
 } from '../../utils/printer'
 import { assertNever, typeNever } from '../../utils'
 
-import * as JSAST from './js-ast'
+import * as JSAST from './jsAst'
 
 type Options = {
   outputFile?: (filePath: string, data: string) => Promise<void>

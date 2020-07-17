@@ -10,7 +10,7 @@ import {
 } from '../../utils/printer'
 import { typeNever, assertNever } from '../../utils'
 
-import * as SwiftAST from './swift-ast'
+import * as SwiftAST from './swiftAst'
 
 type Options = {
   outputFile?: (filePath: string, data: string) => Promise<void>

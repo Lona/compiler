@@ -3,9 +3,9 @@ import upperFirst from 'lodash.upperfirst'
 import camelCase from 'lodash.camelcase'
 import { Helpers } from '../../helpers'
 import { Plugin } from '../index'
-import convertLogic from './convert-logic'
-import renderJS from './render-ast'
-import * as JSAST from './js-ast'
+import convertLogic from './convertLogic'
+import renderJS from './renderAst'
+import * as JSAST from './jsAst'
 import { resolveImportPath } from './utils'
 
 export const convertFile = async (

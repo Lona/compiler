@@ -1,19 +1,19 @@
 import { LogicAST } from '@lona/serialization'
 import { config as Config } from '../utils'
-import { generate as generateEvaluationContext } from './evaluation-context'
-import { EvaluationContext } from './logic-evaluate'
-import { createStandardLibraryResolver } from './hardcoded-mapping'
+import { generate as generateEvaluationContext } from './evaluationContext'
+import { EvaluationContext } from './logicEvaluate'
+import { createStandardLibraryResolver } from './hardcodedMapping'
 import { Reporter, defaultReporter } from './reporter'
 import { FSWrapper, createFSWrapper } from './fs'
-export { HardcodedMap } from './hardcoded-mapping'
-export { EvaluationContext } from './logic-evaluate'
-import { TraversalConfig, reduce } from './logic-traversal'
+export { HardcodedMap } from './hardcodedMapping'
+export { EvaluationContext } from './logicEvaluate'
+import { TraversalConfig, reduce } from './logicTraversal'
 import {
   makeProgram,
   declarationPathTo,
   findParentNode,
   findNode,
-} from './logic-ast'
+} from './logicAst'
 
 /**
  * Helpers passed to every plugins. They contains some methods abstracting
