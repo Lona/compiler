@@ -34,6 +34,7 @@
   "license": "MIT",
   "dependencies": {
     "@lona/serialization": "^0.3.10",
+    "buffs": "^0.4.1",
     "color": "^3.1.2",
     "glob": "^7.1.6",
     "lodash.camelcase": "^4.3.0",
@@ -43,6 +44,7 @@
     "lodash.snakecase": "^4.1.1",
     "lodash.upperfirst": "^4.3.1",
     "prettier": "^1.19.1",
+    "tree-visit": "^0.0.5",
     "uuid": "^7.0.2",
     "yargs": "^15.1.0"
   },

@@ -1,0 +1,49 @@
+import Prelude
+
+/*
+ * # Color
+ *
+ * A color value. Colors can be defined using CSS color codes.
+ *
+ * ## Example
+ *
+ * We might declare a color variable, `ocean` to use throughout our design system to represent the hex code `#69D2E7`:
+ *
+ * ```logic
+ * <Declarations>
+ *   <Variable name="ocean" type="Color" value="#69D2E7"/>
+ * </Declarations>
+ * ```
+ */
+struct Color {
+  let value: String = ""
+}
+
+extension Color {
+  func setHue(color: Color, hue: Number) -> Color {}
+  /*
+   * # Set Saturation
+   *
+   * Adjust the saturation of a color.
+   *
+   * @param color - # Color
+   *
+   *                The base color to adjust.
+   */
+  func setSaturation(color: Color, saturation: Number) -> Color {}
+  func setLightness(color: Color, lightness: Number) -> Color {}
+  func fromHSL(hue: Number, saturation: Number, lightness: Number) -> Color {}
+  /*
+   * # Saturate
+   *
+   * Adjust color saturation.
+   *
+   * @param color - # Color
+   *
+   *                The base color to adjust.
+   * @param factor - # Factor
+   *
+   *                 This value will be multiplied with the current saturation value.
+   */
+  func saturate(color: Color, factor: Number) -> Color {}
+}

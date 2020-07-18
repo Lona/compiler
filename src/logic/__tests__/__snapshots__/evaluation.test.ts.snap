@@ -1,0 +1,600 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Logic / Evaluate evaluates DimensionSize 1`] = `
+Object {
+  "memory": Object {
+    "data": Array [
+      Object {
+        "memory": Object {
+          "type": "number",
+          "value": 100,
+        },
+        "type": Object {
+          "name": "Number",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+    ],
+    "type": "enum",
+    "value": "fixed",
+  },
+  "type": Object {
+    "name": "DimensionSize",
+    "parameters": Array [],
+    "type": "constant",
+  },
+}
+`;
+
+exports[`Logic / Evaluate evaluates Element 1`] = `
+Object {
+  "memory": Object {
+    "type": "record",
+    "value": Object {
+      "parameters": Object {
+        "memory": Object {
+          "type": "array",
+          "value": Array [],
+        },
+        "type": Object {
+          "name": "Array",
+          "parameters": Array [
+            Object {
+              "type": "variable",
+              "value": "?92",
+            },
+          ],
+          "type": "constant",
+        },
+      },
+      "type": Object {
+        "memory": Object {
+          "type": "string",
+          "value": "Test",
+        },
+        "type": Object {
+          "name": "String",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+    },
+  },
+  "type": Object {
+    "name": "Element",
+    "parameters": Array [],
+    "type": "constant",
+  },
+}
+`;
+
+exports[`Logic / Evaluate evaluates ElementParameter 1`] = `
+Object {
+  "memory": Object {
+    "data": Array [
+      Object {
+        "memory": Object {
+          "type": "string",
+          "value": "height",
+        },
+        "type": Object {
+          "name": "String",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+      Object {
+        "memory": Object {
+          "type": "number",
+          "value": 20,
+        },
+        "type": Object {
+          "name": "Number",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+    ],
+    "type": "enum",
+    "value": "number",
+  },
+  "type": Object {
+    "name": "ElementParameter",
+    "parameters": Array [],
+    "type": "constant",
+  },
+}
+`;
+
+exports[`Logic / Evaluate evaluates Padding 1`] = `
+Object {
+  "memory": Object {
+    "type": "record",
+    "value": Object {
+      "bottom": Object {
+        "memory": Object {
+          "type": "number",
+          "value": 30,
+        },
+        "type": Object {
+          "name": "Number",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+      "left": Object {
+        "memory": Object {
+          "type": "number",
+          "value": 40,
+        },
+        "type": Object {
+          "name": "Number",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+      "right": Object {
+        "memory": Object {
+          "type": "number",
+          "value": 20,
+        },
+        "type": Object {
+          "name": "Number",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+      "top": Object {
+        "memory": Object {
+          "type": "number",
+          "value": 10,
+        },
+        "type": Object {
+          "name": "Number",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+    },
+  },
+  "type": Object {
+    "name": "Padding",
+    "parameters": Array [],
+    "type": "constant",
+  },
+}
+`;
+
+exports[`Logic / Evaluate evaluates View 1`] = `
+Object {
+  "memory": Object {
+    "type": "record",
+    "value": Object {
+      "parameters": Object {
+        "memory": Object {
+          "type": "array",
+          "value": Array [
+            Object {
+              "memory": Object {
+                "data": Array [
+                  Object {
+                    "memory": Object {
+                      "type": "string",
+                      "value": "backgroundColor",
+                    },
+                    "type": Object {
+                      "name": "String",
+                      "parameters": Array [],
+                      "type": "constant",
+                    },
+                  },
+                  Object {
+                    "memory": Object {
+                      "type": "record",
+                      "value": Object {
+                        "value": Object {
+                          "memory": Object {
+                            "type": "string",
+                            "value": "red",
+                          },
+                          "type": Object {
+                            "name": "String",
+                            "parameters": Array [],
+                            "type": "constant",
+                          },
+                        },
+                      },
+                    },
+                    "type": Object {
+                      "name": "Color",
+                      "parameters": Array [],
+                      "type": "constant",
+                    },
+                  },
+                ],
+                "type": "enum",
+                "value": "color",
+              },
+              "type": Object {
+                "name": "ElementParameter",
+                "parameters": Array [],
+                "type": "constant",
+              },
+            },
+            Object {
+              "memory": Object {
+                "data": Array [
+                  Object {
+                    "memory": Object {
+                      "type": "string",
+                      "value": "children",
+                    },
+                    "type": Object {
+                      "name": "String",
+                      "parameters": Array [],
+                      "type": "constant",
+                    },
+                  },
+                  Object {
+                    "memory": Object {
+                      "type": "array",
+                      "value": Array [],
+                    },
+                    "type": Object {
+                      "name": "Array",
+                      "parameters": Array [
+                        Object {
+                          "type": "variable",
+                          "value": "?9b",
+                        },
+                      ],
+                      "type": "constant",
+                    },
+                  },
+                ],
+                "type": "enum",
+                "value": "elements",
+              },
+              "type": Object {
+                "name": "ElementParameter",
+                "parameters": Array [],
+                "type": "constant",
+              },
+            },
+            Object {
+              "memory": Object {
+                "data": Array [
+                  Object {
+                    "memory": Object {
+                      "type": "string",
+                      "value": "width",
+                    },
+                    "type": Object {
+                      "name": "String",
+                      "parameters": Array [],
+                      "type": "constant",
+                    },
+                  },
+                  Object {
+                    "memory": Object {
+                      "data": Array [
+                        Object {
+                          "memory": Object {
+                            "type": "number",
+                            "value": 20,
+                          },
+                          "type": Object {
+                            "name": "Number",
+                            "parameters": Array [],
+                            "type": "constant",
+                          },
+                        },
+                      ],
+                      "type": "enum",
+                      "value": "fixed",
+                    },
+                    "type": Object {
+                      "name": "DimensionSize",
+                      "parameters": Array [],
+                      "type": "constant",
+                    },
+                  },
+                ],
+                "type": "enum",
+                "value": "dimension",
+              },
+              "type": Object {
+                "name": "ElementParameter",
+                "parameters": Array [],
+                "type": "constant",
+              },
+            },
+            Object {
+              "memory": Object {
+                "data": Array [
+                  Object {
+                    "memory": Object {
+                      "type": "string",
+                      "value": "height",
+                    },
+                    "type": Object {
+                      "name": "String",
+                      "parameters": Array [],
+                      "type": "constant",
+                    },
+                  },
+                  Object {
+                    "memory": Object {
+                      "data": Array [
+                        Object {
+                          "memory": Object {
+                            "type": "number",
+                            "value": 20,
+                          },
+                          "type": Object {
+                            "name": "Number",
+                            "parameters": Array [],
+                            "type": "constant",
+                          },
+                        },
+                      ],
+                      "type": "enum",
+                      "value": "fixed",
+                    },
+                    "type": Object {
+                      "name": "DimensionSize",
+                      "parameters": Array [],
+                      "type": "constant",
+                    },
+                  },
+                ],
+                "type": "enum",
+                "value": "dimension",
+              },
+              "type": Object {
+                "name": "ElementParameter",
+                "parameters": Array [],
+                "type": "constant",
+              },
+            },
+            Object {
+              "memory": Object {
+                "data": Array [
+                  Object {
+                    "memory": Object {
+                      "type": "string",
+                      "value": "padding",
+                    },
+                    "type": Object {
+                      "name": "String",
+                      "parameters": Array [],
+                      "type": "constant",
+                    },
+                  },
+                  Object {
+                    "memory": Object {
+                      "type": "record",
+                      "value": Object {
+                        "bottom": Object {
+                          "memory": Object {
+                            "type": "number",
+                            "value": 8,
+                          },
+                          "type": Object {
+                            "name": "Number",
+                            "parameters": Array [],
+                            "type": "constant",
+                          },
+                        },
+                        "left": Object {
+                          "memory": Object {
+                            "type": "number",
+                            "value": 8,
+                          },
+                          "type": Object {
+                            "name": "Number",
+                            "parameters": Array [],
+                            "type": "constant",
+                          },
+                        },
+                        "right": Object {
+                          "memory": Object {
+                            "type": "number",
+                            "value": 8,
+                          },
+                          "type": Object {
+                            "name": "Number",
+                            "parameters": Array [],
+                            "type": "constant",
+                          },
+                        },
+                        "top": Object {
+                          "memory": Object {
+                            "type": "number",
+                            "value": 8,
+                          },
+                          "type": Object {
+                            "name": "Number",
+                            "parameters": Array [],
+                            "type": "constant",
+                          },
+                        },
+                      },
+                    },
+                    "type": Object {
+                      "name": "Padding",
+                      "parameters": Array [],
+                      "type": "constant",
+                    },
+                  },
+                ],
+                "type": "enum",
+                "value": "padding",
+              },
+              "type": Object {
+                "name": "ElementParameter",
+                "parameters": Array [],
+                "type": "constant",
+              },
+            },
+          ],
+        },
+        "type": Object {
+          "name": "Array",
+          "parameters": Array [
+            Object {
+              "type": "variable",
+              "value": "?1n",
+            },
+          ],
+          "type": "constant",
+        },
+      },
+      "type": Object {
+        "memory": Object {
+          "type": "string",
+          "value": "LonaView",
+        },
+        "type": Object {
+          "name": "String",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+    },
+  },
+  "type": Object {
+    "name": "Element",
+    "parameters": Array [],
+    "type": "constant",
+  },
+}
+`;
+
+exports[`Logic / Evaluate evaluates color literals 1`] = `
+Object {
+  "memory": Object {
+    "type": "record",
+    "value": Object {
+      "value": Object {
+        "memory": Object {
+          "type": "string",
+          "value": "red",
+        },
+        "type": Object {
+          "name": "String",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+    },
+  },
+  "type": Object {
+    "name": "Color",
+    "parameters": Array [],
+    "type": "constant",
+  },
+}
+`;
+
+exports[`Logic / Evaluate evaluates custom function 1`] = `
+Object {
+  "memory": Object {
+    "type": "number",
+    "value": 42,
+  },
+  "type": Object {
+    "name": "Number",
+    "parameters": Array [],
+    "type": "constant",
+  },
+}
+`;
+
+exports[`Logic / Evaluate evaluates custom function with argument default value 1`] = `
+Object {
+  "memory": Object {
+    "type": "number",
+    "value": 42,
+  },
+  "type": Object {
+    "name": "Number",
+    "parameters": Array [],
+    "type": "constant",
+  },
+}
+`;
+
+exports[`Logic / Evaluate evaluates custom function with arguments 1`] = `
+Object {
+  "memory": Object {
+    "type": "number",
+    "value": 42,
+  },
+  "type": Object {
+    "name": "Number",
+    "parameters": Array [],
+    "type": "constant",
+  },
+}
+`;
+
+exports[`Logic / Evaluate evaluates function that returns Padding 1`] = `
+Object {
+  "memory": Object {
+    "type": "record",
+    "value": Object {
+      "bottom": Object {
+        "memory": Object {
+          "type": "number",
+          "value": 8,
+        },
+        "type": Object {
+          "name": "Number",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+      "left": Object {
+        "memory": Object {
+          "type": "number",
+          "value": 8,
+        },
+        "type": Object {
+          "name": "Number",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+      "right": Object {
+        "memory": Object {
+          "type": "number",
+          "value": 8,
+        },
+        "type": Object {
+          "name": "Number",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+      "top": Object {
+        "memory": Object {
+          "type": "number",
+          "value": 8,
+        },
+        "type": Object {
+          "name": "Number",
+          "parameters": Array [],
+          "type": "constant",
+        },
+      },
+    },
+  },
+  "type": Object {
+    "name": "Padding",
+    "parameters": Array [],
+    "type": "constant",
+  },
+}
+`;
