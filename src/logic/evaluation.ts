@@ -5,7 +5,7 @@ import { Value } from './runtime/value'
 import { Scope } from './scope'
 import { TypeChecker } from './typeChecker'
 import { Substitution } from './typeUnifier'
-import { Reporter } from '../helpers/reporter'
+import { Reporter } from '../utils/reporter'
 import { declarationPathTo } from '../helpers/logicAst'
 import { assertNever } from '../utils'
 

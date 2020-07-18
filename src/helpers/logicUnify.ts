@@ -2,7 +2,7 @@ import intersection from 'lodash.intersection'
 import * as LogicAST from './logicAst'
 import * as LogicScope from './logicScope'
 import * as LogicTraversal from './logicTraversal'
-import { Reporter } from './reporter'
+import { Reporter } from '../utils/reporter'
 import { ShallowMap, assertNever, nonNullable } from '../utils'
 
 type FunctionArgument = {

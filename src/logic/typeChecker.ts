@@ -8,7 +8,7 @@ import { bool, StaticType } from './staticType'
 import { forEach } from './syntaxNode'
 import { Constraint, substitute, Substitution } from './typeUnifier'
 import { assertNever } from '../utils'
-import { Reporter } from '../helpers/reporter'
+import { Reporter } from '../utils/reporter'
 
 class LogicNameGenerator {
   private prefix: string

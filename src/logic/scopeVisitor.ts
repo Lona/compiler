@@ -4,7 +4,7 @@ import { NodePath } from './nodePath'
 import { createScopeVisitor } from './nodes/createNode'
 import { Scope } from './scope'
 import { Traversal, visit } from './syntaxNode'
-import { Reporter } from '../helpers/reporter'
+import { Reporter } from '../utils/reporter'
 
 export class ScopeVisitor {
   namespace: Namespace

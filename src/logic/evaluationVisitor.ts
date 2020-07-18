@@ -6,7 +6,7 @@ import { Substitution, substitute } from './typeUnifier'
 import { EvaluationContext, Thunk } from './evaluation'
 import { UUID } from './namespace'
 import { StaticType } from './staticType'
-import { Reporter } from '../helpers/reporter'
+import { Reporter } from '../utils/reporter'
 
 export class EvaluationVisitor {
   evaluation: EvaluationContext

@@ -3,7 +3,7 @@ import * as LogicAST from './logicAst'
 import * as LogicScope from './logicScope'
 import { isHardcodedMapCall } from './hardcodedMapping'
 import { hardcoded } from './logicEvaluationHardcodedMap'
-import { Reporter } from './reporter'
+import { Reporter } from '../utils/reporter'
 import { nonNullable, ShallowMap, assertNever } from '../utils'
 import { STANDARD_LIBRARY } from './evaluationContext'
 

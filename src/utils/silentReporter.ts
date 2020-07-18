@@ -1,4 +1,4 @@
-import { Reporter } from '../helpers/reporter'
+import { Reporter } from './reporter'
 
 export const silentReporter: Reporter = {
   log: () => {},

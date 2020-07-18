@@ -1,6 +1,6 @@
 import * as LogicAST from './logicAst'
 import * as LogicTraversal from './logicTraversal'
-import { Reporter } from './reporter'
+import { Reporter } from '../utils/reporter'
 import { ShallowMap } from '../utils/shallowMap'
 
 class ScopeStack<K extends string, V> {

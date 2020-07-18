@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as serialization from '@lona/serialization'
 import * as LogicAST from '../logicAst'
 import { build } from '../logicScope'
-import { defaultReporter } from '../reporter'
+import { defaultReporter } from '../../utils/reporter'
 
 let id = 0
 jest.mock('uuid', () => ({ v4: () => '' + id++ }))

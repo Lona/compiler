@@ -2,7 +2,7 @@ import { LogicAST as AST } from '@lona/serialization'
 import { Namespace, UUID } from './namespace'
 import ScopeStack from './scopeStack'
 import { ScopeVisitor } from './scopeVisitor'
-import { Reporter } from '../helpers/reporter'
+import { Reporter } from '../utils/reporter'
 import { silentReporter } from '../utils/silentReporter'
 
 export class Scope {

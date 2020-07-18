@@ -5,7 +5,7 @@ import * as LogicAST from './logicAst'
 import * as LogicScope from './logicScope'
 import * as LogicUnify from './logicUnify'
 import * as LogicEvaluate from './logicEvaluate'
-import { Reporter } from './reporter'
+import { Reporter } from '../utils/reporter'
 import { nonNullable } from '../utils'
 
 export const STANDARD_LIBRARY = 'standard library'

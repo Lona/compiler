@@ -6,7 +6,7 @@ import * as LogicEvaluate from './evaluation'
 import { createNamespace } from './namespace'
 import { createUnificationContext } from './typeChecker'
 import { createScopeContext } from './scope'
-import { Reporter } from '../helpers/reporter'
+import { Reporter } from '../utils/reporter'
 import { makeProgram, joinPrograms } from '../helpers/logicAst'
 import { nonNullable } from '../utils'
 
