@@ -1,14 +1,14 @@
-import * as LogicTraversal from '../helpers/logicTraversal'
 import { LogicAST as AST } from '@lona/serialization'
 import { MultiMap } from './multiMap'
 import { UUID } from './namespace'
 import { createTypeCheckerVisitor } from './nodes/createNode'
 import { Scope } from './scope'
 import { bool, StaticType } from './staticType'
-import { forEach } from './syntaxNode'
 import { Constraint, substitute, Substitution } from './typeUnifier'
 import { Reporter } from '../utils/reporter'
 import { assertNever } from '../utils/typeHelpers'
+import { visit } from './traversal'
+import { EnterReturnValue, LeaveReturnValue } from 'tree-visit'
 
 class LogicNameGenerator {
   private prefix: string
@@ -41,7 +41,6 @@ export class TypeCheckerVisitor {
   typeChecker: TypeChecker = makeEmptyContext()
   scope: Scope
   reporter: Reporter
-  traversalConfig = LogicTraversal.emptyConfig()
 
   constructor(scope: Scope, reporter: Reporter) {
     this.scope = scope
@@ -163,12 +162,11 @@ export class TypeCheckerVisitor {
 }
 
 const build = (
+  isLeaving: boolean,
   node: AST.SyntaxNode,
   visitor: TypeCheckerVisitor
-): TypeChecker => {
-  const { typeChecker, traversalConfig, scope } = visitor
-
-  traversalConfig.needsRevisitAfterTraversingChildren = true
+): EnterReturnValue => {
+  const { typeChecker, scope } = visitor
 
   switch (node.type) {
     case 'record':
@@ -188,24 +186,23 @@ const build = (
       const visitorNode = createTypeCheckerVisitor(node)
 
       if (visitorNode) {
-        if (traversalConfig._isRevisit) {
-          visitorNode.typeCheckerLeave(visitor)
+        if (isLeaving) {
+          return visitorNode.typeCheckerLeave(visitor)
         } else {
-          visitorNode.typeCheckerEnter(visitor)
+          return visitorNode.typeCheckerEnter(visitor)
         }
-        return typeChecker
       }
 
       break
     case 'branch': {
-      if (!traversalConfig._isRevisit) {
+      if (!isLeaving) {
         // the condition needs to be a Boolean
         visitor.setType(node.data.condition.data.id, bool)
       }
       break
     }
     case 'loop': {
-      if (!traversalConfig._isRevisit) {
+      if (!isLeaving) {
         // the condition needs to be a Boolean
         visitor.setType(node.data.expression.data.id, bool)
       }
@@ -214,7 +211,7 @@ const build = (
     case 'placeholder': {
       // Using 'placeholder' here may cause problems, since
       // placeholder is ambiguous in our LogicAST TS types
-      if (traversalConfig._isRevisit) {
+      if (isLeaving) {
         visitor.setType(node.data.id, {
           type: 'variable',
           value: typeChecker.typeNameGenerator.next(),
@@ -241,8 +238,6 @@ const build = (
     default:
       assertNever(node)
   }
-
-  return typeChecker
 }
 
 export const createUnificationContext = (
@@ -252,8 +247,14 @@ export const createUnificationContext = (
 ): TypeChecker => {
   const visitor = new TypeCheckerVisitor(scope, reporter)
 
-  forEach(rootNode, visitor.traversalConfig, node => {
-    build(node, visitor)
+  visit(rootNode, {
+    onEnter: node => {
+      return build(false, node, visitor)
+    },
+    // TODO: Fix return type
+    onLeave: node => {
+      return build(true, node, visitor) as LeaveReturnValue
+    },
   })
 
   return visitor.typeChecker

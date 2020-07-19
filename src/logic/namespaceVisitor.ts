@@ -1,8 +1,8 @@
 import { LogicAST as AST } from '@lona/serialization'
 import { NodePath } from './nodePath'
 import { createDeclarationNode } from './nodes/createNode'
-import { Traversal, visit } from './syntaxNode'
 import { Namespace, UUID } from './namespace'
+import { visit } from './traversal'
 
 export default class NamespaceVisitor {
   namespace: Namespace
@@ -41,9 +41,9 @@ export default class NamespaceVisitor {
   }
 
   traverse(rootNode: AST.SyntaxNode) {
-    visit(rootNode, Traversal.preorder, {
-      enter: node => createDeclarationNode(node)?.namespaceEnter(this),
-      leave: node => createDeclarationNode(node)?.namespaceLeave(this),
+    visit(rootNode, {
+      onEnter: node => createDeclarationNode(node)?.namespaceEnter(this),
+      onLeave: node => createDeclarationNode(node)?.namespaceLeave(this),
     })
   }
 }

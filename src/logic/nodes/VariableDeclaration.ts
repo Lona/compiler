@@ -4,6 +4,7 @@ import NamespaceVisitor from '../namespaceVisitor'
 import { ScopeVisitor } from '../scopeVisitor'
 import { TypeCheckerVisitor } from '../typeChecker'
 import { EvaluationVisitor } from '../evaluationVisitor'
+import { LeaveReturnValue } from 'tree-visit'
 
 export class VariableDeclaration extends Node<AST.VariableDeclaration>
   implements IDeclaration {
@@ -27,12 +28,13 @@ export class VariableDeclaration extends Node<AST.VariableDeclaration>
 
   typeCheckerEnter(visitor: TypeCheckerVisitor): void {}
 
-  typeCheckerLeave(visitor: TypeCheckerVisitor): void {
+  typeCheckerLeave(visitor: TypeCheckerVisitor): LeaveReturnValue {
     const { initializer, annotation, name } = this.syntaxNode.data
-    const { traversalConfig, typeChecker, reporter } = visitor
+    const { typeChecker, reporter } = visitor
 
     if (!initializer || !annotation || annotation.type === 'placeholder') {
-      traversalConfig.ignoreChildren = true
+      // TODO: This shouldn't do anything here, so why was it here?
+      // traversalConfig.ignoreChildren = true
     } else {
       const annotationType = visitor.unificationType(
         [],

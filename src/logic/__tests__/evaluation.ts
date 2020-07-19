@@ -3,7 +3,7 @@ import * as Serialization from '@lona/serialization'
 import { EvaluationContext } from '../evaluation'
 import { run } from '../environment'
 import { UUID } from '../namespace'
-import { findNode } from '../syntaxNode'
+import { findNode } from '../traversal'
 
 function getInitializerId(
   rootNode: AST.SyntaxNode,

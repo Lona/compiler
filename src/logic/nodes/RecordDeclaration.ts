@@ -9,6 +9,7 @@ import { FunctionArgument, StaticType } from '../staticType'
 import { TypeCheckerVisitor } from '../typeChecker'
 import { IDeclaration, Node } from './interfaces'
 import { substitute } from '../typeUnifier'
+import { EnterReturnValue } from 'buffs'
 
 export class RecordDeclaration extends Node<AST.RecordDeclaration>
   implements IDeclaration {
@@ -35,7 +36,7 @@ export class RecordDeclaration extends Node<AST.RecordDeclaration>
     visitor.declareValue(name, id)
   }
 
-  scopeEnter(visitor: ScopeVisitor): void {
+  scopeEnter(visitor: ScopeVisitor): EnterReturnValue {
     const { name, declarations, genericParameters } = this.syntaxNode.data
 
     visitor.addTypeToScope(name)
@@ -68,13 +69,13 @@ export class RecordDeclaration extends Node<AST.RecordDeclaration>
       }
     })
 
+    visitor.popNamespace()
+
     // Don't introduce variables names into scope
-    visitor.traversalConfig.ignoreChildren = true
+    return 'skip'
   }
 
-  scopeLeave(visitor: ScopeVisitor): void {
-    visitor.popNamespace()
-  }
+  scopeLeave(visitor: ScopeVisitor): void {}
 
   typeCheckerEnter(visitor: TypeCheckerVisitor): void {
     const { genericParameters, declarations, name } = this.syntaxNode.data

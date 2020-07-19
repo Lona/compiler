@@ -3,7 +3,7 @@ import { Namespace, UUID } from './namespace'
 import { NodePath } from './nodePath'
 import { createScopeVisitor } from './nodes/createNode'
 import { Scope } from './scope'
-import { Traversal, visit } from './syntaxNode'
+import { visit } from './traversal'
 import { Reporter } from '../utils/reporter'
 
 export class ScopeVisitor {
@@ -11,7 +11,6 @@ export class ScopeVisitor {
   scope: Scope
   reporter: Reporter
   currentPath = new NodePath()
-  traversalConfig = Traversal.preorder
   targetId?: UUID
 
   constructor(
@@ -27,12 +26,14 @@ export class ScopeVisitor {
   }
 
   traverse(rootNode: AST.SyntaxNode) {
-    visit(rootNode, this.traversalConfig, {
-      targetId: this.targetId,
-      enter: (node: AST.SyntaxNode) =>
-        createScopeVisitor(node)?.scopeEnter(this),
-      leave: (node: AST.SyntaxNode) =>
-        createScopeVisitor(node)?.scopeLeave(this),
+    visit(rootNode, {
+      onEnter: (node: AST.SyntaxNode) => {
+        if (node.data.id === this.targetId) return 'stop'
+        return createScopeVisitor(node)?.scopeEnter(this)
+      },
+      onLeave: (node: AST.SyntaxNode) => {
+        return createScopeVisitor(node)?.scopeLeave(this)
+      },
     })
   }
 

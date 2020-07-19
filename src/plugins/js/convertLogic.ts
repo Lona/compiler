@@ -9,8 +9,8 @@ import {
   makeProgram,
   findParentNode,
 } from '../../helpers/logicAst'
-import { reduce } from '../../helpers/logicTraversal'
 import { typeNever, nonNullable } from '../../utils/typeHelpers'
+import { visit } from '../../logic/traversal'
 
 type LogicGenerationContext = {
   isStatic: boolean
@@ -311,7 +311,9 @@ const declaration = (
         ? expression(node.data.initializer, newContext)
         : { type: 'Identifier', data: ['undefined'] }
 
-      const isDynamic = reduce(
+      let isDynamic = false
+
+      visit(
         {
           type: 'declaration',
           data: {
@@ -319,7 +321,9 @@ const declaration = (
             content: node,
           },
         },
-        (prev, child) => {
+        child => {
+          if (isDynamic) return
+
           if (
             child.type === 'expression' &&
             child.data.expression.type === 'identifierExpression'
@@ -332,15 +336,12 @@ const declaration = (
             )
 
             if (prefix.length === 0) {
-              return prev
+              return
             }
 
-            return true
+            isDynamic = true
           }
-
-          return prev
-        },
-        false
+        }
       )
 
       const variable = createVariableOrProperty(

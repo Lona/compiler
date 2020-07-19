@@ -4,14 +4,11 @@ import { IExpression, Node } from './interfaces'
 import { TypeCheckerVisitor } from '../typeChecker'
 import { EvaluationVisitor } from '../evaluationVisitor'
 import { flattenedMemberExpression } from '../../helpers/logicAst'
+import { EnterReturnValue } from 'tree-visit'
 
 export class MemberExpression extends Node<AST.MemberExpression>
   implements IExpression {
-  scopeEnter(visitor: ScopeVisitor): void {
-    visitor.traversalConfig.ignoreChildren = true
-  }
-
-  scopeLeave(visitor: ScopeVisitor): void {
+  scopeEnter(visitor: ScopeVisitor): EnterReturnValue {
     const { id } = this.syntaxNode.data
 
     const identifiers = flattenedMemberExpression(this.syntaxNode)
@@ -28,15 +25,13 @@ export class MemberExpression extends Node<AST.MemberExpression>
         visitor.scope.undefinedMemberExpressions.add(id)
       }
     }
+
+    return 'skip'
   }
 
-  typeCheckerEnter(visitor: TypeCheckerVisitor): void {
-    const { traversalConfig } = visitor
+  scopeLeave(visitor: ScopeVisitor): void {}
 
-    traversalConfig.ignoreChildren = true
-  }
-
-  typeCheckerLeave(visitor: TypeCheckerVisitor): void {
+  typeCheckerEnter(visitor: TypeCheckerVisitor): EnterReturnValue {
     const { id } = this.syntaxNode.data
     const { scope, typeChecker } = visitor
 
@@ -45,7 +40,11 @@ export class MemberExpression extends Node<AST.MemberExpression>
       typeChecker,
       id
     )
+
+    return 'skip'
   }
+
+  typeCheckerLeave(visitor: TypeCheckerVisitor): void {}
 
   evaluationEnter(visitor: EvaluationVisitor) {
     const { id } = this.syntaxNode.data

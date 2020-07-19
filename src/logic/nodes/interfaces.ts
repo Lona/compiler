@@ -5,8 +5,9 @@ import { TypeCheckerVisitor } from '../typeChecker'
 import { EvaluationVisitor } from '../evaluationVisitor'
 import { createNode } from './createNode'
 import { compact } from '../../utils/sequence'
-import { findNode, findNodes } from '../syntaxNode'
+import { findNode, findNodes } from '../traversal'
 import { FunctionCallExpression } from './FunctionCallExpression'
+import { EnterReturnValue, LeaveReturnValue } from 'tree-visit'
 
 export type SyntaxNodeType = AST.SyntaxNode['type']
 
@@ -48,22 +49,22 @@ export class Node<T extends AST.SyntaxNode> implements INode {
 }
 
 export interface INamespaceContributor extends INode {
-  namespaceEnter(visitor: NamespaceVisitor): void
-  namespaceLeave(visitor: NamespaceVisitor): void
+  namespaceEnter(visitor: NamespaceVisitor): EnterReturnValue
+  namespaceLeave(visitor: NamespaceVisitor): LeaveReturnValue
 }
 
 export interface IScopeContributor extends INode {
-  scopeEnter(visitor: ScopeVisitor): void
-  scopeLeave(visitor: ScopeVisitor): void
+  scopeEnter(visitor: ScopeVisitor): EnterReturnValue
+  scopeLeave(visitor: ScopeVisitor): LeaveReturnValue
 }
 
 export interface ITypeCheckerContributor extends INode {
-  typeCheckerEnter(visitor: TypeCheckerVisitor): void
-  typeCheckerLeave(visitor: TypeCheckerVisitor): void
+  typeCheckerEnter(visitor: TypeCheckerVisitor): EnterReturnValue
+  typeCheckerLeave(visitor: TypeCheckerVisitor): LeaveReturnValue
 }
 
 export interface IEvaluationContributor extends INode {
-  evaluationEnter(visitor: EvaluationVisitor): void
+  evaluationEnter(visitor: EvaluationVisitor): EnterReturnValue
 }
 
 export interface IDeclaration

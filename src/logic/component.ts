@@ -1,6 +1,6 @@
 import { LogicAST as AST } from '@lona/serialization'
 import { FunctionDeclaration } from './nodes/FunctionDeclaration'
-import { findNode } from './syntaxNode'
+import { findNode } from './traversal'
 import { FunctionCallExpression } from './nodes/FunctionCallExpression'
 import { IdentifierExpression } from './nodes/IdentifierExpression'
 import { IExpression } from './nodes/interfaces'

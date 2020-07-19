@@ -1,23 +1,17 @@
 import { LogicAST as AST } from '@lona/serialization'
 import { ITypeAnnotation, Node } from './interfaces'
 import { ScopeVisitor } from '../scopeVisitor'
+import { EnterReturnValue } from 'buffs'
 
 export class IdentifierTypeAnnotation
   extends Node<AST.TypeIdentifierTypeAnnotation>
   implements ITypeAnnotation {
-  scopeEnter(visitor: ScopeVisitor): void {
-    const { genericArguments } = this.syntaxNode.data
+  scopeEnter(visitor: ScopeVisitor): EnterReturnValue {
+    const { genericArguments, id, identifier } = this.syntaxNode.data
 
     genericArguments.forEach(arg => {
       visitor.traverse(arg)
     })
-
-    visitor.traversalConfig.ignoreChildren = true
-    // visitor.traversalConfig.needsRevisitAfterTraversingChildren = false
-  }
-
-  scopeLeave(visitor: ScopeVisitor): void {
-    const { id, identifier } = this.syntaxNode.data
 
     if (identifier.isPlaceholder) return
 
@@ -32,14 +26,17 @@ export class IdentifierTypeAnnotation
       )
       visitor.scope.undefinedTypeIdentifiers.add(id)
     }
+
+    return 'skip'
   }
+
+  scopeLeave(visitor: ScopeVisitor): void {}
 }
 
 export class FunctionTypeAnnotation extends Node<AST.FunctionTypeTypeAnnotation>
   implements ITypeAnnotation {
-  scopeEnter(visitor: ScopeVisitor): void {
-    visitor.traversalConfig.ignoreChildren = true
-    visitor.traversalConfig.needsRevisitAfterTraversingChildren = false
+  scopeEnter(visitor: ScopeVisitor): EnterReturnValue {
+    return 'skip'
   }
 
   scopeLeave(visitor: ScopeVisitor): void {}
