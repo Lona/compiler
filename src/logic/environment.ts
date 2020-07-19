@@ -13,7 +13,7 @@ import { compact } from '../utils/sequence'
 export const STANDARD_LIBRARY = 'standard library'
 
 export const run = (reporter: Reporter, programs: AST.SyntaxNode[]) => {
-  const standardLibsPath = path.join(__dirname, 'library')
+  const standardLibsPath = path.join(__dirname, '../../static/logic')
   const standardLibs = fs.readdirSync(standardLibsPath)
 
   const libraryFiles: AST.Program[] = standardLibs.map(

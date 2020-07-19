@@ -1,9 +1,9 @@
 import { LogicAST as AST } from '@lona/serialization'
 import * as Serialization from '@lona/serialization'
 import { EvaluationContext } from '../evaluation'
-import { run } from '../environment'
 import { UUID } from '../namespace'
 import { findNode } from '../traversal'
+import { run } from '../environment'
 
 function getInitializerId(
   rootNode: AST.SyntaxNode,

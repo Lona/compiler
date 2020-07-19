@@ -27,6 +27,7 @@ export type ModuleContext = {
   libraryFiles: LogicFile[]
   documentFiles: LogicFile[]
   logicFiles: LogicFile[]
+  sourceFiles: LogicFile[]
   scope: Scope
   typeChecker: TypeChecker
   substitution: Substitution
@@ -49,6 +50,18 @@ export function createModule(
   }))
 
   const componentFiles: LogicFile[] = componentFilePaths(
+    workspaceFs,
+    workspacePath
+  ).map(sourcePath => ({
+    isLibrary: false,
+    sourcePath,
+    rootNode: decodeLogic(
+      workspaceFs.readFileSync(sourcePath, 'utf8')
+    ) as AST.TopLevelDeclarations,
+    mdxContent: [],
+  }))
+
+  const logicFiles: LogicFile[] = logicFilePaths(
     workspaceFs,
     workspacePath
   ).map(sourcePath => ({
@@ -110,8 +123,9 @@ export function createModule(
     componentFiles,
     libraryFiles,
     documentFiles,
-    get logicFiles() {
-      return [...documentFiles]
+    logicFiles,
+    get sourceFiles() {
+      return [...documentFiles, ...logicFiles]
     },
     scope,
     typeChecker,
@@ -130,12 +144,11 @@ function componentFilePaths(fs: IFS, workspacePath: string): string[] {
   )
 }
 
-// TODO: Read logic files
-// function logicFilePaths(fs: IFS, workspacePath: string): string[] {
-//   return match(fs, workspacePath, {
-//     includePatterns: ['**/*.logic'],
-//   }).map(file => path.join(workspacePath, file))
-// }
+function logicFilePaths(fs: IFS, workspacePath: string): string[] {
+  return match(fs, workspacePath, {
+    includePatterns: ['**/*.logic'],
+  }).map(file => path.join(workspacePath, file))
+}
 
 function documentFilePaths(fs: IFS, workspacePath: string): string[] {
   return match(fs, workspacePath, { includePatterns: ['**/*.md'] }).map(file =>
@@ -144,7 +157,7 @@ function documentFilePaths(fs: IFS, workspacePath: string): string[] {
 }
 
 function libraryFilePaths(): string[] {
-  const libraryPath = path.join(__dirname, 'library')
+  const libraryPath = path.join(__dirname, '../../static/logic')
 
   return match(fs, libraryPath, { includePatterns: ['**/*.logic'] }).map(file =>
     path.join(libraryPath, file)

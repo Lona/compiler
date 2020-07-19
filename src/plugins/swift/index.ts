@@ -20,7 +20,7 @@ export const convertFile = async (
 ): Promise<string> => {
   let swiftAST: SwiftAST.SwiftNode | undefined
 
-  const rootNode = helpers.module.logicFiles.find(
+  const rootNode = helpers.module.sourceFiles.find(
     file => file.sourcePath === filePath
   )?.rootNode
 
@@ -56,7 +56,7 @@ const convertWorkspace = async (
   }
 ): Promise<void> => {
   await Promise.all(
-    helpers.module.logicFiles.map(async file => {
+    helpers.module.sourceFiles.map(async file => {
       const outputText = await convertFile(file.sourcePath, helpers, options)
 
       if (!outputText) return
