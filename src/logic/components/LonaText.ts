@@ -1,7 +1,7 @@
 import { ComponentVisitor } from './ComponentVisitor'
 import { Decode } from '../runtime/value'
 import { LonaView, LonaViewConstructor } from './LonaView'
-import { silentReporter } from '../../utils/silentReporter'
+import { silentReporter } from '../../utils/reporter'
 
 export class LonaText extends LonaView {
   value?: string

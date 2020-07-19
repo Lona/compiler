@@ -5,7 +5,7 @@ import { createScopeContext } from '../scope'
 import { StaticType } from '../staticType'
 import { createUnificationContext } from '../typeChecker'
 import { substitute, unify } from '../typeUnifier'
-import { silentReporter } from '../../utils/silentReporter'
+import { silentReporter } from '../../utils/reporter'
 
 describe('Logic / Scope', () => {
   it('finds identifier expression references', () => {

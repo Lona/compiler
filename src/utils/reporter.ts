@@ -11,3 +11,10 @@ export const defaultReporter: Reporter = {
   warn: console.warn.bind(console),
   error: console.error.bind(console),
 }
+
+export const silentReporter: Reporter = {
+  log: () => {},
+  info: () => {},
+  warn: () => {},
+  error: () => {},
+}

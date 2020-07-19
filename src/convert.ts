@@ -3,8 +3,8 @@ import * as fs from 'fs'
 
 import { Plugin } from './plugins'
 import Helpers from './helpers'
-import { findPlugin } from './utils/findPlugin'
-import { isWorkspacePath } from './utils/isWorkspacePath'
+import { findPlugin } from './utils/plugin'
+import { isWorkspacePath } from './utils/workspace'
 
 export async function convert<ExpectedOptions, Result>(
   workspacePath: string,

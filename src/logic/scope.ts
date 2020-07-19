@@ -2,8 +2,7 @@ import { LogicAST as AST } from '@lona/serialization'
 import { Namespace, UUID } from './namespace'
 import ScopeStack from './scopeStack'
 import { ScopeVisitor } from './scopeVisitor'
-import { Reporter } from '../utils/reporter'
-import { silentReporter } from '../utils/silentReporter'
+import { Reporter, silentReporter } from '../utils/reporter'
 
 export class Scope {
   // References to the pattern they're defined by (e.g. the record name or function argument)

@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { isWorkspacePath } from './utils/isWorkspacePath'
+import { isWorkspacePath } from './utils/workspace'
 import { load } from './utils/config'
 
 export const getConfig = async (workspacePath: string) => {
