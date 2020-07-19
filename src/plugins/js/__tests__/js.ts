@@ -4,9 +4,9 @@ import Helpers from '../../../helpers'
 
 const tokensBlock = (string: string) => '```tokens\n' + string + '\n```\n'
 
-// TODO: Test more kinds of Swift
-describe('Swift', () => {
-  it('generates swift', async () => {
+// TODO: Test more kinds of JS
+describe('JS', () => {
+  it('generates js', async () => {
     const source = createFs({
       'lona.json': JSON.stringify({}),
       'Colors.md': tokensBlock(`let color: Color = #color(css: "pink")`),

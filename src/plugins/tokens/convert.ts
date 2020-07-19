@@ -8,13 +8,10 @@ export const convertDeclaration = (
   declaration: serialization.LogicAST.Declaration,
   helpers: Helpers
 ): Token | undefined => {
-  if (!helpers.evaluationContext) {
-    return undefined
-  }
   if (declaration.type !== 'variable' || !declaration.data.initializer) {
     return undefined
   }
-  const logicValue = helpers.evaluationContext.evaluate(
+  const logicValue = helpers.module.evaluationContext.evaluate(
     declaration.data.initializer.data.id
   )
   const tokenValue = TokenValue.create(logicValue)
@@ -31,6 +28,7 @@ export const convert = (
   helpers: Helpers
 ): Token[] => {
   let declarations: serialization.LogicAST.Declaration[]
+
   if ('type' in node && node.type === 'program') {
     declarations = node.data.block
       .map(x => (x.type === 'declaration' ? x.data.content : undefined))

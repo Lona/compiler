@@ -1,42 +1,26 @@
-import * as LogicEvaluate from '../../helpers/logicEvaluate'
-import * as LogicUnify from '../../helpers/logicUnify'
 import * as TokenAST from './tokensAst'
+import { Memory } from '../../logic/runtime/memory'
+import { Value, Decode } from '../../logic/runtime/value'
 
-let getField = (key: string, fields: LogicEvaluate.Memory) => {
+let getField = (key: string, fields: Memory) => {
   if (fields.type !== 'record') {
     return
   }
   return fields.value[key]
 }
 
-const getColorString = (value: LogicEvaluate.Value): string | undefined => {
-  if (
-    value.type.type !== 'constant' ||
-    value.type.name !== LogicUnify.color.name ||
-    value.memory.type !== 'record'
-  ) {
-    return undefined
-  }
-  const field = getField('value', value.memory)
-  if (field && field.memory.type === 'string') {
-    return field.memory.value
-  }
-}
-
-const getColorValue = (
-  value?: LogicEvaluate.Value
-): TokenAST.ColorTokenValue | undefined => {
+const getColorValue = (value?: Value): TokenAST.ColorTokenValue | undefined => {
   if (!value) {
     return undefined
   }
-  const css = getColorString(value)
+  const css = Decode.color(value)
   if (css) {
     return { type: 'color', value: { css } }
   }
   return undefined
 }
 
-const getOptional = (value?: LogicEvaluate.Value) => {
+const getOptional = (value?: Value) => {
   if (!value) {
     return undefined
   }
@@ -52,9 +36,7 @@ const getOptional = (value?: LogicEvaluate.Value) => {
   return undefined
 }
 
-const getFontWeight = (
-  value?: LogicEvaluate.Value
-): TokenAST.FontWeight | undefined => {
+const getFontWeight = (value?: Value): TokenAST.FontWeight | undefined => {
   if (!value) {
     return undefined
   }
@@ -92,14 +74,14 @@ const getFontWeight = (
 }
 
 const getShadowValue = (
-  value?: LogicEvaluate.Value
+  value?: Value
 ): TokenAST.ShadowTokenValue | undefined => {
   if (!value) {
     return undefined
   }
   if (
     value.type.type !== 'constant' ||
-    value.type.name !== LogicUnify.shadow.name ||
+    value.type.name !== 'Shadow' ||
     value.memory.type !== 'record'
   ) {
     return undefined
@@ -124,14 +106,14 @@ const getShadowValue = (
 }
 
 const getTextStyleValue = (
-  value?: LogicEvaluate.Value
+  value?: Value
 ): TokenAST.TextStyleTokenValue | undefined => {
   if (!value) {
     return undefined
   }
   if (
     value.type.type !== 'constant' ||
-    value.type.name !== LogicUnify.textStyle.name ||
+    value.type.name !== 'TextStyle' ||
     value.memory.type !== 'record'
   ) {
     return undefined
@@ -170,9 +152,7 @@ const getTextStyleValue = (
   }
 }
 
-export const create = (
-  value?: LogicEvaluate.Value
-): TokenAST.TokenValue | undefined =>
+export const create = (value?: Value): TokenAST.TokenValue | undefined =>
   getColorValue(value) ||
   getShadowValue(value) ||
   getTextStyleValue(value) ||

@@ -1,10 +1,16 @@
 import { LogicAST } from '@lona/serialization'
 import lowerFirst from 'lodash.lowerfirst'
-import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
+import { Helpers } from '../../helpers'
 import { nonNullable, typeNever } from '../../utils'
 import * as JSAST from './jsAst'
 import { enumName } from './format'
 import { resolveImportPath } from './utils'
+import {
+  declarationPathTo,
+  makeProgram,
+  findParentNode,
+} from '../../helpers/logicAst'
+import { reduce } from '../../helpers/logicTraversal'
 
 type LogicGenerationContext = {
   isStatic: boolean
@@ -13,11 +19,6 @@ type LogicGenerationContext = {
   filePath: string
   importIdentifier: (identifier: string, from: string) => void
   helpers: Helpers
-  resolveStandardLibrary: (
-    node: LogicAST.SyntaxNode,
-    evaluationContext: undefined | EvaluationContext,
-    context: LogicGenerationContext
-  ) => JSAST.JSNode | undefined
 }
 
 type RecordParameter = {
@@ -78,8 +79,8 @@ const sharedPrefix = (
     return []
   }
 
-  const aPath = context.helpers.ast.traversal.declarationPathTo(rootNode, a)
-  const bPath = context.helpers.ast.traversal.declarationPathTo(rootNode, b)
+  const aPath = declarationPathTo(rootNode, a)
+  const bPath = declarationPathTo(rootNode, b)
   return inner(aPath, bPath)
 }
 
@@ -91,10 +92,7 @@ function evaluateColor(
   node: LogicAST.SyntaxNode,
   context: LogicGenerationContext
 ): JSAST.JSNode | undefined {
-  if (!context.helpers.evaluationContext) {
-    return undefined
-  }
-  const color = context.helpers.evaluationContext.evaluate(node.data.id)
+  const color = context.helpers.module.evaluationContext.evaluate(node.data.id)
 
   if (
     !color ||
@@ -114,204 +112,6 @@ function evaluateColor(
       data: color.memory.value.value.memory.value,
     },
   }
-}
-
-function notImplemented(
-  functionName: string,
-  node: LogicAST.SyntaxNode,
-  context: LogicGenerationContext
-): undefined {
-  throw new Error(`${functionName} not implemented`)
-}
-
-const hardcoded: HardcodedMap<JSAST.JSNode, [LogicGenerationContext]> = {
-  functionCallExpression: {
-    'TextAlign.left': notImplemented.bind(null, 'TextAlign.left'),
-    'TextAlign.center': notImplemented.bind(null, 'TextAlign.center'),
-    'TextAlign.right': notImplemented.bind(null, 'TextAlign.right'),
-    'DimensionSize.fixed': notImplemented.bind(null, 'DimensionSize.fixed'),
-    'DimensionSize.flexible': notImplemented.bind(
-      null,
-      'DimensionSize.flexible'
-    ),
-    Padding: notImplemented.bind(null, 'Padding'),
-    'Padding.size': notImplemented.bind(null, 'Padding.size'),
-    'ElementParameter.boolean': notImplemented.bind(
-      null,
-      'ElementParameter.boolean'
-    ),
-    'ElementParameter.number': notImplemented.bind(
-      null,
-      'ElementParameter.number'
-    ),
-    'ElementParameter.string': notImplemented.bind(
-      null,
-      'ElementParameter.string'
-    ),
-    'ElementParameter.color': notImplemented.bind(
-      null,
-      'ElementParameter.color'
-    ),
-    'ElementParameter.textStyle': notImplemented.bind(
-      null,
-      'ElementParameter.textStyle'
-    ),
-    'ElementParameter.elements': notImplemented.bind(
-      null,
-      'ElementParameter.elements'
-    ),
-    'ElementParameter.textAlign': notImplemented.bind(
-      null,
-      'ElementParameter.textAlign'
-    ),
-    'ElementParameter.dimension': notImplemented.bind(
-      null,
-      'ElementParameter.dimension'
-    ),
-    'ElementParameter.padding': notImplemented.bind(
-      null,
-      'ElementParameter.padding'
-    ),
-    Element: notImplemented.bind(null, 'Element'),
-    View: notImplemented.bind(null, 'View'),
-    Text: notImplemented.bind(null, 'Text'),
-    VerticalStack: notImplemented.bind(null, 'VerticalStack'),
-    HorizontalStack: notImplemented.bind(null, 'HorizontalStack'),
-    'Color.saturate': evaluateColor,
-    'Color.setHue': evaluateColor,
-    'Color.setSaturation': evaluateColor,
-    'Color.setLightness': evaluateColor,
-    'Color.fromHSL': evaluateColor,
-    'Boolean.or': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument' ||
-        !node.data.arguments[1] ||
-        node.data.arguments[1].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first 2 arguments of `Boolean.or` need to be a value'
-        )
-      }
-
-      return {
-        type: 'BinaryExpression',
-        data: {
-          left: expression(node.data.arguments[0].data.expression, context),
-          operator: JSAST.binaryOperator.Or,
-          right: expression(node.data.arguments[1].data.expression, context),
-        },
-      }
-    },
-    'Boolean.and': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument' ||
-        !node.data.arguments[1] ||
-        node.data.arguments[1].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first 2 arguments of `Boolean.and` need to be a value'
-        )
-      }
-
-      return {
-        type: 'BinaryExpression',
-        data: {
-          left: expression(node.data.arguments[0].data.expression, context),
-          operator: JSAST.binaryOperator.And,
-          right: expression(node.data.arguments[1].data.expression, context),
-        },
-      }
-    },
-    'String.concat': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument' ||
-        !node.data.arguments[1] ||
-        node.data.arguments[1].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first 2 arguments of `String.concat` need to be a value'
-        )
-      }
-      // TODO:
-      return undefined
-    },
-    'Number.range': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument' ||
-        !node.data.arguments[1] ||
-        node.data.arguments[1].type !== 'argument' ||
-        !node.data.arguments[2] ||
-        node.data.arguments[2].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first 3 arguments of `Number.range` need to be a value'
-        )
-      }
-      // TODO:
-      return undefined
-    },
-    'Array.at': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument' ||
-        !node.data.arguments[1] ||
-        node.data.arguments[1].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first 2 arguments of `Array.at` need to be a value'
-        )
-      }
-      // TODO:
-      return undefined
-    },
-    'Optional.value': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first argument of `Optional.value` needs to be a value'
-        )
-      }
-      return expression(node.data.arguments[0].data.expression, context)
-    },
-    Shadow: () => {
-      // polyfilled
-      return undefined
-    },
-    TextStyle: () => {
-      // polyfilled
-      return undefined
-    },
-    'Optional.none': () => ({
-      type: 'Literal',
-      data: { type: 'Undefined', data: undefined },
-    }),
-    'FontWeight.ultraLight': () => fontWeight(100),
-    'FontWeight.thin': () => fontWeight(200),
-    'FontWeight.light': () => fontWeight(300),
-    'FontWeight.regular': () => fontWeight(400),
-    'FontWeight.medium': () => fontWeight(500),
-    'FontWeight.semibold': () => fontWeight(600),
-    'FontWeight.bold': () => fontWeight(700),
-    'FontWeight.heavy': () => fontWeight(800),
-    'FontWeight.black': () => fontWeight(900),
-  },
-  memberExpression: {
-    'FontWeight.w100': () => fontWeight(100),
-    'FontWeight.w200': () => fontWeight(200),
-    'FontWeight.w300': () => fontWeight(300),
-    'FontWeight.w400': () => fontWeight(400),
-    'FontWeight.w500': () => fontWeight(500),
-    'FontWeight.w600': () => fontWeight(600),
-    'FontWeight.w700': () => fontWeight(700),
-    'FontWeight.w800': () => fontWeight(800),
-    'FontWeight.w900': () => fontWeight(900),
-  },
 }
 
 export default function convert(
@@ -334,10 +134,9 @@ export default function convert(
     filePath,
     helpers,
     importIdentifier,
-    resolveStandardLibrary: helpers.createStandardLibraryResolver(hardcoded),
   }
 
-  const program = helpers.ast.makeProgram(node)
+  const program = makeProgram(node)
 
   if (!program) {
     helpers.reporter.warn(`Unhandled syntaxNode type "${node.type}"`)
@@ -373,15 +172,6 @@ const statement = (
   node: LogicAST.Statement,
   context: LogicGenerationContext
 ): JSAST.JSNode => {
-  const potentialHandled = context.resolveStandardLibrary(
-    node,
-    context.helpers.evaluationContext,
-    context
-  )
-  if (potentialHandled) {
-    return potentialHandled
-  }
-
   switch (node.type) {
     case 'branch': {
       return {
@@ -426,14 +216,6 @@ const declaration = (
   node: LogicAST.Declaration,
   context: LogicGenerationContext
 ): JSAST.JSNode => {
-  const potentialHandled = context.resolveStandardLibrary(
-    node,
-    context.helpers.evaluationContext,
-    context
-  )
-  if (potentialHandled) {
-    return potentialHandled
-  }
   switch (node.type) {
     case 'importDeclaration':
       return { type: 'Empty' }
@@ -529,7 +311,7 @@ const declaration = (
         ? expression(node.data.initializer, newContext)
         : { type: 'Identifier', data: ['undefined'] }
 
-      const isDynamic = context.helpers.ast.traversal.reduce(
+      const isDynamic = reduce(
         {
           type: 'declaration',
           data: {
@@ -634,56 +416,16 @@ const expression = (
   node: LogicAST.Expression,
   context: LogicGenerationContext
 ): JSAST.JSNode => {
-  const potentialHandled = context.resolveStandardLibrary(
-    node,
-    context.helpers.evaluationContext,
-    context
-  )
-  if (potentialHandled) {
-    return potentialHandled
-  }
+  const { evaluationContext, scope } = context.helpers.module
+
   switch (node.type) {
     case 'identifierExpression': {
-      const isFromOtherFile = context.helpers.evaluationContext?.isFromOtherFile(
-        node.data.identifier.id,
-        context.filePath
-      )
-
       const standard: JSAST.JSNode = {
         type: 'Identifier',
         data: [lowerFirst(node.data.identifier.string)],
       }
-      // const patternId = context.helpers.evaluationContext?.getPattern(
-      //   node.data.identifier.id
-      // )
 
-      // if (!patternId) {
-      if (isFromOtherFile) {
-        context.importIdentifier(standard.data[0], isFromOtherFile)
-      }
       return standard
-      // }
-
-      // const pattern = context.helpers.ast.traversal.declarationPathTo(
-      //   context.rootNode,
-      //   patternId
-      // )
-
-      // if (!pattern.length) {
-      //   if (isFromOtherFile) {
-      //     context.importIdentifier(standard.data[0], isFromOtherFile)
-      //   }
-      //   return standard
-      // }
-
-      // if (isFromOtherFile) {
-      //   context.importIdentifier(lowerFirst(pattern[0]), isFromOtherFile)
-      // }
-
-      // return {
-      //   type: 'Identifier',
-      //   data: pattern.map(lowerFirst),
-      // }
     }
     case 'literalExpression':
       return literal(node.data.literal, context)
@@ -724,29 +466,18 @@ const expression = (
         return standard()
       }
 
-      /* Does the identifier point to a defined pattern? */
-      const identifierPatternId = context.helpers.evaluationContext?.getPattern(
-        lastIdentifier.id
-      )
-      /* Does the expression point to a defined pattern? (used for member expressions) */
-      const expressionPatternId = context.helpers.evaluationContext?.getPattern(
-        node.data.expression.data.id
-      )
+      const identifierPatternId =
+        scope.identifierExpressionToPattern[lastIdentifier.id]
+      const expressionPatternId =
+        scope.memberExpressionToPattern[node.data.expression.data.id]
 
       const patternId = identifierPatternId || expressionPatternId
 
-      if (!patternId || !context.helpers.evaluationContext) {
-        return standard()
-      }
+      if (!patternId) return standard()
 
-      const parent = context.helpers.ast.traversal.findParentNode(
-        context.helpers.evaluationContext.rootNode,
-        patternId
-      )
+      const parent = findParentNode(context.rootNode, patternId)
 
-      if (!parent) {
-        return standard()
-      }
+      if (!parent) return standard()
 
       // initialization of a record
       if (
@@ -802,10 +533,7 @@ const expression = (
         parent.type === 'declaration' &&
         parent.data.content.type === 'enumeration'
       ) {
-        const enumeration = context.helpers.ast.traversal.findParentNode(
-          context.helpers.evaluationContext.rootNode,
-          parent.data.id
-        )
+        const enumeration = findParentNode(context.rootNode, parent.data.id)
 
         if (
           enumeration &&
@@ -848,14 +576,6 @@ const literal = (
   node: LogicAST.Literal,
   context: LogicGenerationContext
 ): JSAST.JSNode => {
-  const potentialHandled = context.resolveStandardLibrary(
-    node,
-    context.helpers.evaluationContext,
-    context
-  )
-  if (potentialHandled) {
-    return potentialHandled
-  }
   switch (node.type) {
     case 'none': {
       return {

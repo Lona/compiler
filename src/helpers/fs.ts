@@ -1,5 +1,5 @@
-import * as fs from 'fs'
 import * as path from 'path'
+import { IFS } from 'buffs'
 
 export type FSWrapper = {
   readFile(filePath: string): Promise<string>
@@ -8,13 +8,16 @@ export type FSWrapper = {
 }
 
 export const createFSWrapper = (
+  fs: IFS,
   workspacePath: string,
   _outputPath?: unknown
 ): FSWrapper => {
+  // TODO: Remove arbitrary relative path
   const outputPath =
     typeof _outputPath === 'string'
       ? _outputPath
       : path.join(process.cwd(), 'lona-generated')
+
   const fsWrapper = {
     readFile(filePath: string) {
       return fs.promises.readFile(
@@ -22,11 +25,13 @@ export const createFSWrapper = (
         'utf-8'
       )
     },
+
     writeFile(filePath: string, data: string) {
       const resolvedPath = path.resolve(outputPath, filePath)
       fs.mkdirSync(path.dirname(resolvedPath), { recursive: true })
       return fs.promises.writeFile(resolvedPath, data, 'utf-8')
     },
+
     async copyDir(dirPath: string, output: string = '.') {
       const resolvedPath = path.resolve(workspacePath, dirPath)
       const files = await fs.promises.readdir(resolvedPath)

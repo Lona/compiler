@@ -1,6 +1,6 @@
 import { LogicAST } from '@lona/serialization'
-
-import { Helpers, HardcodedMap, EvaluationContext } from '../../helpers'
+import { Helpers } from '../../helpers'
+import { makeProgram } from '../../helpers/logicAst'
 import { nonNullable, typeNever } from '../../utils'
 import * as SwiftAST from './swiftAst'
 
@@ -8,11 +8,6 @@ type LogicGenerationContext = {
   isStatic: boolean
   isTopLevel: boolean
   helpers: Helpers
-  resolveStandardLibrary: (
-    node: LogicAST.SyntaxNode,
-    evaluationContext: undefined | EvaluationContext,
-    context: LogicGenerationContext
-  ) => SwiftAST.SwiftNode | undefined
 }
 
 function fontWeight(weight: string): SwiftAST.SwiftNode {
@@ -35,10 +30,7 @@ function evaluateColor(
   node: LogicAST.SyntaxNode,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode | undefined {
-  if (!context.helpers.evaluationContext) {
-    return undefined
-  }
-  const color = context.helpers.evaluationContext.evaluate(node.data.id)
+  const color = context.helpers.module.evaluationContext.evaluate(node.data.id)
 
   if (
     !color ||
@@ -68,196 +60,6 @@ function notImplemented(
   throw new Error(`${functionName} not implemented`)
 }
 
-const hardcoded: HardcodedMap<SwiftAST.SwiftNode, [LogicGenerationContext]> = {
-  functionCallExpression: {
-    'TextAlign.left': notImplemented.bind(null, 'TextAlign.left'),
-    'TextAlign.center': notImplemented.bind(null, 'TextAlign.center'),
-    'TextAlign.right': notImplemented.bind(null, 'TextAlign.right'),
-    'DimensionSize.fixed': notImplemented.bind(null, 'DimensionSize.fixed'),
-    'DimensionSize.flexible': notImplemented.bind(
-      null,
-      'DimensionSize.flexible'
-    ),
-    Padding: notImplemented.bind(null, 'Padding'),
-    'Padding.size': notImplemented.bind(null, 'Padding.size'),
-    'ElementParameter.boolean': notImplemented.bind(
-      null,
-      'ElementParameter.boolean'
-    ),
-    'ElementParameter.number': notImplemented.bind(
-      null,
-      'ElementParameter.number'
-    ),
-    'ElementParameter.string': notImplemented.bind(
-      null,
-      'ElementParameter.string'
-    ),
-    'ElementParameter.color': notImplemented.bind(
-      null,
-      'ElementParameter.color'
-    ),
-    'ElementParameter.textStyle': notImplemented.bind(
-      null,
-      'ElementParameter.textStyle'
-    ),
-    'ElementParameter.elements': notImplemented.bind(
-      null,
-      'ElementParameter.elements'
-    ),
-    'ElementParameter.textAlign': notImplemented.bind(
-      null,
-      'ElementParameter.textAlign'
-    ),
-    'ElementParameter.dimension': notImplemented.bind(
-      null,
-      'ElementParameter.dimension'
-    ),
-    'ElementParameter.padding': notImplemented.bind(
-      null,
-      'ElementParameter.padding'
-    ),
-    Element: notImplemented.bind(null, 'Element'),
-    View: notImplemented.bind(null, 'View'),
-    Text: notImplemented.bind(null, 'Text'),
-    VerticalStack: notImplemented.bind(null, 'VerticalStack'),
-    HorizontalStack: notImplemented.bind(null, 'HorizontalStack'),
-    'Color.saturate': evaluateColor,
-    'Color.setHue': evaluateColor,
-    'Color.setSaturation': evaluateColor,
-    'Color.setLightness': evaluateColor,
-    'Color.fromHSL': evaluateColor,
-    'Boolean.or': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument' ||
-        !node.data.arguments[1] ||
-        node.data.arguments[1].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first 2 arguments of `Boolean.or` need to be a value'
-        )
-      }
-
-      return {
-        type: 'BinaryExpression',
-        data: {
-          left: expression(node.data.arguments[0].data.expression, context),
-          operator: '||',
-          right: expression(node.data.arguments[1].data.expression, context),
-        },
-      }
-    },
-    'Boolean.and': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument' ||
-        !node.data.arguments[1] ||
-        node.data.arguments[1].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first 2 arguments of `Boolean.and` need to be a value'
-        )
-      }
-
-      return {
-        type: 'BinaryExpression',
-        data: {
-          left: expression(node.data.arguments[0].data.expression, context),
-          operator: '&&',
-          right: expression(node.data.arguments[1].data.expression, context),
-        },
-      }
-    },
-    'String.concat': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument' ||
-        !node.data.arguments[1] ||
-        node.data.arguments[1].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first 2 arguments of `String.concat` need to be a value'
-        )
-      }
-      // TODO:
-      return undefined
-    },
-    'Number.range': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument' ||
-        !node.data.arguments[1] ||
-        node.data.arguments[1].type !== 'argument' ||
-        !node.data.arguments[2] ||
-        node.data.arguments[2].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first 3 arguments of `Number.range` need to be a value'
-        )
-      }
-      // TODO:
-      return undefined
-    },
-    'Array.at': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument' ||
-        !node.data.arguments[1] ||
-        node.data.arguments[1].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first 2 arguments of `Array.at` need to be a value'
-        )
-      }
-      // TODO:
-      return undefined
-    },
-    'Optional.value': (node, context) => {
-      if (
-        !node.data.arguments[0] ||
-        node.data.arguments[0].type !== 'argument'
-      ) {
-        throw new Error(
-          'The first argument of `Optional.value` needs to be a value'
-        )
-      }
-      return expression(node.data.arguments[0].data.expression, context)
-    },
-    Shadow: () => {
-      // polyfilled
-      return undefined
-    },
-    TextStyle: () => {
-      // polyfilled
-      return undefined
-    },
-    'Optional.none': () => ({
-      type: 'LiteralExpression',
-      data: { type: 'Nil', data: undefined },
-    }),
-    'FontWeight.ultraLight': () => fontWeight('ultraLight'),
-    'FontWeight.thin': () => fontWeight('thin'),
-    'FontWeight.light': () => fontWeight('light'),
-    'FontWeight.regular': () => fontWeight('regular'),
-    'FontWeight.medium': () => fontWeight('medium'),
-    'FontWeight.semibold': () => fontWeight('semibold'),
-    'FontWeight.bold': () => fontWeight('bold'),
-    'FontWeight.heavy': () => fontWeight('heavy'),
-    'FontWeight.black': () => fontWeight('back'),
-  },
-  memberExpression: {
-    'FontWeight.w100': () => fontWeight('ultraLight'),
-    'FontWeight.w200': () => fontWeight('thin'),
-    'FontWeight.w300': () => fontWeight('light'),
-    'FontWeight.w400': () => fontWeight('regular'),
-    'FontWeight.w500': () => fontWeight('medium'),
-    'FontWeight.w600': () => fontWeight('semibold'),
-    'FontWeight.w700': () => fontWeight('bold'),
-    'FontWeight.w800': () => fontWeight('heavy'),
-    'FontWeight.w900': () => fontWeight('back'),
-  },
-}
-
 export default function convert(
   node: LogicAST.SyntaxNode,
   helpers: Helpers
@@ -266,10 +68,9 @@ export default function convert(
     isStatic: false,
     isTopLevel: true,
     helpers,
-    resolveStandardLibrary: helpers.createStandardLibraryResolver(hardcoded),
   }
 
-  const program = helpers.ast.makeProgram(node)
+  const program = makeProgram(node)
 
   if (!program) {
     helpers.reporter.warn(`Unhandled syntaxNode type "${node.type}"`)
@@ -290,15 +91,6 @@ const statement = (
   node: LogicAST.Statement,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = context.resolveStandardLibrary(
-    node,
-    context.helpers.evaluationContext,
-    context
-  )
-  if (potentialHandled) {
-    return potentialHandled
-  }
-
   switch (node.type) {
     case 'placeholder':
       return { type: 'Empty' }
@@ -350,14 +142,6 @@ const declaration = (
   node: LogicAST.Declaration,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = context.resolveStandardLibrary(
-    node,
-    context.helpers.evaluationContext,
-    context
-  )
-  if (potentialHandled) {
-    return potentialHandled
-  }
   switch (node.type) {
     case 'importDeclaration': {
       return { type: 'Empty' }
@@ -567,14 +351,6 @@ const expression = (
   node: LogicAST.Expression,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = context.resolveStandardLibrary(
-    node,
-    context.helpers.evaluationContext,
-    context
-  )
-  if (potentialHandled) {
-    return potentialHandled
-  }
   switch (node.type) {
     case 'identifierExpression': {
       return {
@@ -642,14 +418,6 @@ const literal = (
   node: LogicAST.Literal,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
-  const potentialHandled = context.resolveStandardLibrary(
-    node,
-    context.helpers.evaluationContext,
-    context
-  )
-  if (potentialHandled) {
-    return potentialHandled
-  }
   switch (node.type) {
     case 'none': {
       return {

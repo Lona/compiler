@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`JS generates js 1`] = `
+"var color = \\"pink\\";
+module.exports.color = color;
+"
+`;

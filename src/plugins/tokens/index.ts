@@ -10,10 +10,12 @@ export const convertFile = async (
   filePath: string,
   helpers: Helpers
 ): Promise<ConvertedFile> => {
-  const logicNode = helpers.config.logicFiles[filePath]
+  const logicFile = helpers.module.documentFiles.find(
+    file => file.sourcePath === filePath
+  )
 
-  if (!logicNode) {
-    throw new Error(`${filePath} is not a token file`)
+  if (!logicFile) {
+    throw new Error(`${filePath} is not a tokens file`)
   }
 
   const name = path.basename(filePath, path.extname(filePath))
@@ -25,7 +27,7 @@ export const convertFile = async (
     name,
     contents: {
       type: 'flatTokens',
-      value: convert(logicNode, helpers),
+      value: convert(logicFile.rootNode, helpers),
     },
   }
 
@@ -56,29 +58,23 @@ async function convertWorkspace(
     [key: string]: unknown
   }
 ): Promise<ConvertedWorkspace | void> {
-  let workspace: ConvertedWorkspace
-
-  if (!helpers.evaluationContext) {
-    helpers.reporter.warn('Failed to evaluate workspace.')
-    workspace = { flatTokensSchemaVersion: '0.0.1', files: [] }
-  } else {
-    workspace = {
-      files: await Promise.all(
-        helpers.config.logicPaths
-          .concat(helpers.config.documentPaths)
-          .map(x => convertFile(x, helpers))
-      ),
-      flatTokensSchemaVersion: '0.0.1',
-    }
+  let workspace: ConvertedWorkspace = {
+    files: await Promise.all(
+      helpers.module.documentFiles.map(file =>
+        convertFile(file.sourcePath, helpers)
+      )
+    ),
+    flatTokensSchemaVersion: '0.0.1',
   }
 
   if (!options.output) {
     return workspace
   }
 
-  await helpers.fs.writeFile(
+  await helpers.fs.writeFileSync(
     'tokens.json',
-    JSON.stringify(workspace, null, '  ')
+    JSON.stringify(workspace, null, '  '),
+    'utf8'
   )
 }
 

@@ -17,26 +17,24 @@ export const convertFile = async (
 ): Promise<string> => {
   let jsAST: JSAST.JSNode | undefined
 
-  const logicNode = helpers.config.logicFiles[filePath]
-  if (logicNode) {
+  const rootNode = helpers.module.logicFiles.find(
+    file => file.sourcePath === filePath
+  )?.rootNode
+
+  if (rootNode) {
     if (
-      logicNode.type !== 'topLevelDeclarations' ||
-      !logicNode.data.declarations.length
+      rootNode.type !== 'topLevelDeclarations' ||
+      !rootNode.data.declarations.length
     ) {
       return ''
     }
-    jsAST = convertLogic(logicNode, filePath, helpers)
+
+    jsAST = convertLogic(rootNode, filePath, helpers)
   }
 
-  if (!jsAST) {
-    return ''
-  }
+  if (!jsAST) return ''
 
-  // only output file if we passed an output option
-  const outputFile =
-    typeof options['output'] !== 'undefined' ? helpers.fs.writeFile : undefined
-
-  return `${renderJS(jsAST, { outputFile, reporter: helpers.reporter })}`
+  return `${renderJS(jsAST, { reporter: helpers.reporter })}`
 }
 
 const convertWorkspace = async (
@@ -49,25 +47,24 @@ const convertWorkspace = async (
   const imports: string[] = []
 
   await Promise.all(
-    helpers.config.logicPaths
-      .concat(helpers.config.documentPaths)
-      .map(async filePath => {
-        const swiftContent = await convertFile(filePath, helpers, options)
-        if (!swiftContent) {
-          return
-        }
-        const name = upperFirst(
-          camelCase(path.basename(filePath, path.extname(filePath)))
-        )
-        const outputPath = path.join(path.dirname(filePath), `${name}.js`)
+    helpers.module.logicFiles.map(async file => {
+      const outputText = await convertFile(file.sourcePath, helpers, options)
 
-        imports.push(outputPath)
+      if (!outputText) return
 
-        await helpers.fs.writeFile(outputPath, swiftContent)
-      })
+      const name = upperFirst(
+        camelCase(path.basename(file.sourcePath, path.extname(file.sourcePath)))
+      )
+
+      const outputPath = path.join(path.dirname(file.sourcePath), `${name}.js`)
+
+      imports.push(outputPath)
+
+      helpers.fs.writeFileSync(outputPath, outputText, 'utf8')
+    })
   )
 
-  await helpers.fs.writeFile(
+  helpers.fs.writeFileSync(
     './index.js',
     `${imports
       .map(
@@ -84,7 +81,8 @@ Object.keys(__lona_import_${i}).forEach(function (key) {
   });
 })`
       )
-      .join('\n\n')}`
+      .join('\n\n')}`,
+    'utf8'
   )
 
   // await helpers.fs.copyDir(

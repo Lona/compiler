@@ -11,18 +11,22 @@ export const convertFile = async (
   filePath: string,
   helpers: Helpers
 ): Promise<ConvertedFile> => {
-  const documentNode = helpers.config.componentFiles[filePath]
+  const logicFile = helpers.module.documentFiles.find(
+    file => file.sourcePath === filePath
+  )
 
-  if (!documentNode) {
-    throw new Error(`${filePath} is not a documentation file`)
+  if (!logicFile) {
+    throw new Error(`${filePath} is not a document file`)
   }
 
   const name = path.basename(filePath, path.extname(filePath))
   const outputPath = path.join(path.dirname(filePath), `${name}.mdx`)
 
+  const root = { children: logicFile.mdxContent }
+
   const value = {
-    mdxString: convert(documentNode, helpers),
-    children: findChildPages(documentNode),
+    mdxString: convert(root, helpers),
+    children: findChildPages(root),
   }
 
   const file: ConvertedFile = {
@@ -62,27 +66,24 @@ async function convertWorkspace(
     [key: string]: unknown
   }
 ): Promise<ConvertedWorkspace | void> {
-  let workspace: ConvertedWorkspace
-
-  if (!helpers.evaluationContext) {
-    helpers.reporter.warn('Failed to evaluate workspace.')
-    workspace = { flatTokensSchemaVersion: '0.0.1', files: [] }
-  } else {
-    workspace = {
-      files: await Promise.all(
-        helpers.config.logicPaths
-          .concat(helpers.config.documentPaths)
-          .map(x => convertFile(x, helpers))
-      ),
-      flatTokensSchemaVersion: '0.0.1',
-    }
+  let workspace: ConvertedWorkspace = {
+    files: await Promise.all(
+      helpers.module.documentFiles.map(file =>
+        convertFile(file.sourcePath, helpers)
+      )
+    ),
+    flatTokensSchemaVersion: '0.0.1',
   }
 
   if (!options.output) {
     return workspace
   }
 
-  await helpers.fs.writeFile('docs.json', JSON.stringify(workspace, null, '  '))
+  await helpers.fs.writeFileSync(
+    'docs.json',
+    JSON.stringify(workspace, null, '  '),
+    'utf8'
+  )
 }
 type ExpectedOptions = {}
 const plugin: Plugin<ExpectedOptions, ConvertedWorkspace | void> = {

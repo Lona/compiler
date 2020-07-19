@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Tokens generates tokens 1`] = `
+Object {
+  "contents": Object {
+    "type": "flatTokens",
+    "value": Array [
+      Object {
+        "qualifiedName": Array [
+          "color",
+        ],
+        "value": Object {
+          "type": "color",
+          "value": Object {
+            "css": "pink",
+          },
+        },
+      },
+    ],
+  },
+  "inputPath": "/Colors.md",
+  "name": "Colors",
+  "outputPath": "/Colors.flat.json",
+}
+`;

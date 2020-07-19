@@ -1,3 +1,4 @@
+import * as fs from 'fs'
 import * as path from 'path'
 import upperFirst from 'lodash.upperfirst'
 import camelCase from 'lodash.camelcase'
@@ -6,6 +7,7 @@ import { Helpers } from '../../helpers'
 import convertLogic from './convertLogic'
 import renderSwift from './renderAst'
 import * as SwiftAST from './swiftAst'
+import { copy } from 'buffs'
 
 export const convertFile = async (
   filePath: string,
@@ -18,24 +20,22 @@ export const convertFile = async (
 ): Promise<string> => {
   let swiftAST: SwiftAST.SwiftNode | undefined
 
-  const logicNode = helpers.config.logicFiles[filePath]
-  if (logicNode) {
+  const rootNode = helpers.module.logicFiles.find(
+    file => file.sourcePath === filePath
+  )?.rootNode
+
+  if (rootNode) {
     if (
-      logicNode.type !== 'topLevelDeclarations' ||
-      !logicNode.data.declarations.length
+      rootNode.type !== 'topLevelDeclarations' ||
+      !rootNode.data.declarations.length
     ) {
       return ''
     }
-    swiftAST = convertLogic(logicNode, helpers)
+
+    swiftAST = convertLogic(rootNode, helpers)
   }
 
-  if (!swiftAST) {
-    return ''
-  }
-
-  // only output file if we passed an output option
-  const outputFile =
-    typeof options['output'] !== 'undefined' ? helpers.fs.writeFile : undefined
+  if (!swiftAST) return ''
 
   return `import Foundation
 
@@ -45,7 +45,7 @@ export const convertFile = async (
   import AppKit
 #endif
 
-${renderSwift(swiftAST, { outputFile, reporter: helpers.reporter })}`
+${renderSwift(swiftAST, { reporter: helpers.reporter })}`
 }
 
 const convertWorkspace = async (
@@ -56,23 +56,27 @@ const convertWorkspace = async (
   }
 ): Promise<void> => {
   await Promise.all(
-    helpers.config.logicPaths
-      .concat(helpers.config.documentPaths)
-      .map(async filePath => {
-        const swiftContent = await convertFile(filePath, helpers, options)
-        if (!swiftContent) {
-          return
-        }
-        const name = upperFirst(
-          camelCase(path.basename(filePath, path.extname(filePath)))
-        )
-        const outputPath = path.join(path.dirname(filePath), `${name}.swift`)
+    helpers.module.logicFiles.map(async file => {
+      const outputText = await convertFile(file.sourcePath, helpers, options)
 
-        await helpers.fs.writeFile(outputPath, swiftContent)
-      })
+      if (!outputText) return
+
+      const name = upperFirst(
+        camelCase(path.basename(file.sourcePath, path.extname(file.sourcePath)))
+      )
+
+      const outputPath = path.join(
+        path.dirname(file.sourcePath),
+        `${name}.swift`
+      )
+
+      helpers.fs.writeFileSync(outputPath, outputText, 'utf8')
+    })
   )
 
-  await helpers.fs.copyDir(
+  copy(
+    fs,
+    helpers.fs,
     path.join(__dirname, '../../../static/swift'),
     './lona-helpers'
   )

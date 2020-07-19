@@ -4,6 +4,7 @@ import {
   decodeLogic,
   extractProgramFromAST,
   LogicAST as AST,
+  MDXAST,
 } from '@lona/serialization'
 import { IFS } from 'buffs'
 import { evaluate, EvaluationContext } from './evaluation'
@@ -23,10 +24,15 @@ type LogicFile = {
   isLibrary: boolean
   sourcePath: string
   rootNode: AST.TopLevelDeclarations
+  mdxContent: MDXAST.Content[]
 }
 
 export type ModuleContext = {
   componentFiles: LogicFile[]
+  libraryFiles: LogicFile[]
+  documentFiles: LogicFile[]
+  logicFiles: LogicFile[]
+  scope: Scope
   typeChecker: TypeChecker
   substitution: Substitution
   evaluationContext: EvaluationContext
@@ -37,33 +43,47 @@ export function createModule(
   workspaceFs: IFS,
   workspacePath: string
 ): ModuleContext {
-  const componentFiles = componentFilePaths(workspaceFs, workspacePath).map(
-    sourcePath => ({
-      isLibrary: false,
+  const libraryFiles: LogicFile[] = libraryFilePaths().map(sourcePath => ({
+    isLibrary: true,
+    sourcePath,
+    // Always read library files from the real FS
+    rootNode: decode(fs, sourcePath, decodeLogic) as AST.TopLevelDeclarations,
+    mdxContent: [],
+  }))
+
+  const componentFiles: LogicFile[] = componentFilePaths(
+    workspaceFs,
+    workspacePath
+  ).map(sourcePath => ({
+    isLibrary: false,
+    sourcePath,
+    rootNode: decode(
+      workspaceFs,
       sourcePath,
-      rootNode: decode(
-        workspaceFs,
-        sourcePath,
-        decodeLogic
-      ) as AST.TopLevelDeclarations,
-    })
-  )
+      decodeLogic
+    ) as AST.TopLevelDeclarations,
+    mdxContent: [],
+  }))
+
+  const documentFiles: LogicFile[] = documentFilePaths(
+    workspaceFs,
+    workspacePath
+  ).map(sourcePath => ({
+    isLibrary: false,
+    sourcePath,
+    ...decode(workspaceFs, sourcePath, data => {
+      const content = decodeDocument(data)
+      return {
+        rootNode: extractProgramFromAST(content),
+        mdxContent: content.children,
+      }
+    }),
+  }))
 
   const files: LogicFile[] = [
-    ...libraryFilePaths().map(sourcePath => ({
-      isLibrary: true,
-      sourcePath,
-      // Always read library files from the real FS
-      rootNode: decode(fs, sourcePath, decodeLogic) as AST.TopLevelDeclarations,
-    })),
+    ...libraryFiles,
     ...componentFiles,
-    ...documentFilePaths(workspaceFs, workspacePath).map(sourcePath => ({
-      isLibrary: false,
-      sourcePath,
-      rootNode: decode(workspaceFs, sourcePath, data =>
-        extractProgramFromAST(decodeDocument(data))
-      ),
-    })),
+    ...documentFiles,
   ]
 
   const namespace: Namespace = mergeNamespaces(
@@ -94,6 +114,12 @@ export function createModule(
 
   return {
     componentFiles,
+    libraryFiles,
+    documentFiles,
+    get logicFiles() {
+      return [...documentFiles]
+    },
+    scope,
     typeChecker,
     substitution,
     evaluationContext,
