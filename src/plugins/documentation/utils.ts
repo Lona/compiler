@@ -1,5 +1,5 @@
 import * as serialization from '@lona/serialization'
-import { nonNullable } from '../../utils'
+import { nonNullable } from '../../utils/typeHelpers'
 
 export const findChildPages = (root: {
   children: serialization.MDXAST.Content[]

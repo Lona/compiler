@@ -7,7 +7,7 @@ import { TypeCheckerVisitor } from '../typeChecker'
 import { IExpression, Node, INode } from './interfaces'
 import { createExpressionNode } from './createNode'
 import { compact } from '../../utils/sequence'
-import { nonNullable } from '../../utils'
+import { nonNullable } from '../../utils/typeHelpers'
 
 export class FunctionCallExpression extends Node<AST.FunctionCallExpression>
   implements IExpression {

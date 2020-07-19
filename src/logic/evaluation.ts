@@ -7,7 +7,7 @@ import { TypeChecker } from './typeChecker'
 import { Substitution } from './typeUnifier'
 import { Reporter } from '../utils/reporter'
 import { declarationPathTo } from '../helpers/logicAst'
-import { assertNever } from '../utils'
+import { assertNever } from '../utils/typeHelpers'
 
 const STANDARD_LIBRARY = 'standard library'
 

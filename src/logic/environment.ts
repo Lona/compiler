@@ -8,7 +8,7 @@ import { createUnificationContext } from './typeChecker'
 import { createScopeContext } from './scope'
 import { Reporter } from '../utils/reporter'
 import { makeProgram, joinPrograms } from '../helpers/logicAst'
-import { nonNullable } from '../utils'
+import { compact } from '../utils/sequence'
 
 export const STANDARD_LIBRARY = 'standard library'
 
@@ -24,7 +24,7 @@ export const run = (reporter: Reporter, programs: AST.SyntaxNode[]) => {
   )
 
   const standardLibsProgram = joinPrograms(libraryFiles)
-  const logicPrograms = programs.map(makeProgram).filter(nonNullable)
+  const logicPrograms = compact(programs.map(makeProgram))
   const programNode = joinPrograms([standardLibsProgram, ...logicPrograms])
 
   const namespace = createNamespace(programNode)

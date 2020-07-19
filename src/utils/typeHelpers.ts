@@ -5,3 +5,7 @@ export function assertNever(x: never): never {
 export function typeNever(x: never, reporter: (s: string) => void) {
   reporter('Unknown type: ' + x['type'])
 }
+
+export function nonNullable<T>(value: T): value is NonNullable<T> {
+  return value !== null && value !== undefined
+}

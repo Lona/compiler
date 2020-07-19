@@ -1,9 +1,7 @@
-import fs from 'fs'
-import { config as Config } from '../utils'
-import { defaultReporter, Reporter } from '../utils/reporter'
-import { createFSWrapper, FSWrapper } from './fs'
-import { ModuleContext, createModule } from '../logic/module'
 import { IFS } from 'buffs'
+import { createModule, ModuleContext } from '../logic/module'
+import { Config, load } from '../utils/config'
+import { defaultReporter, Reporter } from '../utils/reporter'
 
 /**
  * Helpers passed to every plugins. They contain:
@@ -15,7 +13,7 @@ import { IFS } from 'buffs'
 export type Helpers = {
   fs: IFS
   reporter: Reporter
-  config: Config.Config
+  config: Config
   module: ModuleContext
 }
 
@@ -32,7 +30,7 @@ export default async (
   const helpers: Helpers = {
     fs,
     reporter,
-    config: await Config.load(fs, workspacePath),
+    config: await load(fs, workspacePath),
     module: createModule(fs, workspacePath),
   }
 

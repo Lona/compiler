@@ -1,7 +1,6 @@
 import { LogicAST } from '@lona/serialization'
 import lowerFirst from 'lodash.lowerfirst'
 import { Helpers } from '../../helpers'
-import { nonNullable, typeNever } from '../../utils'
 import * as JSAST from './jsAst'
 import { enumName } from './format'
 import { resolveImportPath } from './utils'
@@ -11,6 +10,7 @@ import {
   findParentNode,
 } from '../../helpers/logicAst'
 import { reduce } from '../../helpers/logicTraversal'
+import { typeNever, nonNullable } from '../../utils/typeHelpers'
 
 type LogicGenerationContext = {
   isStatic: boolean

@@ -2,7 +2,7 @@ import * as serialization from '@lona/serialization'
 import { Helpers } from '../../helpers'
 import { Token } from './tokensAst'
 import * as TokenValue from './tokenValue'
-import { nonNullable } from '../../utils'
+import { nonNullable } from '../../utils/typeHelpers'
 
 export const convertDeclaration = (
   declaration: serialization.LogicAST.Declaration,

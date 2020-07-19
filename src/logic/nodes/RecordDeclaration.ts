@@ -9,7 +9,6 @@ import { FunctionArgument, StaticType } from '../staticType'
 import { TypeCheckerVisitor } from '../typeChecker'
 import { IDeclaration, Node } from './interfaces'
 import { substitute } from '../typeUnifier'
-import { nonNullable } from '../../utils'
 
 export class RecordDeclaration extends Node<AST.RecordDeclaration>
   implements IDeclaration {
@@ -81,11 +80,11 @@ export class RecordDeclaration extends Node<AST.RecordDeclaration>
     const { genericParameters, declarations, name } = this.syntaxNode.data
     const { typeChecker } = visitor
 
-    const genericNames = genericParameters
-      .map(param =>
+    const genericNames = compact(
+      genericParameters.map(param =>
         param.type === 'parameter' ? param.data.name.name : undefined
       )
-      .filter(nonNullable)
+    )
 
     const genericsInScope = genericNames.map(x => [
       x,

@@ -1,8 +1,8 @@
 import { LogicAST } from '@lona/serialization'
 import { Helpers } from '../../helpers'
 import { makeProgram } from '../../helpers/logicAst'
-import { nonNullable, typeNever } from '../../utils'
 import * as SwiftAST from './swiftAst'
+import { typeNever, nonNullable } from '../../utils/typeHelpers'
 
 type LogicGenerationContext = {
   isStatic: boolean

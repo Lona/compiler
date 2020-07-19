@@ -13,7 +13,6 @@ import { IDeclaration, Node } from './interfaces'
 import { ReturnStatement } from './ReturnStatement'
 import { FunctionParameter } from './FunctionParameter'
 import { createNode } from './createNode'
-import { nonNullable } from '../../utils'
 
 export class FunctionDeclaration extends Node<AST.FunctionDeclaration>
   implements IDeclaration {
@@ -77,11 +76,11 @@ export class FunctionDeclaration extends Node<AST.FunctionDeclaration>
     const { genericParameters, parameters, name } = this.syntaxNode.data
     const { typeChecker } = visitor
 
-    const genericNames = genericParameters
-      .map(param =>
+    const genericNames = compact(
+      genericParameters.map(param =>
         param.type === 'parameter' ? param.data.name.name : undefined
       )
-      .filter(nonNullable)
+    )
 
     const genericsInScope: [string, string][] = genericNames.map(x => [
       x,

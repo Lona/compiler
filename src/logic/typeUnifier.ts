@@ -2,7 +2,7 @@ import intersection from 'lodash.intersection'
 import { MultiMap } from './multiMap'
 import { StaticType } from './staticType'
 import { Reporter } from '../utils/reporter'
-import { assertNever, nonNullable } from '../utils'
+import { assertNever, nonNullable } from '../utils/typeHelpers'
 
 export type Constraint = {
   head: StaticType

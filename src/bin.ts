@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
 import yargs from 'yargs'
-
-import { getConfig, convert } from './index'
+import { convert, getConfig } from './index'
 
 yargs
   .scriptName('@lona/compiler')
@@ -23,7 +22,7 @@ yargs
       }
       getConfig(argv.workspace)
         .then(config => {
-          console.log(JSON.stringify(config, null, '  '))
+          console.log(JSON.stringify(config, null, 2))
         })
         .catch(err => {
           console.error(err)
@@ -59,7 +58,7 @@ yargs
             if (typeof result === 'string') {
               console.log(result)
             } else {
-              console.log(JSON.stringify(result, null, '  '))
+              console.log(JSON.stringify(result, null, 2))
             }
           }
         })

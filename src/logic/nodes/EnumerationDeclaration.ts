@@ -8,7 +8,6 @@ import { StaticType } from '../staticType'
 import { TypeCheckerVisitor } from '../typeChecker'
 import { substitute } from '../typeUnifier'
 import { IDeclaration, Node } from './interfaces'
-import { nonNullable } from '../../utils'
 
 export class EnumerationDeclaration extends Node<AST.EnumerationDeclaration>
   implements IDeclaration {
@@ -62,11 +61,11 @@ export class EnumerationDeclaration extends Node<AST.EnumerationDeclaration>
     const { genericParameters, cases, name } = this.syntaxNode.data
     const { typeChecker } = visitor
 
-    const genericNames = genericParameters
-      .map(param =>
+    const genericNames = compact(
+      genericParameters.map(param =>
         param.type === 'parameter' ? param.data.name.name : undefined
       )
-      .filter(nonNullable)
+    )
 
     const genericsInScope: [string, string][] = genericNames.map(x => [
       x,
