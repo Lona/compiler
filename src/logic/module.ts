@@ -1,4 +1,5 @@
 import fs from 'fs'
+import path from 'path'
 import {
   decodeDocument,
   decodeLogic,
@@ -6,14 +7,8 @@ import {
   LogicAST as AST,
   MDXAST,
 } from '@lona/serialization'
-import { IFS } from 'buffs'
+import { IFS, match } from 'buffs'
 import { evaluate, EvaluationContext } from './evaluation'
-import {
-  componentFilePaths,
-  decode,
-  documentFilePaths,
-  libraryFilePaths,
-} from './files'
 import { createNamespace, mergeNamespaces, Namespace } from './namespace'
 import { createScopeContext, mergeScopes, Scope } from './scope'
 import { createUnificationContext, TypeChecker } from './typeChecker'
@@ -47,7 +42,9 @@ export function createModule(
     isLibrary: true,
     sourcePath,
     // Always read library files from the real FS
-    rootNode: decode(fs, sourcePath, decodeLogic) as AST.TopLevelDeclarations,
+    rootNode: decodeLogic(
+      fs.readFileSync(sourcePath, 'utf8')
+    ) as AST.TopLevelDeclarations,
     mdxContent: [],
   }))
 
@@ -57,10 +54,8 @@ export function createModule(
   ).map(sourcePath => ({
     isLibrary: false,
     sourcePath,
-    rootNode: decode(
-      workspaceFs,
-      sourcePath,
-      decodeLogic
+    rootNode: decodeLogic(
+      workspaceFs.readFileSync(sourcePath, 'utf8')
     ) as AST.TopLevelDeclarations,
     mdxContent: [],
   }))
@@ -68,17 +63,16 @@ export function createModule(
   const documentFiles: LogicFile[] = documentFilePaths(
     workspaceFs,
     workspacePath
-  ).map(sourcePath => ({
-    isLibrary: false,
-    sourcePath,
-    ...decode(workspaceFs, sourcePath, data => {
-      const content = decodeDocument(data)
-      return {
-        rootNode: extractProgramFromAST(content),
-        mdxContent: content.children,
-      }
-    }),
-  }))
+  ).map(sourcePath => {
+    const decoded = decodeDocument(workspaceFs.readFileSync(sourcePath, 'utf8'))
+
+    return {
+      isLibrary: false,
+      sourcePath,
+      rootNode: extractProgramFromAST(decoded),
+      mdxContent: decoded.children,
+    }
+  })
 
   const files: LogicFile[] = [
     ...libraryFiles,
@@ -128,4 +122,31 @@ export function createModule(
       scope.undefinedMemberExpressions.size === 0 &&
       scope.undefinedTypeIdentifiers.size === 0,
   }
+}
+
+function componentFilePaths(fs: IFS, workspacePath: string): string[] {
+  return match(fs, workspacePath, { includePatterns: ['**/*.cmp'] }).map(file =>
+    path.join(workspacePath, file)
+  )
+}
+
+// TODO: Read logic files
+// function logicFilePaths(fs: IFS, workspacePath: string): string[] {
+//   return match(fs, workspacePath, {
+//     includePatterns: ['**/*.logic'],
+//   }).map(file => path.join(workspacePath, file))
+// }
+
+function documentFilePaths(fs: IFS, workspacePath: string): string[] {
+  return match(fs, workspacePath, { includePatterns: ['**/*.md'] }).map(file =>
+    path.join(workspacePath, file)
+  )
+}
+
+function libraryFilePaths(): string[] {
+  const libraryPath = path.join(__dirname, 'library')
+
+  return match(fs, libraryPath, { includePatterns: ['**/*.logic'] }).map(file =>
+    path.join(libraryPath, file)
+  )
 }
