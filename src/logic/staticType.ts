@@ -9,7 +9,7 @@ export type Variable = {
 }
 
 export type Constructor = {
-  type: 'constant'
+  type: 'constructor'
   name: string
   parameters: StaticType[]
 }
@@ -28,55 +28,55 @@ export type Function = {
 export type StaticType = Variable | Constructor | Generic | Function
 
 export const unit: Constructor = {
-  type: 'constant',
+  type: 'constructor',
   name: 'Void',
   parameters: [],
 }
 
 export const bool: Constructor = {
-  type: 'constant',
+  type: 'constructor',
   name: 'Boolean',
   parameters: [],
 }
 
 export const number: Constructor = {
-  type: 'constant',
+  type: 'constructor',
   name: 'Number',
   parameters: [],
 }
 
 export const string: Constructor = {
-  type: 'constant',
+  type: 'constructor',
   name: 'String',
   parameters: [],
 }
 
 export const color: Constructor = {
-  type: 'constant',
+  type: 'constructor',
   name: 'Color',
   parameters: [],
 }
 
 export const shadow: Constructor = {
-  type: 'constant',
+  type: 'constructor',
   name: 'Shadow',
   parameters: [],
 }
 
 export const textStyle: Constructor = {
-  type: 'constant',
+  type: 'constructor',
   name: 'TextStyle',
   parameters: [],
 }
 
 export const optional = (type: StaticType): Constructor => ({
-  type: 'constant',
+  type: 'constructor',
   name: 'Optional',
   parameters: [type],
 })
 
 export const array = (typeUnification: StaticType): Constructor => ({
-  type: 'constant',
+  type: 'constructor',
   name: 'Array',
   parameters: [typeUnification],
 })

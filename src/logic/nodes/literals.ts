@@ -90,7 +90,7 @@ export class ArrayLiteral extends Node<AST.ArrayLiteral> implements ILiteral {
     }
 
     visitor.setType(id, {
-      type: 'constant',
+      type: 'constructor',
       name: 'Array',
       parameters: [elementType],
     })

@@ -18,7 +18,7 @@ export function evaluateIsTrue(
   const condition = context.evaluate(expression.data.id)
   return (
     (condition &&
-      condition.type.type === 'constant' &&
+      condition.type.type === 'constructor' &&
       condition.type.name === 'Boolean' &&
       condition.memory.type === 'bool' &&
       condition.memory.value) ||

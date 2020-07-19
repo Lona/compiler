@@ -31,6 +31,10 @@ let x: Array<Number> = []`
       result = substitute(substitution, result)
     }
 
-    expect(result).toEqual({ type: 'constant', name: 'Number', parameters: [] })
+    expect(result).toEqual({
+      type: 'constructor',
+      name: 'Number',
+      parameters: [],
+    })
   })
 })

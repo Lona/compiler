@@ -78,7 +78,7 @@ export class EnumerationDeclaration extends Node<AST.EnumerationDeclaration>
     }))
 
     const returnType: StaticType = {
-      type: 'constant',
+      type: 'constructor',
       name: name.name,
       parameters: universalTypes,
     }

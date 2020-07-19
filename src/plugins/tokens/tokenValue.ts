@@ -25,7 +25,7 @@ const getOptional = (value?: Value) => {
     return undefined
   }
   if (
-    value.type.type === 'constant' &&
+    value.type.type === 'constructor' &&
     value.type.name === 'Optional' &&
     value.memory.type === 'enum' &&
     value.memory.value === 'value' &&
@@ -41,7 +41,7 @@ const getFontWeight = (value?: Value): TokenAST.FontWeight | undefined => {
     return undefined
   }
   if (
-    value.type.type !== 'constant' ||
+    value.type.type !== 'constructor' ||
     value.type.name !== 'FontWeight' ||
     value.memory.type !== 'enum'
   ) {
@@ -80,7 +80,7 @@ const getShadowValue = (
     return undefined
   }
   if (
-    value.type.type !== 'constant' ||
+    value.type.type !== 'constructor' ||
     value.type.name !== 'Shadow' ||
     value.memory.type !== 'record'
   ) {
@@ -112,7 +112,7 @@ const getTextStyleValue = (
     return undefined
   }
   if (
-    value.type.type !== 'constant' ||
+    value.type.type !== 'constructor' ||
     value.type.name !== 'TextStyle' ||
     value.memory.type !== 'record'
   ) {

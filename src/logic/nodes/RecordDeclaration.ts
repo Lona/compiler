@@ -118,7 +118,7 @@ export class RecordDeclaration extends Node<AST.RecordDeclaration>
     })
 
     const returnType: StaticType = {
-      type: 'constant',
+      type: 'constructor',
       name: name.name,
       parameters: universalTypes,
     }

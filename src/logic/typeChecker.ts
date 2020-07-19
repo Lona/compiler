@@ -109,7 +109,7 @@ export class TypeCheckerVisitor {
         this.unificationType(genericsInScope, getName, arg)
       )
       return {
-        type: 'constant',
+        type: 'constructor',
         name: string,
         parameters,
       }
@@ -130,7 +130,7 @@ export class TypeCheckerVisitor {
     if (type.type === 'variable') {
       return []
     }
-    if (type.type === 'constant') {
+    if (type.type === 'constructor') {
       return type.parameters
         .map(this.genericNames)
         .reduce((prev, x) => prev.concat(x), [])

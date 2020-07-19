@@ -25,9 +25,9 @@ export function substitute(
     return resolvedType
   }
 
-  if (resolvedType.type === 'constant') {
+  if (resolvedType.type === 'constructor') {
     return {
-      type: 'constant',
+      type: 'constructor',
       name: resolvedType.name,
       parameters: resolvedType.parameters.map(x => substitute(substitution, x)),
     }
@@ -128,7 +128,7 @@ export const unify = (
         tail: tail.returnType,
         origin: constraint,
       })
-    } else if (head.type === 'constant' && tail.type === 'constant') {
+    } else if (head.type === 'constructor' && tail.type === 'constructor') {
       if (head.name !== tail.name) {
         reporter.error(JSON.stringify(constraint, null, '  '))
         throw new Error(
@@ -157,8 +157,8 @@ export const unify = (
     } else if (tail.type === 'variable') {
       substitution.set(tail, head)
     } else if (
-      (head.type === 'constant' && tail.type === 'function') ||
-      (head.type === 'function' && tail.type === 'constant')
+      (head.type === 'constructor' && tail.type === 'function') ||
+      (head.type === 'function' && tail.type === 'constructor')
     ) {
       throw new Error(`[UnificationError] [KindMismatch] ${head} ${tail}`)
     }

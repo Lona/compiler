@@ -52,7 +52,7 @@ export namespace Encode {
 export namespace Decode {
   export const string = ({ type, memory }: Value): string | undefined => {
     if (
-      type.type === 'constant' &&
+      type.type === 'constructor' &&
       type.name === 'String' &&
       memory.type === 'string'
     ) {
@@ -62,7 +62,7 @@ export namespace Decode {
 
   export const color = ({ type, memory }: Value): string | undefined => {
     if (
-      type.type === 'constant' &&
+      type.type === 'constructor' &&
       type.name === 'Color' &&
       memory.type === 'record'
     ) {

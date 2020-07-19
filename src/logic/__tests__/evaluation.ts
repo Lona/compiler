@@ -44,7 +44,7 @@ describe('Logic / Evaluate', () => {
     const evaluation = standardEvaluate(rootNode)
 
     expect(evaluation.evaluate(initializerId)).toEqual({
-      type: { type: 'constant', name: 'Number', parameters: [] },
+      type: { type: 'constructor', name: 'Number', parameters: [] },
       memory: { type: 'number', value: 4 },
     })
   })
@@ -71,7 +71,7 @@ let x: Foo = Foo.bar()
     const evaluation = standardEvaluate(rootNode)
 
     expect(evaluation.evaluate(initializerId)).toEqual({
-      type: { type: 'constant', name: 'Foo', parameters: [] },
+      type: { type: 'constructor', name: 'Foo', parameters: [] },
       memory: { type: 'enum', value: 'bar', data: [] },
     })
   })

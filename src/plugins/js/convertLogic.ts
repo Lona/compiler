@@ -96,7 +96,7 @@ function evaluateColor(
 
   if (
     !color ||
-    color.type.type !== 'constant' ||
+    color.type.type !== 'constructor' ||
     color.type.name !== 'Color' ||
     color.memory.type !== 'record' ||
     !color.memory.value.value ||
