@@ -1,16 +1,10 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { isWorkspacePath } from './utils/workspace'
-import { load } from './utils/config'
+import { load, Config } from './utils/config'
 
-export const getConfig = async (workspacePath: string) => {
+export const getConfig = (workspacePath: string): Config | undefined => {
   const resolvedPath = path.resolve(workspacePath)
 
-  if (!(await isWorkspacePath(resolvedPath))) {
-    throw new Error(
-      'The path provided is not a Lona Workspace. A workspace must contain a `lona.json` file.'
-    )
-  }
-
-  return await load(fs, resolvedPath)
+  return isWorkspacePath(resolvedPath) ? load(fs, resolvedPath) : undefined
 }

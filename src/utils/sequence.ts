@@ -9,15 +9,3 @@ export function compact<T>(input: (T | false | null | undefined)[]): T[] {
 
   return output
 }
-
-export function zip<A, B>(a: Array<A>, b: Array<B>): [A, B][] {
-  const length = Math.max(a.length, b.length)
-
-  const output: [A, B][] = []
-
-  for (let i = 0; i < length; i++) {
-    output.push([a[i], b[i]])
-  }
-
-  return output
-}

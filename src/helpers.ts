@@ -17,20 +17,20 @@ export type Helpers = {
   module: ModuleContext
 }
 
-export default async (
+export default (
   fs: IFS,
   workspacePath: string,
   options: {
     outputPath?: unknown
     reporter?: Reporter
   } = {}
-): Promise<Helpers> => {
+): Helpers => {
   const { reporter = defaultReporter } = options
 
   const helpers: Helpers = {
     fs,
     reporter,
-    config: await load(fs, workspacePath),
+    config: load(fs, workspacePath),
     module: createModule(fs, workspacePath),
   }
 

@@ -18,7 +18,7 @@ export type Config = {
 /**
  * Load the workspace config file, `lona.json`.
  */
-export async function load(fs: IFS, workspacePath: string): Promise<Config> {
+export function load(fs: IFS, workspacePath: string): Config {
   // TODO: Validate lona.json
   const lonaFile = JSON.parse(
     fs.readFileSync(path.join(workspacePath, 'lona.json'), 'utf8')

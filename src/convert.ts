@@ -16,18 +16,18 @@ export async function convert<ExpectedOptions, Result>(
 ): Promise<unknown> {
   const resolvedPath = path.resolve(workspacePath)
 
-  const pluginFunction =
-    typeof plugin === 'string' ? findPlugin<ExpectedOptions>(plugin) : plugin
-
-  if (!(await isWorkspacePath(resolvedPath))) {
+  if (!isWorkspacePath(resolvedPath)) {
     throw new Error(
       'The path provided is not a Lona Workspace. A workspace must contain a `lona.json` file.'
     )
   }
 
-  const helpers = await Helpers(fs, resolvedPath, {
+  const helpers = Helpers(fs, resolvedPath, {
     outputPath: options.output,
   })
+
+  const pluginFunction =
+    typeof plugin === 'string' ? findPlugin<ExpectedOptions>(plugin) : plugin
 
   return pluginFunction.convertWorkspace(workspacePath, helpers, {
     ...((helpers.config.format || {})[pluginFunction.format] || {}),
