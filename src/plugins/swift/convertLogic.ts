@@ -1,6 +1,6 @@
 import { LogicAST } from '@lona/serialization'
 import { Helpers } from '../../helpers'
-import { makeProgram } from '../../helpers/logicAst'
+import { makeProgram } from '../../logic/ast'
 import * as SwiftAST from './swiftAst'
 import { typeNever, nonNullable } from '../../utils/typeHelpers'
 

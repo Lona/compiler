@@ -4,11 +4,7 @@ import { Helpers } from '../../helpers'
 import * as JSAST from './jsAst'
 import { enumName } from './format'
 import { resolveImportPath } from './utils'
-import {
-  declarationPathTo,
-  makeProgram,
-  findParentNode,
-} from '../../helpers/logicAst'
+import { declarationPathTo, makeProgram, findParentNode } from '../../logic/ast'
 import { typeNever, nonNullable } from '../../utils/typeHelpers'
 import { visit } from '../../logic/traversal'
 

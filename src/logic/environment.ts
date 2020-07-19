@@ -7,7 +7,7 @@ import { createNamespace } from './namespace'
 import { createUnificationContext } from './typeChecker'
 import { createScopeContext } from './scope'
 import { Reporter } from '../utils/reporter'
-import { makeProgram, joinPrograms } from '../helpers/logicAst'
+import { makeProgram, joinPrograms } from './ast'
 import { compact } from '../utils/sequence'
 
 export const STANDARD_LIBRARY = 'standard library'

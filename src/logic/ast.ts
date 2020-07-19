@@ -1,6 +1,5 @@
 import { LogicAST } from '@lona/serialization'
 import { uuid } from '../utils/uuid'
-export { LogicAST as AST }
 
 /**
  * Takes an array of programs and returns a program containing

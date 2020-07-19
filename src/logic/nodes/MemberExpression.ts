@@ -3,7 +3,7 @@ import { ScopeVisitor } from '../scopeVisitor'
 import { IExpression, Node } from './interfaces'
 import { TypeCheckerVisitor } from '../typeChecker'
 import { EvaluationVisitor } from '../evaluationVisitor'
-import { flattenedMemberExpression } from '../../helpers/logicAst'
+import { flattenedMemberExpression } from '../ast'
 import { EnterReturnValue } from 'tree-visit'
 
 export class MemberExpression extends Node<AST.MemberExpression>

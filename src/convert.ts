@@ -13,10 +13,10 @@ export async function convert<ExpectedOptions, Result>(
     output?: string
     [argName: string]: unknown
   } = {}
-) {
+): Promise<unknown> {
   const resolvedPath = path.resolve(workspacePath)
 
-  const formatter =
+  const pluginFunction =
     typeof plugin === 'string' ? findPlugin<ExpectedOptions>(plugin) : plugin
 
   if (!(await isWorkspacePath(resolvedPath))) {
@@ -29,8 +29,8 @@ export async function convert<ExpectedOptions, Result>(
     outputPath: options.output,
   })
 
-  return formatter.convertWorkspace(workspacePath, helpers, {
-    ...((helpers.config.format || {})[formatter.format] || {}),
+  return pluginFunction.convertWorkspace(workspacePath, helpers, {
+    ...((helpers.config.format || {})[pluginFunction.format] || {}),
     ...(options || {}),
   })
 }

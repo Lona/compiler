@@ -1,7 +1,7 @@
 import { IFS } from 'buffs'
-import { createModule, ModuleContext } from '../logic/module'
-import { Config, load } from '../utils/config'
-import { defaultReporter, Reporter } from '../utils/reporter'
+import { createModule, ModuleContext } from './logic/module'
+import { Config, load } from './utils/config'
+import { defaultReporter, Reporter } from './utils/reporter'
 
 /**
  * Helpers passed to every plugins. They contain:

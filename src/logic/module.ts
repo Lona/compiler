@@ -18,7 +18,7 @@ import { createNamespace, mergeNamespaces, Namespace } from './namespace'
 import { createScopeContext, mergeScopes, Scope } from './scope'
 import { createUnificationContext, TypeChecker } from './typeChecker'
 import { Substitution, unify } from './typeUnifier'
-import { joinPrograms, makeProgram } from '../helpers/logicAst'
+import { joinPrograms, makeProgram } from './ast'
 
 type LogicFile = {
   isLibrary: boolean
