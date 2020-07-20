@@ -91,6 +91,7 @@ export function createModule(
     ...libraryFiles,
     ...componentFiles,
     ...documentFiles,
+    ...logicFiles,
   ]
 
   const namespace: Namespace = mergeNamespaces(
@@ -157,9 +158,9 @@ function documentFilePaths(fs: IFS, workspacePath: string): string[] {
 }
 
 function libraryFilePaths(): string[] {
-  const libraryPath = path.join(__dirname, '../../static/logic')
-
-  return match(fs, libraryPath, { includePatterns: ['**/*.logic'] }).map(file =>
-    path.join(libraryPath, file)
-  )
+  return match(fs, STANDARD_LIBRARY_PATH, {
+    includePatterns: ['**/*.logic'],
+  }).map(file => path.join(STANDARD_LIBRARY_PATH, file))
 }
+
+export const STANDARD_LIBRARY_PATH = path.join(__dirname, '../../static/logic')

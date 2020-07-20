@@ -1,15 +1,19 @@
 import { LogicAST as AST } from '@lona/serialization'
-import * as Serialization from '@lona/serialization'
-import { EvaluationContext } from '../evaluation'
+import { createFs } from 'buffs'
+import { createModule, ModuleContext } from '../module'
 import { UUID } from '../namespace'
 import { findNode } from '../traversal'
-import { run } from '../environment'
 
-function getInitializerId(
-  rootNode: AST.SyntaxNode,
-  variableName: string
-): UUID {
-  const variable = findNode(rootNode, node => {
+function getInitializerId(module: ModuleContext, variableName: string): UUID {
+  const logicFile = module.logicFiles.find(file =>
+    file.sourcePath.endsWith('Example.logic')
+  )
+
+  if (!logicFile) {
+    throw new Error(`Failed to find Example.logic`)
+  }
+
+  const variable = findNode(logicFile.rootNode, node => {
     return node.type === 'variable' && node.data.name.name === variableName
   }) as AST.VariableDeclaration | undefined
 
@@ -26,24 +30,22 @@ function getInitializerId(
   return initializer.data.id
 }
 
-function standardEvaluate(rootNode: AST.SyntaxNode): EvaluationContext {
-  const evaluation = run(console, [rootNode])
+function moduleWithFile(file: string): ModuleContext {
+  const source = createFs({
+    'lona.json': JSON.stringify({}),
+    'Example.logic': file,
+  })
 
-  if (!evaluation) {
-    throw new Error('Failed to evaluate')
-  }
-
-  return evaluation
+  return createModule(source, '/')
 }
 
 describe('Logic / Evaluate', () => {
   it('evaluates number literals', () => {
     const file = `let x: Number = 4`
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    expect(evaluation.evaluate(initializerId)).toEqual({
+    expect(module.evaluationContext.evaluate(initializerId)).toEqual({
       type: { type: 'constructor', name: 'Number', parameters: [] },
       memory: { type: 'number', value: 4 },
     })
@@ -51,11 +53,10 @@ describe('Logic / Evaluate', () => {
 
   it('evaluates color literals', () => {
     const file = `let x: Color = #color(css: "red")`
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    expect(evaluation.evaluate(initializerId)).toMatchSnapshot()
+    expect(module.evaluationContext.evaluate(initializerId)).toMatchSnapshot()
   })
 
   it('evaluates enums', () => {
@@ -65,12 +66,11 @@ enum Foo {
 }
 
 let x: Foo = Foo.bar()
-    `
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+`
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    expect(evaluation.evaluate(initializerId)).toEqual({
+    expect(module.evaluationContext.evaluate(initializerId)).toEqual({
       type: { type: 'constructor', name: 'Foo', parameters: [] },
       memory: { type: 'enum', value: 'bar', data: [] },
     })
@@ -84,11 +84,10 @@ func test() -> Number {
 
 let x: Number = test()
 `
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    const result = evaluation.evaluate(initializerId)
+    const result = module.evaluationContext.evaluate(initializerId)
 
     expect(result).toMatchSnapshot()
   })
@@ -101,28 +100,26 @@ func test(myNumber: Number) -> Number {
 
 let x: Number = test(myNumber: 42)
 `
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    const result = evaluation.evaluate(initializerId)
+    const result = module.evaluationContext.evaluate(initializerId)
 
     expect(result).toMatchSnapshot()
   })
 
   it('evaluates custom function with argument default value', () => {
     const file = `
-  func test(myNumber: Number = 42) -> Number {
-    return myNumber
-  }
+func test(myNumber: Number = 42) -> Number {
+  return myNumber
+}
 
-  let x: Number = test()
-  `
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+let x: Number = test()
+`
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    const result = evaluation.evaluate(initializerId)
+    const result = module.evaluationContext.evaluate(initializerId)
 
     expect(result).toMatchSnapshot()
   })
@@ -131,79 +128,73 @@ let x: Number = test(myNumber: 42)
     const file = `
 let x: DimensionSize = DimensionSize.fixed(100)
 `
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    expect(evaluation.evaluate(initializerId)).toMatchSnapshot()
+    expect(module.evaluationContext.evaluate(initializerId)).toMatchSnapshot()
   })
 
   it('evaluates ElementParameter', () => {
     const file = `
-  let x: ElementParameter = ElementParameter.number("height", 20)
-  `
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+let x: ElementParameter = ElementParameter.number("height", 20)
+`
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    const result = evaluation.evaluate(initializerId)
+    const result = module.evaluationContext.evaluate(initializerId)
 
     expect(result).toMatchSnapshot()
   })
 
   it('evaluates Element', () => {
     const file = `
-  let x: Element = Element(type: "Test", parameters: [])
-  `
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+let x: Element = Element(type: "Test", parameters: [])
+`
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    const result = evaluation.evaluate(initializerId)
+    const result = module.evaluationContext.evaluate(initializerId)
 
     expect(result).toMatchSnapshot()
   })
 
   it('evaluates Padding', () => {
     const file = `
-  let x: Padding = Padding(top: 10, right: 20, bottom: 30, left: 40)
-  `
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+let x: Padding = Padding(top: 10, right: 20, bottom: 30, left: 40)
+`
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    const result = evaluation.evaluate(initializerId)
+    const result = module.evaluationContext.evaluate(initializerId)
 
     expect(result).toMatchSnapshot()
   })
 
   it('evaluates function that returns Padding', () => {
     const file = `
-  let x: Padding = Padding.size(value: 8)
-  `
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+let x: Padding = Padding.size(value: 8)
+`
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    const result = evaluation.evaluate(initializerId)
+    const result = module.evaluationContext.evaluate(initializerId)
 
     expect(result).toMatchSnapshot()
   })
 
   it('evaluates View', () => {
     const file = `
-  let width: DimensionSize = DimensionSize.fixed(20)
-  let height: DimensionSize = DimensionSize.fixed(20)
-  let name: String = "name"
-  let padding: Padding = Padding.size(value: 8)
-  let backgroundColor: Color = #color(css: "red")
-  let x: Element = View(__name: name, width: width, height: height, padding: padding, backgroundColor: backgroundColor, children: [])
-  `
-    const rootNode = Serialization.decodeLogic(file)
-    const initializerId = getInitializerId(rootNode, 'x')
-    const evaluation = standardEvaluate(rootNode)
+let width: DimensionSize = DimensionSize.fixed(20)
+let height: DimensionSize = DimensionSize.fixed(20)
+let name: String = "name"
+let padding: Padding = Padding.size(value: 8)
+let backgroundColor: Color = #color(css: "red")
+let x: Element = View(__name: name, width: width, height: height, padding: padding, backgroundColor: backgroundColor, children: [])
+`
+    const module = moduleWithFile(file)
+    const initializerId = getInitializerId(module, 'x')
 
-    const result = evaluation.evaluate(initializerId)
+    const result = module.evaluationContext.evaluate(initializerId)
 
     expect(result).toMatchSnapshot()
   })

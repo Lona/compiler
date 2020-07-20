@@ -6,10 +6,13 @@ import path from 'path'
 import { createNamespace } from '../namespace'
 import { createScopeContext } from '../scope'
 import { findNode } from '../traversal'
+import { STANDARD_LIBRARY_PATH } from '../module'
 
 function readLibrary(name: string): string {
-  const librariesPath = path.join(__dirname, '../library')
-  return fs.readFileSync(path.join(librariesPath, `${name}.logic`), 'utf8')
+  return fs.readFileSync(
+    path.join(STANDARD_LIBRARY_PATH, `${name}.logic`),
+    'utf8'
+  )
 }
 
 describe('Logic / Scope', () => {
