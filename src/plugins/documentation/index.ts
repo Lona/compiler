@@ -4,43 +4,9 @@ import { Plugin } from '../index'
 import { ConvertedWorkspace, ConvertedFile } from './documentationAst'
 import { convert } from './convert'
 import { findChildPages } from './utils'
+import { LogicFile } from '../../logic/module'
 
 export { ConvertedWorkspace, ConvertedFile }
-
-export const convertFile = async (
-  filePath: string,
-  helpers: Helpers
-): Promise<ConvertedFile> => {
-  const logicFile = helpers.module.documentFiles.find(
-    file => file.sourcePath === filePath
-  )
-
-  if (!logicFile) {
-    throw new Error(`${filePath} is not a document file`)
-  }
-
-  const name = path.basename(filePath, path.extname(filePath))
-  const outputPath = path.join(path.dirname(filePath), `${name}.mdx`)
-
-  const root = { children: logicFile.mdxContent }
-
-  const value = {
-    mdxString: convert(root, helpers),
-    children: findChildPages(root),
-  }
-
-  const file: ConvertedFile = {
-    inputPath: filePath,
-    outputPath,
-    name,
-    contents: {
-      type: 'documentationPage',
-      value,
-    },
-  }
-
-  return file
-}
 
 // depending on whether we have an output or not,
 // we return the doc or write it to disk
@@ -51,6 +17,7 @@ function convertWorkspace(
     [key: string]: unknown
   } & { output?: never }
 ): Promise<ConvertedWorkspace>
+
 function convertWorkspace(
   workspacePath: string,
   helpers: Helpers,
@@ -67,27 +34,53 @@ async function convertWorkspace(
   }
 ): Promise<ConvertedWorkspace | void> {
   let workspace: ConvertedWorkspace = {
-    files: await Promise.all(
-      helpers.module.documentFiles.map(file =>
-        convertFile(file.sourcePath, helpers)
-      )
+    files: helpers.module.documentFiles.map(file =>
+      convertFile(workspacePath, file, helpers)
     ),
     flatTokensSchemaVersion: '0.0.1',
   }
 
-  if (!options.output) {
-    return workspace
-  }
+  if (typeof options.output !== 'string') return workspace
 
-  await helpers.fs.writeFileSync(
-    'docs.json',
-    JSON.stringify(workspace, null, '  '),
+  helpers.fs.writeFileSync(
+    options.output,
+    JSON.stringify(workspace, null, 2),
     'utf8'
   )
 }
-type ExpectedOptions = {}
-const plugin: Plugin<ExpectedOptions, ConvertedWorkspace | void> = {
+
+function convertFile(
+  workspacePath: string,
+  file: LogicFile,
+  helpers: Helpers
+): ConvertedFile {
+  const filePath = file.sourcePath
+  const name = path.basename(filePath, path.extname(filePath))
+  const outputPath = path.join(path.dirname(filePath), `${name}.mdx`)
+
+  const root = { children: file.mdxContent }
+
+  const value = {
+    mdxString: convert(root, helpers),
+    children: findChildPages(root),
+  }
+
+  const result: ConvertedFile = {
+    inputPath: path.relative(workspacePath, filePath),
+    outputPath: path.relative(workspacePath, outputPath),
+    name,
+    contents: {
+      type: 'documentationPage',
+      value,
+    },
+  }
+
+  return result
+}
+
+const plugin: Plugin<{}, ConvertedWorkspace | void> = {
   format: 'documentation',
   convertWorkspace,
 }
+
 export default plugin

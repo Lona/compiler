@@ -45,8 +45,8 @@ describe('Tokens', () => {
 
     await plugin.convertWorkspace('/', helpers, { output: '/tokens.json' })
 
-    const tokens = JSON.parse(source.readFileSync('/tokens.json', 'utf8'))
+    const output = JSON.parse(source.readFileSync('/tokens.json', 'utf8'))
 
-    expect(tokens).toMatchSnapshot()
+    expect(output).toMatchSnapshot()
   })
 })
