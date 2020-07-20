@@ -16,9 +16,8 @@
     "prepublishOnly": "npm run build",
     "test": "jest",
     "test:watch": "jest --watch",
-    "snapshot": "npm run snapshot:swift && npm run snapshot:js",
-    "snapshot:swift": "ts-node src/bin.ts convert ./examples/workspace --format=swift --output=./examples/generated/swift",
-    "snapshot:js": "ts-node src/bin.ts convert ./examples/workspace --format=js --output=./examples/generated/js"
+    "snapshot": "npm run snapshot:swift",
+    "snapshot:swift": "ts-node src/bin.ts convert ./examples/workspace --format=swift --output=./examples/generated/swift"
   },
   "repository": "https://github.com/Lona/compiler",
   "author": "Mathieu Dutour",
