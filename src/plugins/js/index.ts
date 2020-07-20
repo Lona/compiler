@@ -63,11 +63,6 @@ const convertWorkspace = async (
       .join('\n\n')}`,
     'utf8'
   )
-
-  // await helpers.fs.copyDir(
-  //   path.join(__dirname, '../../../static/js'),
-  //   './lona-helpers'
-  // )
 }
 
 function convertFile(file: LogicFile, helpers: Helpers): string {

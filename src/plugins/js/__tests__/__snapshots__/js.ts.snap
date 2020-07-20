@@ -1,5 +1,54 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`JS converts workspace 1`] = `
+Object {
+  "/output/Colors.js": "var primary = \\"#45CBFF\\";
+module.exports.primary = primary;
+
+var accent = primary;
+module.exports.accent = accent;
+
+var testSaturate = color.saturate(accent, 0.3);
+module.exports.testSaturate = testSaturate;
+",
+  "/output/Shadows.js": "var small = shadow(0, 2, 2, 0, primary);
+module.exports.small = small;
+",
+  "/output/TextStyles.js": "var heading1 = textStyle(optional.value(\\"Helvetica\\"), optional.value(28), fontWeight.w700, optional.value(\\"teal\\"));
+module.exports.heading1 = heading1;
+",
+  "/output/index.js": "var __lona_import_0 = require(\\"./Colors\\");
+Object.keys(__lona_import_0).forEach(function (key) {
+  Object.defineProperty(module.exports, key, {
+    enumerable: true,
+    get: function get() {
+      return __lona_import_0[key];
+    }
+  });
+})
+
+var __lona_import_1 = require(\\"./Shadows\\");
+Object.keys(__lona_import_1).forEach(function (key) {
+  Object.defineProperty(module.exports, key, {
+    enumerable: true,
+    get: function get() {
+      return __lona_import_1[key];
+    }
+  });
+})
+
+var __lona_import_2 = require(\\"./TextStyles\\");
+Object.keys(__lona_import_2).forEach(function (key) {
+  Object.defineProperty(module.exports, key, {
+    enumerable: true,
+    get: function get() {
+      return __lona_import_2[key];
+    }
+  });
+})",
+}
+`;
+
 exports[`JS generates js 1`] = `
 "var __lona_import_0 = require(\\"./Colors\\");
 Object.keys(__lona_import_0).forEach(function (key) {
