@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Logic / Implementations implements the standard library 1`] = `
+Array [
+  "Color.setHue",
+  "Color.setSaturation",
+  "Color.setLightness",
+  "Color.fromHSL",
+  "Boolean.or",
+  "Boolean.and",
+  "Number.range",
+  "String.concat",
+  "Array.at",
+]
+`;

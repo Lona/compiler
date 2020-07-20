@@ -28,6 +28,7 @@ export type ModuleContext = {
   documentFiles: LogicFile[]
   logicFiles: LogicFile[]
   sourceFiles: LogicFile[]
+  namespace: Namespace
   scope: Scope
   typeChecker: TypeChecker
   substitution: Substitution
@@ -129,6 +130,7 @@ export function createModule(
     get sourceFiles() {
       return [...documentFiles, ...logicFiles]
     },
+    namespace,
     scope,
     typeChecker,
     substitution,
