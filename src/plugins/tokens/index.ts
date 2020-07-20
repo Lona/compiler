@@ -39,10 +39,10 @@ async function convertWorkspace(
     flatTokensSchemaVersion: '0.0.1',
   }
 
-  if (!options.output) return workspace
+  if (typeof options.output !== 'string') return workspace
 
   helpers.fs.writeFileSync(
-    'tokens.json',
+    options.output,
     JSON.stringify(workspace, null, 2),
     'utf8'
   )

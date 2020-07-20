@@ -1,6 +1,10 @@
+import fs from 'fs'
+import path from 'path'
+import { createFs, copy } from 'buffs'
 import Helpers from '../../../helpers'
 import plugin from '../index'
-import { createFs } from 'buffs'
+
+const workspacePath = path.join(__dirname, '../../../../examples/workspace')
 
 const tokensBlock = (string: string) => '```tokens\n' + string + '\n```\n'
 
@@ -30,5 +34,19 @@ describe('Tokens', () => {
     const converted = await plugin.convertWorkspace('/', helpers, {})
 
     expect(converted).toMatchSnapshot()
+  })
+
+  it('converts workspace', async () => {
+    const source = createFs()
+
+    copy(fs, source, workspacePath, '/')
+
+    const helpers = Helpers(source, '/')
+
+    await plugin.convertWorkspace('/', helpers, { output: '/tokens.json' })
+
+    const tokens = JSON.parse(source.readFileSync('/tokens.json', 'utf8'))
+
+    expect(tokens).toMatchSnapshot()
   })
 })

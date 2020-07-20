@@ -1,5 +1,118 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Tokens converts workspace 1`] = `
+Object {
+  "files": Array [
+    Object {
+      "contents": Object {
+        "type": "flatTokens",
+        "value": Array [
+          Object {
+            "qualifiedName": Array [
+              "primary",
+            ],
+            "value": Object {
+              "type": "color",
+              "value": Object {
+                "css": "#45CBFF",
+              },
+            },
+          },
+          Object {
+            "qualifiedName": Array [
+              "accent",
+            ],
+            "value": Object {
+              "type": "color",
+              "value": Object {
+                "css": "#45CBFF",
+              },
+            },
+          },
+          Object {
+            "qualifiedName": Array [
+              "testSaturate",
+            ],
+            "value": Object {
+              "type": "color",
+              "value": Object {
+                "css": "#29D7FF",
+              },
+            },
+          },
+        ],
+      },
+      "inputPath": "Colors.md",
+      "name": "Colors",
+      "outputPath": "Colors.flat.json",
+    },
+    Object {
+      "contents": Object {
+        "type": "flatTokens",
+        "value": Array [],
+      },
+      "inputPath": "README.md",
+      "name": "README",
+      "outputPath": "README.flat.json",
+    },
+    Object {
+      "contents": Object {
+        "type": "flatTokens",
+        "value": Array [
+          Object {
+            "qualifiedName": Array [
+              "small",
+            ],
+            "value": Object {
+              "type": "shadow",
+              "value": Object {
+                "blur": 2,
+                "color": Object {
+                  "css": "#45CBFF",
+                },
+                "radius": 0,
+                "x": 0,
+                "y": 2,
+              },
+            },
+          },
+        ],
+      },
+      "inputPath": "Shadows.md",
+      "name": "Shadows",
+      "outputPath": "Shadows.flat.json",
+    },
+    Object {
+      "contents": Object {
+        "type": "flatTokens",
+        "value": Array [
+          Object {
+            "qualifiedName": Array [
+              "heading1",
+            ],
+            "value": Object {
+              "type": "textStyle",
+              "value": Object {
+                "color": Object {
+                  "css": "teal",
+                },
+                "fontFamily": "Helvetica",
+                "fontSize": 28,
+                "fontWeight": "700",
+              },
+            },
+          },
+        ],
+      },
+      "inputPath": "TextStyles.md",
+      "name": "TextStyles",
+      "outputPath": "TextStyles.flat.json",
+    },
+  ],
+  "flatTokensSchemaVersion": "0.0.1",
+}
+`;
+
 exports[`Tokens generates tokens 1`] = `
 Object {
   "files": Array [
