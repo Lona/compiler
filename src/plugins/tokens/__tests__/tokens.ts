@@ -1,5 +1,5 @@
 import Helpers from '../../../helpers'
-import { convertFile } from '../index'
+import plugin from '../index'
 import { createFs } from 'buffs'
 
 const tokensBlock = (string: string) => '```tokens\n' + string + '\n```\n'
@@ -12,8 +12,22 @@ describe('Tokens', () => {
       'Colors.md': tokensBlock(`let color: Color = #color(css: "pink")`),
     })
 
-    const helpers = await Helpers(source, '/')
-    const converted = await convertFile('/Colors.md', helpers)
+    const helpers = Helpers(source, '/')
+    const converted = await plugin.convertWorkspace('/', helpers, {})
+
+    expect(converted).toMatchSnapshot()
+  })
+
+  it('generates tokens with function call', async () => {
+    const source = createFs({
+      'lona.json': JSON.stringify({}),
+      'Colors.md': tokensBlock(
+        `let testSaturate: Color = Color.saturate(color: #color(css: "pink"), factor: 0.3)`
+      ),
+    })
+
+    const helpers = Helpers(source, '/')
+    const converted = await plugin.convertWorkspace('/', helpers, {})
 
     expect(converted).toMatchSnapshot()
   })

@@ -1,11 +1,11 @@
-import * as serialization from '@lona/serialization'
+import { LogicAST as AST } from '@lona/serialization'
 import { Helpers } from '../../helpers'
 import { Token } from './tokensAst'
 import * as TokenValue from './tokenValue'
 import { nonNullable } from '../../utils/typeHelpers'
 
 export const convertDeclaration = (
-  declaration: serialization.LogicAST.Declaration,
+  declaration: AST.Declaration,
   helpers: Helpers
 ): Token | undefined => {
   if (declaration.type !== 'variable' || !declaration.data.initializer) {
@@ -23,11 +23,8 @@ export const convertDeclaration = (
   return { qualifiedName: [declaration.data.name.name], value: tokenValue }
 }
 
-export const convert = (
-  node: serialization.LogicAST.SyntaxNode,
-  helpers: Helpers
-): Token[] => {
-  let declarations: serialization.LogicAST.Declaration[]
+export const convert = (node: AST.SyntaxNode, helpers: Helpers): Token[] => {
+  let declarations: AST.Declaration[]
 
   if ('type' in node && node.type === 'program') {
     declarations = node.data.block

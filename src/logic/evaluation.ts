@@ -8,6 +8,7 @@ import { Substitution } from './typeUnifier'
 import { Reporter } from '../utils/reporter'
 import { declarationPathTo } from './ast'
 import { assertNever } from '../utils/typeHelpers'
+import { Namespace } from './namespace'
 
 const STANDARD_LIBRARY = 'standard library'
 
@@ -172,6 +173,7 @@ const evaluateNode = (
 
 export const evaluate = (
   rootNode: AST.SyntaxNode,
+  namespace: Namespace,
   scope: Scope,
   typeChecker: TypeChecker,
   substitution: Substitution,
@@ -179,6 +181,7 @@ export const evaluate = (
 ): EvaluationContext => {
   const visitor = new EvaluationVisitor(
     rootNode,
+    namespace,
     scope,
     typeChecker,
     substitution,

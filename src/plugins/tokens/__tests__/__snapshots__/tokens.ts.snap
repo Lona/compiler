@@ -2,24 +2,58 @@
 
 exports[`Tokens generates tokens 1`] = `
 Object {
-  "contents": Object {
-    "type": "flatTokens",
-    "value": Array [
-      Object {
-        "qualifiedName": Array [
-          "color",
-        ],
-        "value": Object {
-          "type": "color",
-          "value": Object {
-            "css": "pink",
+  "files": Array [
+    Object {
+      "contents": Object {
+        "type": "flatTokens",
+        "value": Array [
+          Object {
+            "qualifiedName": Array [
+              "color",
+            ],
+            "value": Object {
+              "type": "color",
+              "value": Object {
+                "css": "pink",
+              },
+            },
           },
-        },
+        ],
       },
-    ],
-  },
-  "inputPath": "/Colors.md",
-  "name": "Colors",
-  "outputPath": "/Colors.flat.json",
+      "inputPath": "Colors.md",
+      "name": "Colors",
+      "outputPath": "Colors.flat.json",
+    },
+  ],
+  "flatTokensSchemaVersion": "0.0.1",
+}
+`;
+
+exports[`Tokens generates tokens with function call 1`] = `
+Object {
+  "files": Array [
+    Object {
+      "contents": Object {
+        "type": "flatTokens",
+        "value": Array [
+          Object {
+            "qualifiedName": Array [
+              "testSaturate",
+            ],
+            "value": Object {
+              "type": "color",
+              "value": Object {
+                "css": "#FFB7C5",
+              },
+            },
+          },
+        ],
+      },
+      "inputPath": "Colors.md",
+      "name": "Colors",
+      "outputPath": "Colors.flat.json",
+    },
+  ],
+  "flatTokensSchemaVersion": "0.0.1",
 }
 `;

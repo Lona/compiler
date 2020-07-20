@@ -5,7 +5,7 @@ import { EvaluationVisitor } from '../evaluationVisitor'
 import { UUID } from '../namespace'
 import NamespaceVisitor from '../namespaceVisitor'
 import { DefaultArguments } from '../runtime/memory'
-import { Encode, Value } from '../runtime/value'
+import { Encode, Value, Decode } from '../runtime/value'
 import { ScopeVisitor } from '../scopeVisitor'
 import { FunctionArgument, StaticType } from '../staticType'
 import { TypeCheckerVisitor } from '../typeChecker'
@@ -13,6 +13,7 @@ import { IDeclaration, Node } from './interfaces'
 import { ReturnStatement } from './ReturnStatement'
 import { FunctionParameter } from './FunctionParameter'
 import { createNode } from './createNode'
+import implementations from '../implementations'
 
 export class FunctionDeclaration extends Node<AST.FunctionDeclaration>
   implements IDeclaration {
@@ -183,6 +184,23 @@ export class FunctionDeclaration extends Node<AST.FunctionDeclaration>
             })
           )
         )
+
+        const namespaceEntry = Object.entries(visitor.namespace.values).find(
+          ([key, value]) => value === name.id
+        )
+
+        if (namespaceEntry && namespaceEntry[0] in implementations) {
+          return {
+            type: functionType,
+            memory: {
+              type: 'function',
+              value: {
+                defaultArguments,
+                f: implementations[namespaceEntry[0]],
+              },
+            },
+          }
+        }
 
         return {
           type: functionType,

@@ -15,7 +15,7 @@ import { createUnificationContext, TypeChecker } from './typeChecker'
 import { Substitution, unify } from './typeUnifier'
 import { joinPrograms, makeProgram } from './ast'
 
-type LogicFile = {
+export type LogicFile = {
   isLibrary: boolean
   sourcePath: string
   rootNode: AST.TopLevelDeclarations
@@ -114,6 +114,7 @@ export function createModule(
 
   const evaluationContext = evaluate(
     programNode,
+    namespace,
     scope,
     typeChecker,
     substitution,

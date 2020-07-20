@@ -4,7 +4,7 @@ import { Scope } from './scope'
 import { TypeChecker } from './typeChecker'
 import { Substitution, substitute } from './typeUnifier'
 import { EvaluationContext, Thunk } from './evaluation'
-import { UUID } from './namespace'
+import { UUID, Namespace } from './namespace'
 import { StaticType } from './staticType'
 import { Reporter } from '../utils/reporter'
 
@@ -15,9 +15,11 @@ export class EvaluationVisitor {
   reporter: Reporter
   typeChecker: TypeChecker
   substitution: Substitution
+  namespace: Namespace
 
   constructor(
     rootNode: AST.SyntaxNode,
+    namespace: Namespace,
     scope: Scope,
     typeChecker: TypeChecker,
     substitution: Substitution,
@@ -25,6 +27,7 @@ export class EvaluationVisitor {
   ) {
     this.evaluation = new EvaluationContext(reporter)
     this.rootNode = rootNode
+    this.namespace = namespace
     this.scope = scope
     this.reporter = reporter
     this.typeChecker = typeChecker

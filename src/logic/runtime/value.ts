@@ -59,6 +59,15 @@ export namespace Decode {
       return memory.value
     }
   }
+  export const number = ({ type, memory }: Value): number | undefined => {
+    if (
+      type.type === 'constructor' &&
+      type.name === 'Number' &&
+      memory.type === 'number'
+    ) {
+      return memory.value
+    }
+  }
 
   export const color = ({ type, memory }: Value): string | undefined => {
     if (

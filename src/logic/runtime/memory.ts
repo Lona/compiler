@@ -7,8 +7,10 @@ export type DefaultArguments = {
   [key: string]: [StaticType, Value | void]
 }
 
+export type FuncImplementation = (args: RecordMemory) => Memory
+
 export type FuncMemory = {
-  f: (args: RecordMemory) => Memory
+  f: FuncImplementation
   defaultArguments: DefaultArguments
 }
 
