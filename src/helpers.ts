@@ -15,6 +15,7 @@ export type Helpers = {
   reporter: Reporter
   config: Config
   module: ModuleContext
+  workspacePath: string
 }
 
 export default (
@@ -32,6 +33,7 @@ export default (
     reporter,
     config: load(fs, workspacePath),
     module: createModule(fs, workspacePath),
+    workspacePath,
   }
 
   return helpers

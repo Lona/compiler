@@ -1,5 +1,5 @@
-import { createFs } from 'buffs'
-import { convertFile } from '../index'
+import { createFs, toJSON } from 'buffs'
+import plugin from '../index'
 import Helpers from '../../../helpers'
 
 const tokensBlock = (string: string) => '```tokens\n' + string + '\n```\n'
@@ -12,9 +12,14 @@ describe('JS', () => {
       'Colors.md': tokensBlock(`let color: Color = #color(css: "pink")`),
     })
 
-    const helpers = await Helpers(source, '/')
-    const converted = await convertFile('/Colors.md', helpers, {})
+    const helpers = Helpers(source, '/')
 
-    expect(converted).toMatchSnapshot()
+    await plugin.convertWorkspace('/', helpers, { output: '/output' })
+
+    const index = source.readFileSync('/output/index.js', 'utf8')
+    const colors = source.readFileSync('/output/Colors.js', 'utf8')
+
+    expect(index).toMatchSnapshot()
+    expect(colors).toMatchSnapshot()
   })
 })

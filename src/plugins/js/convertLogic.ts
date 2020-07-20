@@ -147,7 +147,7 @@ export default function convert(
     return {
       type: 'ImportDeclaration',
       data: {
-        source: resolveImportPath(filePath, source),
+        source: resolveImportPath(helpers.workspacePath, filePath, source),
         specifiers: Array.from(imports[source]).map(x => ({
           type: 'ImportSpecifier',
           data: {

@@ -6,36 +6,8 @@ import { Plugin } from '../index'
 import convertLogic from './convertLogic'
 import renderJS from './renderAst'
 import * as JSAST from './jsAst'
-import { resolveImportPath } from './utils'
-
-export const convertFile = async (
-  filePath: string,
-  helpers: Helpers,
-  options: {
-    [key: string]: unknown
-  }
-): Promise<string> => {
-  let jsAST: JSAST.JSNode | undefined
-
-  const rootNode = helpers.module.sourceFiles.find(
-    file => file.sourcePath === filePath
-  )?.rootNode
-
-  if (rootNode) {
-    if (
-      rootNode.type !== 'topLevelDeclarations' ||
-      !rootNode.data.declarations.length
-    ) {
-      return ''
-    }
-
-    jsAST = convertLogic(rootNode, filePath, helpers)
-  }
-
-  if (!jsAST) return ''
-
-  return `${renderJS(jsAST, { reporter: helpers.reporter })}`
-}
+import { generateTranspiledImport } from './utils'
+import { LogicFile } from '../../logic/module'
 
 const convertWorkspace = async (
   workspacePath: string,
@@ -44,19 +16,39 @@ const convertWorkspace = async (
     [key: string]: unknown
   }
 ): Promise<void> => {
+  if (typeof options.output !== 'string') {
+    throw new Error('Output option required when generating JS')
+  }
+
+  const { output } = options
+
+  try {
+    helpers.fs.mkdirSync(output)
+  } catch (e) {
+    // Directory already exists
+  }
+
   const imports: string[] = []
 
   await Promise.all(
-    helpers.module.sourceFiles.map(async file => {
-      const outputText = await convertFile(file.sourcePath, helpers, options)
+    helpers.module.sourceFiles.map(file => {
+      const outputText = convertFile(file, helpers)
 
       if (!outputText) return
 
+      const sourcePath = file.sourcePath
+
       const name = upperFirst(
-        camelCase(path.basename(file.sourcePath, path.extname(file.sourcePath)))
+        camelCase(path.basename(sourcePath, path.extname(sourcePath)))
       )
 
-      const outputPath = path.join(path.dirname(file.sourcePath), `${name}.js`)
+      const relativePath = path.relative(workspacePath, sourcePath)
+
+      const outputPath = path.join(
+        output,
+        path.dirname(relativePath),
+        `${name}.js`
+      )
 
       imports.push(outputPath)
 
@@ -65,22 +57,9 @@ const convertWorkspace = async (
   )
 
   helpers.fs.writeFileSync(
-    './index.js',
+    path.join(output, 'index.js'),
     `${imports
-      .map(
-        (x, i) => `var __lona_import_${i} = require("${resolveImportPath(
-          './index.js',
-          x
-        )}");
-Object.keys(__lona_import_${i}).forEach(function (key) {
-  Object.defineProperty(module.exports, key, {
-    enumerable: true,
-    get: function get() {
-      return __lona_import_${i}[key];
-    }
-  });
-})`
-      )
+      .map((importPath, i) => generateTranspiledImport(output, importPath, i))
       .join('\n\n')}`,
     'utf8'
   )
@@ -91,11 +70,28 @@ Object.keys(__lona_import_${i}).forEach(function (key) {
   // )
 }
 
+function convertFile(file: LogicFile, helpers: Helpers): string {
+  const rootNode = file.rootNode
+
+  if (
+    rootNode.type !== 'topLevelDeclarations' ||
+    !rootNode.data.declarations.length
+  ) {
+    return ''
+  }
+
+  let jsAST: JSAST.JSNode = convertLogic(rootNode, file.sourcePath, helpers)
+
+  return `${renderJS(jsAST, { reporter: helpers.reporter })}`
+}
+
 type ExpectedOptions = {
   framework?: 'react' | 'react-native' | 'react-sketchapp'
 }
+
 const plugin: Plugin<ExpectedOptions, void> = {
   format: 'js',
   convertWorkspace,
 }
+
 export default plugin

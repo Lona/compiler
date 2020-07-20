@@ -1,6 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`JS generates js 1`] = `
+"var __lona_import_0 = require(\\"./Colors\\");
+Object.keys(__lona_import_0).forEach(function (key) {
+  Object.defineProperty(module.exports, key, {
+    enumerable: true,
+    get: function get() {
+      return __lona_import_0[key];
+    }
+  });
+})"
+`;
+
+exports[`JS generates js 2`] = `
 "var color = \\"pink\\";
 module.exports.color = color;
 "
