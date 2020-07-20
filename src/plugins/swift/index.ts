@@ -8,34 +8,68 @@ import convertLogic from './convertLogic'
 import renderSwift from './renderAst'
 import * as SwiftAST from './swiftAst'
 import { copy } from 'buffs'
+import { LogicFile } from '../../logic/module'
 
-export const convertFile = async (
-  filePath: string,
-  helpers: Helpers & {
-    emitFile?: (filePath: string, data: string) => Promise<void>
-  },
+const convertWorkspace = async (
+  workspacePath: string,
+  helpers: Helpers,
   options: {
     [key: string]: unknown
   }
-): Promise<string> => {
-  let swiftAST: SwiftAST.SwiftNode | undefined
-
-  const rootNode = helpers.module.sourceFiles.find(
-    file => file.sourcePath === filePath
-  )?.rootNode
-
-  if (rootNode) {
-    if (
-      rootNode.type !== 'topLevelDeclarations' ||
-      !rootNode.data.declarations.length
-    ) {
-      return ''
-    }
-
-    swiftAST = convertLogic(rootNode, helpers)
+): Promise<void> => {
+  if (typeof options.output !== 'string') {
+    throw new Error('Output option required when generating JS')
   }
 
-  if (!swiftAST) return ''
+  const { output } = options
+
+  try {
+    helpers.fs.mkdirSync(output)
+  } catch (e) {
+    // Directory already exists
+  }
+
+  helpers.module.sourceFiles.map(file => {
+    const outputText = convertFile(file, helpers)
+
+    if (!outputText) return
+
+    const sourcePath = file.sourcePath
+
+    const name = upperFirst(
+      camelCase(path.basename(sourcePath, path.extname(sourcePath)))
+    )
+
+    const relativePath = path.relative(workspacePath, sourcePath)
+
+    const outputPath = path.join(
+      output,
+      path.dirname(relativePath),
+      `${name}.swift`
+    )
+
+    helpers.fs.writeFileSync(outputPath, outputText, 'utf8')
+  })
+
+  copy(
+    fs,
+    helpers.fs,
+    path.join(__dirname, '../../../static/swift'),
+    './lona-helpers'
+  )
+}
+
+function convertFile(file: LogicFile, helpers: Helpers) {
+  const rootNode = file.rootNode
+
+  if (
+    rootNode.type !== 'topLevelDeclarations' ||
+    !rootNode.data.declarations.length
+  ) {
+    return ''
+  }
+
+  const swiftAST: SwiftAST.SwiftNode = convertLogic(rootNode, helpers)
 
   return `import Foundation
 
@@ -48,43 +82,9 @@ export const convertFile = async (
 ${renderSwift(swiftAST, { reporter: helpers.reporter })}`
 }
 
-const convertWorkspace = async (
-  workspacePath: string,
-  helpers: Helpers,
-  options: {
-    [key: string]: unknown
-  }
-): Promise<void> => {
-  await Promise.all(
-    helpers.module.sourceFiles.map(async file => {
-      const outputText = await convertFile(file.sourcePath, helpers, options)
-
-      if (!outputText) return
-
-      const name = upperFirst(
-        camelCase(path.basename(file.sourcePath, path.extname(file.sourcePath)))
-      )
-
-      const outputPath = path.join(
-        path.dirname(file.sourcePath),
-        `${name}.swift`
-      )
-
-      helpers.fs.writeFileSync(outputPath, outputText, 'utf8')
-    })
-  )
-
-  copy(
-    fs,
-    helpers.fs,
-    path.join(__dirname, '../../../static/swift'),
-    './lona-helpers'
-  )
-}
-
-type ExpectedOptions = {}
-const plugin: Plugin<ExpectedOptions, void> = {
+const plugin: Plugin<{}, void> = {
   format: 'swift',
   convertWorkspace,
 }
+
 export default plugin

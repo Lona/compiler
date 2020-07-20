@@ -1,5 +1,48 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Swift converts workspace 1`] = `
+Object {
+  "/output/Colors.swift": "import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let primary: Color = Color(named: \\"primary\\")!
+
+public let accent: Color = primary
+
+public let testSaturate: Color = Color.saturate(color: accent, factor: 0.3)
+",
+  "/output/Shadows.swift": "import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let small: Shadow = Shadow(x: 0, y: 2, blur: 2, radius: 0, color: primary)
+",
+  "/output/TextStyles.swift": "import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let heading1: TextStyle = TextStyle(
+  fontFamily: Optional.value(\\"Helvetica\\"),
+  fontSize: Optional.value(28),
+  fontWeight: FontWeight.w700,
+  color: Optional.value(#colorLiteral(red: 0, green: 0.5019607843137255, blue: 0.5019607843137255, alpha: 1)))
+",
+}
+`;
+
 exports[`Swift generates swift 1`] = `
 "import Foundation
 
