@@ -8,13 +8,13 @@ module.exports.primary = primary;
 var accent = primary;
 module.exports.accent = accent;
 
-var testSaturate = color.saturate(accent, 0.3);
+var testSaturate = \\"#29D7FF\\";
 module.exports.testSaturate = testSaturate;
 ",
-  "/output/Shadows.js": "var small = shadow(0, 2, 2, 0, primary);
+  "/output/Shadows.js": "var small = { x: 0, y: 2, blur: 2, radius: 0, color: \\"#45CBFF\\" };
 module.exports.small = small;
 ",
-  "/output/TextStyles.js": "var heading1 = textStyle(optional.value(\\"Helvetica\\"), optional.value(28), fontWeight.w700, optional.value(\\"teal\\"));
+  "/output/TextStyles.js": "var heading1 = { fontFamily: \\"Helvetica\\", fontWeight: 700, fontSize: 28, color: \\"teal\\" };
 module.exports.heading1 = heading1;
 ",
   "/output/index.js": "var __lona_import_0 = require(\\"./Colors\\");

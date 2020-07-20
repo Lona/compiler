@@ -7,6 +7,8 @@ import { resolveImportPath } from './utils'
 import { declarationPathTo, makeProgram, findParentNode } from '../../logic/ast'
 import { typeNever, nonNullable } from '../../utils/typeHelpers'
 import { visit } from '../../logic/traversal'
+import { Decode } from '../../logic/runtime/value'
+import { convertObject } from './astUtils'
 
 type LogicGenerationContext = {
   isStatic: boolean
@@ -435,6 +437,35 @@ const expression = (
         },
       }
     case 'functionCallExpression': {
+      const result = evaluationContext.evaluate(node.data.id)
+
+      if (result?.type.type === 'constructor') {
+        switch (result.type.name) {
+          case 'Color': {
+            const color = Decode.color(result) ?? 'black'
+
+            return convertObject(color)
+          }
+          case 'Shadow': {
+            const shadow: Decode.EvaluatedShadow = Decode.shadow(result) ?? {
+              x: 0,
+              y: 0,
+              blur: 0,
+              radius: 0,
+              color: 'black',
+            }
+
+            return convertObject(shadow)
+          }
+          case 'TextStyle': {
+            const textStyle: Decode.EvaluatedTextStyle =
+              Decode.textStyle(result) ?? {}
+
+            return convertObject(textStyle)
+          }
+        }
+      }
+
       const validArguments = node.data.arguments.filter(
         x => x.type !== 'placeholder'
       )
