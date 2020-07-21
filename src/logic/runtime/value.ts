@@ -91,7 +91,7 @@ export namespace Decode {
     }
   }
 
-  const fontWeightMapping: { [key: string]: string } = {
+  export const fontWeightToNumberMapping: { [key: string]: string } = {
     ultraLight: '100',
     thin: '200',
     light: '300',
@@ -103,13 +103,22 @@ export namespace Decode {
     black: '900',
   }
 
+  export const fontNumberToWeightMapping: {
+    [key: string]: string
+  } = Object.fromEntries(
+    Object.entries(fontWeightToNumberMapping).map(([key, value]) => [
+      value,
+      key,
+    ])
+  )
+
   export const fontWeight = ({ type, memory }: Value): string | undefined => {
     if (
       type.type === 'constructor' &&
       type.name === 'FontWeight' &&
       memory.type === 'enum'
     ) {
-      return fontWeightMapping[memory.value]
+      return fontWeightToNumberMapping[memory.value]
     }
   }
 

@@ -3,6 +3,7 @@ import { Helpers } from '../../helpers'
 import { makeProgram } from '../../logic/ast'
 import * as SwiftAST from './swiftAst'
 import { typeNever, nonNullable } from '../../utils/typeHelpers'
+import { Decode } from '../../logic/runtime/value'
 
 type LogicGenerationContext = {
   isStatic: boolean
@@ -50,14 +51,6 @@ function evaluateColor(
       data: color.memory.value.value.memory.value,
     },
   }
-}
-
-function notImplemented(
-  functionName: string,
-  node: LogicAST.SyntaxNode,
-  context: LogicGenerationContext
-): undefined {
-  throw new Error(`${functionName} not implemented`)
 }
 
 export default function convert(
@@ -347,10 +340,25 @@ const declaration = (
   }
 }
 
+function createLiteralArgument(
+  label: string,
+  literal: SwiftAST.Literal
+): SwiftAST.SwiftNode {
+  return {
+    type: 'FunctionCallArgument',
+    data: {
+      name: { type: 'SwiftIdentifier', data: label },
+      value: { type: 'LiteralExpression', data: literal },
+    },
+  }
+}
+
 const expression = (
   node: LogicAST.Expression,
   context: LogicGenerationContext
 ): SwiftAST.SwiftNode => {
+  const { evaluationContext } = context.helpers.module
+
   switch (node.type) {
     case 'identifierExpression': {
       return {
@@ -371,6 +379,138 @@ const expression = (
       }
     }
     case 'functionCallExpression': {
+      const result = evaluationContext.evaluate(node.data.id)
+
+      if (result?.type.type === 'constructor') {
+        switch (result.type.name) {
+          case 'Color': {
+            const color = Decode.color(result) ?? 'black'
+
+            return {
+              type: 'LiteralExpression',
+              data: { type: 'Color', data: color },
+            }
+          }
+          case 'Shadow': {
+            const shadow: Decode.EvaluatedShadow = Decode.shadow(result) ?? {
+              x: 0,
+              y: 0,
+              blur: 0,
+              radius: 0,
+              color: 'black',
+            }
+
+            return {
+              type: 'FunctionCallExpression',
+              data: {
+                name: { type: 'SwiftIdentifier', data: 'Shadow' },
+                arguments: [
+                  createLiteralArgument('x', {
+                    type: 'FloatingPoint',
+                    data: shadow.x,
+                  }),
+                  createLiteralArgument('y', {
+                    type: 'FloatingPoint',
+                    data: shadow.y,
+                  }),
+                  createLiteralArgument('blur', {
+                    type: 'FloatingPoint',
+                    data: shadow.blur,
+                  }),
+                  createLiteralArgument('radius', {
+                    type: 'FloatingPoint',
+                    data: shadow.radius,
+                  }),
+                  createLiteralArgument('color', {
+                    type: 'Color',
+                    data: shadow.color,
+                  }),
+                ],
+              },
+            }
+          }
+          case 'TextStyle': {
+            const textStyle: Decode.EvaluatedTextStyle =
+              Decode.textStyle(result) ?? {}
+
+            return {
+              type: 'FunctionCallExpression',
+              data: {
+                name: { type: 'SwiftIdentifier', data: 'TextStyle' },
+                arguments: [
+                  ...(textStyle.fontName
+                    ? [
+                        createLiteralArgument('fontName', {
+                          type: 'String',
+                          data: textStyle.fontName,
+                        }),
+                      ]
+                    : []),
+                  ...(textStyle.fontFamily
+                    ? [
+                        createLiteralArgument('fontFamily', {
+                          type: 'String',
+                          data: textStyle.fontFamily,
+                        }),
+                      ]
+                    : []),
+                  ...(textStyle.fontSize
+                    ? [
+                        createLiteralArgument('fontSize', {
+                          type: 'FloatingPoint',
+                          data: textStyle.fontSize,
+                        }),
+                      ]
+                    : []),
+                  ...(textStyle.fontWeight
+                    ? [
+                        {
+                          type: 'FunctionCallArgument',
+                          data: {
+                            name: {
+                              type: 'SwiftIdentifier',
+                              data: 'fontWeight',
+                            },
+                            value: fontWeight(
+                              Decode.fontNumberToWeightMapping[
+                                String(textStyle.fontWeight)
+                              ]
+                            ),
+                          },
+                        } as SwiftAST.SwiftNode,
+                      ]
+                    : []),
+                  ...(textStyle.lineHeight
+                    ? [
+                        createLiteralArgument('lineHeight', {
+                          type: 'FloatingPoint',
+                          data: textStyle.lineHeight,
+                        }),
+                      ]
+                    : []),
+                  ...(textStyle.letterSpacing
+                    ? [
+                        createLiteralArgument('kerning', {
+                          type: 'FloatingPoint',
+                          data: textStyle.letterSpacing,
+                        }),
+                      ]
+                    : []),
+                  ...(textStyle.color
+                    ? [
+                        createLiteralArgument('color', {
+                          type: 'Color',
+                          data: textStyle.color,
+                        }),
+                      ]
+                    : []),
+                ],
+              },
+            }
+          }
+        }
+      }
+
       return {
         type: 'FunctionCallExpression',
         data: {

@@ -34,6 +34,15 @@ describe('Swift', () => {
 
     await plugin.convertWorkspace('/', helpers, { output: '/output' })
 
-    expect(toJSON(source, '/output')).toMatchSnapshot()
+    const files = toJSON(source, '/output')
+
+    // No need to test helper files
+    Object.keys(files).forEach(file => {
+      if (file.startsWith('/output/lona-helpers/')) {
+        delete files[file]
+      }
+    })
+
+    expect(files).toMatchSnapshot()
   })
 })

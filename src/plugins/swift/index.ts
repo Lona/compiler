@@ -55,7 +55,7 @@ const convertWorkspace = async (
     fs,
     helpers.fs,
     path.join(__dirname, '../../../static/swift'),
-    './lona-helpers'
+    path.join(output, './lona-helpers')
   )
 }
 
