@@ -5,7 +5,7 @@ import plugin from '../index'
 import Helpers from '../../../helpers'
 
 const workspacePath = path.join(__dirname, '../../../../examples/workspace')
-const fixturesPath = path.join(__dirname, '../../../../fixtures')
+const fixturesPath = path.join(__dirname, '../../__tests__/fixtures')
 
 const tokensBlock = (string: string) => '```tokens\n' + string + '\n```\n'
 
