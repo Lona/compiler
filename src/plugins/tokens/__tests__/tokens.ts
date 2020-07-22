@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { createFs, copy } from 'buffs'
-import Helpers from '../../../helpers'
+import { createHelpers } from '../../../helpers'
 import plugin from '../index'
 
 const workspacePath = path.join(__dirname, '../../../../examples/workspace')
@@ -16,7 +16,7 @@ describe('Tokens', () => {
       'Colors.md': tokensBlock(`let color: Color = #color(css: "pink")`),
     })
 
-    const helpers = Helpers(source, '/')
+    const helpers = createHelpers(source, '/')
     const converted = await plugin.convertWorkspace('/', helpers, {})
 
     expect(converted).toMatchSnapshot()
@@ -30,7 +30,7 @@ describe('Tokens', () => {
       ),
     })
 
-    const helpers = Helpers(source, '/')
+    const helpers = createHelpers(source, '/')
     const converted = await plugin.convertWorkspace('/', helpers, {})
 
     expect(converted).toMatchSnapshot()
@@ -41,7 +41,7 @@ describe('Tokens', () => {
 
     copy(fs, source, workspacePath, '/')
 
-    const helpers = Helpers(source, '/')
+    const helpers = createHelpers(source, '/')
 
     await plugin.convertWorkspace('/', helpers, { output: '/tokens.json' })
 

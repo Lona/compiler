@@ -18,14 +18,14 @@ export type Helpers = {
   workspacePath: string
 }
 
-export default (
+export function createHelpers(
   fs: IFS,
   workspacePath: string,
   options: {
     outputPath?: unknown
     reporter?: Reporter
   } = {}
-): Helpers => {
+): Helpers {
   const { reporter = defaultReporter } = options
 
   const helpers: Helpers = {

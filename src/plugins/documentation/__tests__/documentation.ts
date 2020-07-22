@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { createFs, copy } from 'buffs'
 import plugin from '../index'
-import Helpers from '../../../helpers'
+import { createHelpers } from '../../../helpers'
 
 const workspacePath = path.join(__dirname, '../../../../examples/workspace')
 
@@ -11,7 +11,7 @@ it('converts workspace', async () => {
 
   copy(fs, source, workspacePath, '/')
 
-  const helpers = Helpers(source, '/')
+  const helpers = createHelpers(source, '/')
 
   await plugin.convertWorkspace('/', helpers, { output: '/docs.json' })
 
