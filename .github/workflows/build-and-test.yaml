@@ -1,9 +1,6 @@
 name: 'Build and Test'
-on:
-  pull_request:
-  push:
-    branches:
-      - master
+
+on: [push, pull_request]
 
 jobs:
   test:
@@ -13,6 +10,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '12.x'
+
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
