@@ -1,5 +1,282 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Swift Fixtures converts: declaration/enumeration.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public indirect struct Foo: Wrapped {
+  case value(Wrapped)
+  case none
+}
+"
+`;
+
+exports[`Swift Fixtures converts: declaration/function.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+func addA(a: T, b: T = 0) -> T {}
+"
+`;
+
+exports[`Swift Fixtures converts: declaration/import.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+
+"
+`;
+
+exports[`Swift Fixtures converts: declaration/namespace.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public indirect struct Boolean {
+  func foo(a: Bool, b: Bool) -> Bool {}
+  func bar(a: Bool, b: Bool) -> Bool {}
+}
+"
+`;
+
+exports[`Swift Fixtures converts: declaration/record.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public struct ThemedColor: Equatable {
+  public init(
+    light: Color = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
+    dark: Color = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1))
+  {
+    self.light = light
+    self.dark = dark
+  }
+  public let light: Color = Color(named: \\"light\\")!
+  public let dark: Color = Color(named: \\"dark\\")!
+}
+"
+`;
+
+exports[`Swift Fixtures converts: declaration/variable.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let x: Array = [42]
+"
+`;
+
+exports[`Swift Fixtures converts: expression/assignment.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+func assignment(a: CGFloat) -> CGFloat {
+  a = 10
+}
+"
+`;
+
+exports[`Swift Fixtures converts: expression/functionCall.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+func colorIdentity(a: Color) -> Color {
+  return a
+}
+public let pinkWithDetour: Color = Color(named: \\"pinkWithDetour\\")!
+"
+`;
+
+exports[`Swift Fixtures converts: expression/identifier.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let x: CGFloat = 4
+func identifier(a: CGFloat) -> CGFloat {
+  a = x
+}
+"
+`;
+
+exports[`Swift Fixtures converts: expression/member.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public indirect struct Foo {
+  static public let primary: Color = Color(named: \\"primary\\")!
+}
+public let b: Color = Foo.primary
+"
+`;
+
+exports[`Swift Fixtures converts: literal/array.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let x: Array = [42, 35]
+"
+`;
+
+exports[`Swift Fixtures converts: literal/boolean.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let trueBoolean: Bool = true
+public let falseBoolean: Bool = false
+"
+`;
+
+exports[`Swift Fixtures converts: literal/color.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let color: Color = Color(named: \\"color\\")!
+public let hexColor: Color = Color(named: \\"hexColor\\")!
+"
+`;
+
+exports[`Swift Fixtures converts: literal/number.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let positive: CGFloat = 1
+public let float: CGFloat = 0.1
+public let negative: CGFloat = -1
+"
+`;
+
+exports[`Swift Fixtures converts: literal/string.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let string: String = \\"hello\\"
+public let stringWithQuote: String = \\"Hello \\\\\\"world\\\\\\"\\"
+"
+`;
+
+exports[`Swift Fixtures converts: statement/branch.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+func branchStatement() -> CGFloat {
+  if true {
+    return 0
+  }
+  return 1
+}
+"
+`;
+
+exports[`Swift Fixtures converts: statement/loop.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+func loopStatement() -> CGFloat {
+  while false {
+    return 0
+  }
+}
+"
+`;
+
+exports[`Swift Fixtures converts: statement/return.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+func returnStatement() -> CGFloat {
+  return 0
+}
+"
+`;
+
 exports[`Swift converts workspace 1`] = `
 Object {
   "/output/Assets.xcassets/Contents.json": "{

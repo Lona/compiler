@@ -1,5 +1,5 @@
 ```tokens
-enum Optional<Wrapped> {
+enum Foo<Wrapped> {
   case value(Wrapped)
   case none()
 }

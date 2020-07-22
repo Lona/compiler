@@ -1,7 +1,7 @@
 ```tokens
-func member(a: Number) -> Number {
-  a = Colors.primary
-
-  a.test = Colors.primary
+extension Foo {
+  let primary: Color = #color(css: "#45CBFF")
 }
+
+let b: Color = Foo.primary
 ```

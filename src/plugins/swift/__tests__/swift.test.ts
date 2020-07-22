@@ -1,10 +1,11 @@
 import path from 'path'
 import fs from 'fs'
-import { createFs, copy, toJSON } from 'buffs'
+import { createFs, copy, toJSON, match } from 'buffs'
 import plugin from '../index'
 import Helpers from '../../../helpers'
 
 const workspacePath = path.join(__dirname, '../../../../examples/workspace')
+const fixturesPath = path.join(__dirname, '../../../../fixtures')
 
 const tokensBlock = (string: string) => '```tokens\n' + string + '\n```\n'
 
@@ -44,5 +45,29 @@ describe('Swift', () => {
     })
 
     expect(files).toMatchSnapshot()
+  })
+
+  describe('Fixtures', () => {
+    it('converts', async () => {
+      const fixtures = match(fs, fixturesPath, { includePatterns: ['**/*.md'] })
+
+      for (let fixture of fixtures) {
+        const source = createFs({
+          'lona.json': JSON.stringify({}),
+          'Fixture.md': fs.readFileSync(
+            path.join(fixturesPath, fixture),
+            'utf8'
+          ),
+        })
+
+        const helpers = Helpers(source, '/')
+
+        await plugin.convertWorkspace('/', helpers, { output: '/output' })
+
+        expect(
+          source.readFileSync('/output/Fixture.swift', 'utf8')
+        ).toMatchSnapshot(fixture)
+      }
+    })
   })
 })

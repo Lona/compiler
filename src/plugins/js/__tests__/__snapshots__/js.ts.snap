@@ -1,5 +1,133 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`JS Fixtures converts: declaration/enumeration.md 1`] = `
+"var FOO = { VALUE: \\"value\\", NONE: \\"none\\" }
+"
+`;
+
+exports[`JS Fixtures converts: declaration/function.md 1`] = `
+"var addA = (a, b = 0) => {};
+module.exports.addA = addA;
+"
+`;
+
+exports[`JS Fixtures converts: declaration/import.md 1`] = `
+"
+"
+`;
+
+exports[`JS Fixtures converts: declaration/namespace.md 1`] = `
+"var boolean = { foo: (a, b) => {}, bar: (a, b) => {} };
+module.exports.boolean = boolean;
+"
+`;
+
+exports[`JS Fixtures converts: declaration/record.md 1`] = `
+"
+"
+`;
+
+exports[`JS Fixtures converts: declaration/variable.md 1`] = `
+"var x = [ 42 ];
+module.exports.x = x;
+"
+`;
+
+exports[`JS Fixtures converts: expression/assignment.md 1`] = `
+"var assignment = (a) => { a = 10 };
+module.exports.assignment = assignment;
+"
+`;
+
+exports[`JS Fixtures converts: expression/functionCall.md 1`] = `
+"var colorIdentity = (a) => a ;
+module.exports.colorIdentity = colorIdentity;
+var pinkWithDetour = \\"pink\\";
+module.exports.pinkWithDetour = pinkWithDetour;
+"
+`;
+
+exports[`JS Fixtures converts: expression/identifier.md 1`] = `
+"var x = 4;
+module.exports.x = x;
+var identifier = (a) => { a = x };
+module.exports.identifier = identifier;
+"
+`;
+
+exports[`JS Fixtures converts: expression/member.md 1`] = `
+"var foo = { primary: \\"#45CBFF\\" };
+module.exports.foo = foo;
+var b = foo.primary;
+module.exports.b = b;
+"
+`;
+
+exports[`JS Fixtures converts: literal/array.md 1`] = `
+"var x = [ 42, 35 ];
+module.exports.x = x;
+"
+`;
+
+exports[`JS Fixtures converts: literal/boolean.md 1`] = `
+"var trueBoolean = true;
+module.exports.trueBoolean = trueBoolean;
+var falseBoolean = false;
+module.exports.falseBoolean = falseBoolean;
+"
+`;
+
+exports[`JS Fixtures converts: literal/color.md 1`] = `
+"var color = \\"pink\\";
+module.exports.color = color;
+var hexColor = \\"#123456\\";
+module.exports.hexColor = hexColor;
+"
+`;
+
+exports[`JS Fixtures converts: literal/number.md 1`] = `
+"var positive = 1;
+module.exports.positive = positive;
+var float = 0.1;
+module.exports.float = float;
+var negative = -1;
+module.exports.negative = negative;
+"
+`;
+
+exports[`JS Fixtures converts: literal/string.md 1`] = `
+"var string = \\"hello\\";
+module.exports.string = string;
+var stringWithQuote = \\"Hello \\\\\\"world\\\\\\"\\";
+module.exports.stringWithQuote = stringWithQuote;
+"
+`;
+
+exports[`JS Fixtures converts: statement/branch.md 1`] = `
+"var branchStatement = () => {
+  if (true) {
+    return 0;
+  }
+  return 1;
+};
+module.exports.branchStatement = branchStatement;
+"
+`;
+
+exports[`JS Fixtures converts: statement/loop.md 1`] = `
+"var loopStatement = () => { while (false) {
+    return 0;
+  } };
+module.exports.loopStatement = loopStatement;
+"
+`;
+
+exports[`JS Fixtures converts: statement/return.md 1`] = `
+"var returnStatement = () => 0 ;
+module.exports.returnStatement = returnStatement;
+"
+`;
+
 exports[`JS converts workspace 1`] = `
 Object {
   "/output/Colors.js": "var primary = \\"#45CBFF\\";

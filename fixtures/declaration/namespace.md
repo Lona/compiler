@@ -1,6 +1,6 @@
 ```tokens
 extension Boolean {
-  func or(a: Boolean, b: Boolean) -> Boolean {}
-  func and(a: Boolean, b: Boolean) -> Boolean {}
+  func foo(a: Boolean, b: Boolean) -> Boolean {}
+  func bar(a: Boolean, b: Boolean) -> Boolean {}
 }
 ```
