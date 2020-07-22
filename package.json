@@ -12,7 +12,8 @@
   ],
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "rm -rf ./lib && tsc --declaration",
+    "build": "npm run clean && tsc --declaration",
+    "clean": "rm -rf ./lib",
     "prepublishOnly": "npm run build",
     "test": "jest",
     "test:watch": "jest --watch"

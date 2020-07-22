@@ -2,7 +2,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 
 import { Plugin } from './plugins'
-import Helpers from './helpers'
+import { createHelpers } from './helpers'
 import { findPlugin } from './utils/plugin'
 import { isWorkspacePath } from './utils/workspace'
 
@@ -22,7 +22,7 @@ export async function convert<ExpectedOptions, Result>(
     )
   }
 
-  const helpers = Helpers(fs, resolvedPath, {
+  const helpers = createHelpers(fs, resolvedPath, {
     outputPath: options.output,
   })
 
