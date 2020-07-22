@@ -2,6 +2,58 @@
 
 exports[`Swift converts workspace 1`] = `
 Object {
+  "/output/Assets.xcassets/Contents.json": "{
+  \\"info\\": {
+    \\"version\\": 1,
+    \\"author\\": \\"Lona\\"
+  }
+}",
+  "/output/Assets.xcassets/colors/Contents.json": "{
+  \\"info\\": {
+    \\"version\\": 1,
+    \\"author\\": \\"Lona\\"
+  }
+}",
+  "/output/Assets.xcassets/colors/primary.colorset/Contents.json": "{
+  \\"info\\": {
+    \\"version\\": 1,
+    \\"author\\": \\"Lona\\"
+  },
+  \\"colors\\": [
+    {
+      \\"idiom\\": \\"universal\\",
+      \\"color\\": {
+        \\"color-space\\": \\"srgb\\",
+        \\"components\\": {
+          \\"red\\": \\"0x45\\",
+          \\"alpha\\": \\"1.000\\",
+          \\"blue\\": \\"0xFF\\",
+          \\"green\\": \\"0xCB\\"
+        }
+      }
+    }
+  ]
+}",
+  "/output/Assets.xcassets/colors/testSaturate.colorset/Contents.json": "{
+  \\"info\\": {
+    \\"version\\": 1,
+    \\"author\\": \\"Lona\\"
+  },
+  \\"colors\\": [
+    {
+      \\"idiom\\": \\"universal\\",
+      \\"color\\": {
+        \\"color-space\\": \\"srgb\\",
+        \\"components\\": {
+          \\"red\\": \\"0x29\\",
+          \\"alpha\\": \\"1.000\\",
+          \\"blue\\": \\"0xFF\\",
+          \\"green\\": \\"0xD7\\"
+        }
+      }
+    }
+  ]
+}",
   "/output/Colors.swift": "import Foundation
 
 #if canImport(UIKit)

@@ -965,10 +965,10 @@ buffer-from@1.x, buffer-from@^1.0.0:
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.1.tgz#32713bc028f75c02fdb710d7c7bcec1f2c6070ef"
   integrity sha512-MQcXEUbCKtEo7bhqEs6560Hyd4XaovZlO/k9V3hjVUF/zwW7KBVdSK4gIt/bzwS9MbR5qob+F5jusZsb0YQK2A==
 
-buffs@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/buffs/-/buffs-0.4.1.tgz#805c064024fb15706de95e1599429339201651a8"
-  integrity sha512-Ubp+NbUhDN7+N86MbYKwfToRv+dsBjoxMMQOkGYQoXGBqLPHWqmiibHGIrJgWtJFrKDbNoVnp6ElEsTsbXblyw==
+buffs@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/buffs/-/buffs-0.5.0.tgz#a32decc8e6819d96113115e1af50ad734254033d"
+  integrity sha512-PTrqta4/F7PVFBpW8z266GXiPpdUvhijt8rNbA3ALabFf3slr3schJc4k7H8CXjEXpcotdXcyUFjdJYYib26zQ==
   dependencies:
     chalk "^4.0.0"
     memfs "^3.1.2"

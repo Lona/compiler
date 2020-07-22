@@ -15,16 +15,14 @@
     "build": "rm -rf ./lib && tsc --declaration",
     "prepublishOnly": "npm run build",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "snapshot": "npm run snapshot:swift",
-    "snapshot:swift": "ts-node src/bin.ts convert ./examples/workspace --format=swift --output=./examples/generated/swift"
+    "test:watch": "jest --watch"
   },
   "repository": "https://github.com/Lona/compiler",
   "author": "Mathieu Dutour",
   "license": "MIT",
   "dependencies": {
     "@lona/serialization": "^0.3.10",
-    "buffs": "^0.4.1",
+    "buffs": "^0.5.0",
     "color": "^3.1.2",
     "glob": "^7.1.6",
     "lodash.camelcase": "^4.3.0",

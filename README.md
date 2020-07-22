@@ -30,10 +30,6 @@ In the case of `js`, the `--framework` option can have a few values:
 - `reactdom`: [React DOM](https://reactjs.org)
 - `reactsketchapp`: [React SketchApp](http://airbnb.io/react-sketchapp/)
 
-### Examples
-
-Here are a handful of examples. You can check out the scripts section of the `package.json` to see more formats/frameworks -- there is a `snapshot` command for each compiler target.
-
 #### Generate workspace
 
 This will generate the colors, text styles, shadows, custom types, and all components, writing them to `output-directory` in the same structure as the input workspace directory.

@@ -7,8 +7,10 @@ import { Helpers } from '../../helpers'
 import convertLogic from './convertLogic'
 import renderSwift from './renderAst'
 import * as SwiftAST from './swiftAst'
-import { copy } from 'buffs'
+import { copy, DirectoryJSON, createFs, toJSON } from 'buffs'
 import { LogicFile } from '../../logic/module'
+
+const STATIC_FILES_PATH = path.join(__dirname, '../../../static/swift')
 
 const convertWorkspace = async (
   workspacePath: string,
@@ -24,13 +26,13 @@ const convertWorkspace = async (
   const { output } = options
 
   try {
-    helpers.fs.mkdirSync(output)
+    helpers.fs.mkdirSync(output, { recursive: true })
   } catch (e) {
     // Directory already exists
   }
 
   helpers.module.sourceFiles.map(file => {
-    const outputText = convertFile(file, helpers)
+    const [outputText, auxiliaryFiles] = convertFile(file, helpers)
 
     if (!outputText) return
 
@@ -49,29 +51,36 @@ const convertWorkspace = async (
     )
 
     helpers.fs.writeFileSync(outputPath, outputText, 'utf8')
+
+    copy(createFs(auxiliaryFiles), helpers.fs, '/', output)
   })
 
-  copy(
-    fs,
-    helpers.fs,
-    path.join(__dirname, '../../../static/swift'),
-    path.join(output, './lona-helpers')
-  )
+  copy(fs, helpers.fs, STATIC_FILES_PATH, path.join(output, './lona-helpers'))
 }
 
-function convertFile(file: LogicFile, helpers: Helpers) {
+function convertFile(
+  file: LogicFile,
+  helpers: Helpers
+): [string, DirectoryJSON] {
   const rootNode = file.rootNode
 
   if (
     rootNode.type !== 'topLevelDeclarations' ||
     !rootNode.data.declarations.length
   ) {
-    return ''
+    return ['', {}]
   }
 
   const swiftAST: SwiftAST.SwiftNode = convertLogic(rootNode, helpers)
 
-  return `import Foundation
+  // TODO: Consider a separate/better place for determining files to write
+  // instead of as a side effect within renderSwift
+  const files: DirectoryJSON = {}
+
+  const result = renderSwift(swiftAST, { reporter: helpers.reporter, files })
+
+  return [
+    `import Foundation
 
 #if canImport(UIKit)
   import UIKit
@@ -79,7 +88,9 @@ function convertFile(file: LogicFile, helpers: Helpers) {
   import AppKit
 #endif
 
-${renderSwift(swiftAST, { reporter: helpers.reporter })}`
+${result}`,
+    files,
+  ]
 }
 
 const plugin: Plugin<{}, void> = {

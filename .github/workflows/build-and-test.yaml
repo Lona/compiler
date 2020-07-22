@@ -29,17 +29,3 @@ jobs:
 
       # run all the tests
       - run: yarn test
-
-      # run all the examples
-      - run: yarn snapshot
-
-      # check that the examples didn't change
-      - run: |
-          if [ -z "$(git status --porcelain)" ]; then
-            # Working directory clean
-            exit 0
-          else
-            # Uncommitted changes
-            git status --porcelain
-            exit 1
-          fi

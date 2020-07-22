@@ -23,7 +23,7 @@ const convertWorkspace = async (
   const { output } = options
 
   try {
-    helpers.fs.mkdirSync(output)
+    helpers.fs.mkdirSync(output, { recursive: true })
   } catch (e) {
     // Directory already exists
   }

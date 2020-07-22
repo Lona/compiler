@@ -10,9 +10,10 @@ import {
 } from '../../utils/printer'
 import * as SwiftAST from './swiftAst'
 import { typeNever, assertNever } from '../../utils/typeHelpers'
+import { DirectoryJSON } from 'buffs'
 
 type Options = {
-  outputFile?: (filePath: string, data: string) => Promise<void>
+  files: DirectoryJSON
   reporter: {
     log(...args: any[]): void
     warn(...args: any[]): void
@@ -412,67 +413,54 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
       ) {
         const rgba = parseColorDefault(ast.data.init.data.data, 'black')
 
-        if (options.outputFile) {
-          Promise.all([
-            options.outputFile(
-              './Assets.xcassets/Contents.json',
-              JSON.stringify(
-                {
-                  info: {
-                    version: 1,
-                    author: 'Lona',
+        options.files['Assets.xcassets/Contents.json'] = JSON.stringify(
+          {
+            info: {
+              version: 1,
+              author: 'Lona',
+            },
+          },
+          null,
+          2
+        )
+
+        options.files['Assets.xcassets/colors/Contents.json'] = JSON.stringify(
+          {
+            info: {
+              version: 1,
+              author: 'Lona',
+            },
+          },
+          null,
+          2
+        )
+
+        options.files[
+          `Assets.xcassets/colors/${ast.data.pattern.data.identifier.data}.colorset/Contents.json`
+        ] = JSON.stringify(
+          {
+            info: {
+              version: 1,
+              author: 'Lona',
+            },
+            colors: [
+              {
+                idiom: 'universal',
+                color: {
+                  'color-space': 'srgb',
+                  components: {
+                    red: `0x${rgba.r.toString(16).toUpperCase()}`,
+                    alpha: `${rgba.a.toFixed(3)}`,
+                    blue: `0x${rgba.b.toString(16).toUpperCase()}`,
+                    green: `0x${rgba.g.toString(16).toUpperCase()}`,
                   },
                 },
-                null,
-                '  '
-              )
-            ),
-            options.outputFile(
-              './Assets.xcassets/colors/Contents.json',
-              JSON.stringify(
-                {
-                  info: {
-                    version: 1,
-                    author: 'Lona',
-                  },
-                },
-                null,
-                '  '
-              )
-            ),
-            options.outputFile(
-              `./Assets.xcassets/colors/${ast.data.pattern.data.identifier.data}.colorset/Contents.json`,
-              JSON.stringify(
-                {
-                  info: {
-                    version: 1,
-                    author: 'Lona',
-                  },
-                  colors: [
-                    {
-                      idiom: 'universal',
-                      color: {
-                        'color-space': 'srgb',
-                        components: {
-                          red: `0x${rgba.r.toString(16).toUpperCase()}`,
-                          alpha: `${rgba.a.toFixed(3)}`,
-                          blue: `0x${rgba.b.toString(16).toUpperCase()}`,
-                          green: `0x${rgba.g.toString(16).toUpperCase()}`,
-                        },
-                      },
-                    },
-                  ],
-                },
-                null,
-                '  '
-              )
-            ),
-          ]).catch(err => options.reporter.error(err))
-        } else {
-          options.reporter.warn(
-            `The output needs an xcasset file which wasn't emitted`
-          )
-        }
+              },
+            ],
+          },
+          null,
+          2
+        )
 
         return group([
           modifiers,
@@ -1108,6 +1096,9 @@ function renderInitializerBlock(
   }
 }
 
-export default function toString(ast: SwiftAST.SwiftNode, options: Options) {
+export default function toString(
+  ast: SwiftAST.SwiftNode,
+  options: Options
+): string {
   return print(render(ast, options), printerOptions)
 }
