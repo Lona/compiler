@@ -87,11 +87,13 @@ export class EnumerationDeclaration extends Node<AST.EnumerationDeclaration>
       if (enumCase.type === 'placeholder') return
 
       const parameterTypes = compact(
-        enumCase.data.associatedValueTypes.map(annotation => {
-          if (annotation.type === 'placeholder') return
+        enumCase.data.associatedValues.map(associatedValue => {
+          if (associatedValue.type === 'placeholder') return
+
+          const { label, annotation } = associatedValue.data
 
           return {
-            label: undefined,
+            label: label?.name,
             type: visitor.unificationType(
               genericsInScope,
               () => typeChecker.typeNameGenerator.next(),

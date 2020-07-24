@@ -52,7 +52,7 @@ export type Literal =
   | { type: 'Image'; data: string }
   | { type: 'Array'; data: SwiftNode[] }
 
-type TupleTypeElement = {
+export type TupleTypeElement = {
   elementName?: string
   annotation: TypeAnnotation
 }

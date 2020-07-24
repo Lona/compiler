@@ -221,6 +221,7 @@ const build = (
     }
     case 'return': // already handled in the revisit of the function declaration
     case 'parameter': // already handled in the function call
+    case 'associatedValue': // already handled in enum declaration
     case 'functionType':
     case 'typeIdentifier':
     case 'declaration':

@@ -262,19 +262,26 @@ const declaration = (
               if (x.type !== 'enumerationCase') {
                 return undefined
               }
-              const associatedValueTypes = x.data.associatedValueTypes.filter(
+              const associatedValues = x.data.associatedValues.filter(
                 y => y.type !== 'placeholder'
               )
 
+              const associatedTypes: SwiftAST.TupleTypeElement[] = associatedValues.flatMap(
+                associatedValue => {
+                  if (associatedValue.type === 'placeholder') return []
+
+                  const { annotation } = associatedValue.data
+
+                  return {
+                    annotation: typeAnnotation(annotation, context),
+                  }
+                }
+              )
+
               const associatedType: SwiftAST.TypeAnnotation | undefined =
-                associatedValueTypes.length === 0
+                associatedTypes.length === 0
                   ? undefined
-                  : {
-                      type: 'TupleType',
-                      data: associatedValueTypes.map(y => ({
-                        annotation: typeAnnotation(y, context),
-                      })),
-                    }
+                  : { type: 'TupleType', data: associatedTypes }
 
               const enumCase: SwiftAST.SwiftNode = {
                 type: 'EnumCase',

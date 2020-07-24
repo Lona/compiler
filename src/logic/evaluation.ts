@@ -153,6 +153,7 @@ const evaluateNode = (
     case 'topLevelDeclarations':
     case 'enumerationCase': // handled in 'enumeration'
     case 'argument': // handled in 'functionCallExpression'
+    case 'associatedValue': // handled in enum declaration
     case 'namespace':
     case 'importDeclaration':
     case 'placeholder':
