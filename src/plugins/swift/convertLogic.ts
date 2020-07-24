@@ -270,9 +270,10 @@ const declaration = (
                 associatedValue => {
                   if (associatedValue.type === 'placeholder') return []
 
-                  const { annotation } = associatedValue.data
+                  const { annotation, label } = associatedValue.data
 
                   return {
+                    elementName: label?.name,
                     annotation: typeAnnotation(annotation, context),
                   }
                 }

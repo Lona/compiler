@@ -16,6 +16,21 @@ public indirect struct Foo: Wrapped {
 "
 `;
 
+exports[`Swift Fixtures converts: declaration/enumerationWithLabels.md 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public indirect struct Foo {
+  case bar(label1: CGFloat, label2: String)
+}
+"
+`;
+
 exports[`Swift Fixtures converts: declaration/function.md 1`] = `
 "import Foundation
 

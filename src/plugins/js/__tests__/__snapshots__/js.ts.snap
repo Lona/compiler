@@ -5,6 +5,11 @@ exports[`JS Fixtures converts: declaration/enumeration.md 1`] = `
 "
 `;
 
+exports[`JS Fixtures converts: declaration/enumerationWithLabels.md 1`] = `
+"var FOO = { BAR: \\"bar\\" }
+"
+`;
+
 exports[`JS Fixtures converts: declaration/function.md 1`] = `
 "var addA = (a, b = 0) => {};
 module.exports.addA = addA;
