@@ -2,8 +2,8 @@ import * as serialization from '@lona/serialization'
 
 import { Helpers } from '../../helpers'
 import { convertDeclaration } from '../tokens/convert'
-import { Token } from '../tokens/tokens-ast'
-import { nonNullable, assertNever } from '../../utils'
+import { Token } from '../tokens/tokensAst'
+import { assertNever, nonNullable } from '../../utils/typeHelpers'
 
 let tokenNameElement = (kind: string, content: string) =>
   `<span class="lona-token-name lona-token-name-${kind}">${content}</span>`

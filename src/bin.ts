@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
 import yargs from 'yargs'
-
-import { getConfig, convert } from './index'
+import { convert, getConfig } from './index'
 
 yargs
   .scriptName('@lona/compiler')
@@ -18,17 +17,26 @@ yargs
       })
     },
     argv => {
-      if (typeof argv.workspace !== 'string') {
-        throw new Error('workspace needs to be a string')
+      const { workspace } = argv
+
+      if (typeof workspace !== 'string') {
+        throw new Error('workspace must be a string')
       }
-      getConfig(argv.workspace)
-        .then(config => {
-          console.log(JSON.stringify(config, null, '  '))
-        })
-        .catch(err => {
-          console.error(err)
-          process.exit(1)
-        })
+
+      try {
+        const config = getConfig(workspace)
+
+        if (!config) {
+          throw new Error(
+            'The path provided is not a Lona Workspace. A workspace must contain a `lona.json` file.'
+          )
+        }
+
+        console.log(JSON.stringify(config, null, 2))
+      } catch (e) {
+        console.error(e)
+        process.exit(1)
+      }
     }
   )
   .command(
@@ -47,19 +55,23 @@ yargs
       })
     },
     argv => {
-      if (typeof argv.path !== 'string') {
-        throw new Error('path needs to be a string')
+      const { path, format } = argv
+
+      if (typeof path !== 'string') {
+        throw new Error('path must be a string')
       }
-      if (typeof argv.format !== 'string') {
-        throw new Error('format option needs to be a string')
+
+      if (typeof format !== 'string') {
+        throw new Error('format option must be a string')
       }
-      convert(argv.path, argv.format, argv)
+
+      convert(path, format, argv)
         .then(result => {
           if (result) {
             if (typeof result === 'string') {
               console.log(result)
             } else {
-              console.log(JSON.stringify(result, null, '  '))
+              console.log(JSON.stringify(result, null, 2))
             }
           }
         })

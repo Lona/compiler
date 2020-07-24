@@ -1,0 +1,107 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`converts workspace 1`] = `
+Object {
+  "files": Array [
+    Object {
+      "contents": Object {
+        "type": "documentationPage",
+        "value": Object {
+          "children": Array [],
+          "mdxString": "# Colors
+
+<div class=\\"lona-token lona-token-color\\">
+  <div  class=\\"lona-token-preview lona-token-preview-color\\" data-color=\\"#45CBFF\\"></div>
+  <div class=\\"lona-token-details lona-token-details-color\\">
+    <span class=\\"lona-token-name lona-token-name-color\\">primary</span>
+    <span class=\\"lona-token-value lona-token-value-color\\">#45CBFF</span>
+  </div>
+</div>
+
+<div class=\\"lona-token lona-token-color\\">
+  <div  class=\\"lona-token-preview lona-token-preview-color\\" data-color=\\"#45CBFF\\"></div>
+  <div class=\\"lona-token-details lona-token-details-color\\">
+    <span class=\\"lona-token-name lona-token-name-color\\">accent</span>
+    <span class=\\"lona-token-value lona-token-value-color\\">#45CBFF</span>
+  </div>
+</div>
+
+<div class=\\"lona-token lona-token-color\\">
+  <div  class=\\"lona-token-preview lona-token-preview-color\\" data-color=\\"#29D7FF\\"></div>
+  <div class=\\"lona-token-details lona-token-details-color\\">
+    <span class=\\"lona-token-name lona-token-name-color\\">testSaturate</span>
+    <span class=\\"lona-token-value lona-token-value-color\\">#29D7FF</span>
+  </div>
+</div>",
+        },
+      },
+      "inputPath": "Colors.md",
+      "name": "Colors",
+      "outputPath": "Colors.mdx",
+    },
+    Object {
+      "contents": Object {
+        "type": "documentationPage",
+        "value": Object {
+          "children": Array [
+            "Colors.md",
+            "TextStyles.md",
+            "Shadows.md",
+          ],
+          "mdxString": "# Flat Tokens
+
+This is an example workspace for testing token generation.
+
+### Pages
+
+<a class=\\"page\\" href=\\"Colors.md\\">Colors</a>
+
+<a class=\\"page\\" href=\\"TextStyles.md\\">TextStyles</a>
+
+<a class=\\"page\\" href=\\"Shadows.md\\">Shadows</a>",
+        },
+      },
+      "inputPath": "README.md",
+      "name": "README",
+      "outputPath": "README.mdx",
+    },
+    Object {
+      "contents": Object {
+        "type": "documentationPage",
+        "value": Object {
+          "children": Array [],
+          "mdxString": "<div class=\\"lona-token lona-token-shadow\\">
+  <div  class=\\"lona-token-preview lona-token-preview-shadow\\" data-x=\\"0\\" data-y=\\"2\\" data-blur=\\"2\\" data-radius=\\"0\\" data-color=\\"#45CBFF\\"></div>
+  <div class=\\"lona-token-details lona-token-details-shadow\\">
+    <span class=\\"lona-token-name lona-token-name-shadow\\">small</span>
+    <span class=\\"lona-token-value lona-token-value-shadow\\">0px 2px 2px 0px #45CBFF</span>
+  </div>
+</div>",
+        },
+      },
+      "inputPath": "Shadows.md",
+      "name": "Shadows",
+      "outputPath": "Shadows.mdx",
+    },
+    Object {
+      "contents": Object {
+        "type": "documentationPage",
+        "value": Object {
+          "children": Array [],
+          "mdxString": "<div class=\\"lona-token lona-token-textStyle\\">
+  <div  class=\\"lona-token-preview lona-token-preview-textStyle\\" data-fontFamily=\\"Helvetica\\" data-fontWeight=\\"700\\" data-fontSize=\\"28\\" data-color=\\"teal\\"></div>
+  <div class=\\"lona-token-details lona-token-details-textStyle\\">
+    <span class=\\"lona-token-name lona-token-name-textStyle\\">heading1</span>
+    <span class=\\"lona-token-value lona-token-value-textStyle\\">Helvetica 700 28px teal</span>
+  </div>
+</div>",
+        },
+      },
+      "inputPath": "TextStyles.md",
+      "name": "TextStyles",
+      "outputPath": "TextStyles.mdx",
+    },
+  ],
+  "flatTokensSchemaVersion": "0.0.1",
+}
+`;

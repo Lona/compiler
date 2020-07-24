@@ -1,36 +1,11 @@
 import * as path from 'path'
 import { Helpers } from '../../helpers'
 import { Plugin } from '../index'
-import { ConvertedWorkspace, ConvertedFile } from './tokens-ast'
+import { ConvertedWorkspace, ConvertedFile } from './tokensAst'
 import { convert } from './convert'
+import { LogicFile } from '../../logic/module'
 
 export { ConvertedWorkspace, ConvertedFile }
-
-export const convertFile = async (
-  filePath: string,
-  helpers: Helpers
-): Promise<ConvertedFile> => {
-  const logicNode = helpers.config.logicFiles[filePath]
-
-  if (!logicNode) {
-    throw new Error(`${filePath} is not a token file`)
-  }
-
-  const name = path.basename(filePath, path.extname(filePath))
-  const outputPath = path.join(path.dirname(filePath), `${name}.flat.json`)
-
-  const file: ConvertedFile = {
-    inputPath: filePath,
-    outputPath,
-    name,
-    contents: {
-      type: 'flatTokens',
-      value: convert(logicNode, helpers),
-    },
-  }
-
-  return file
-}
 
 // depending on whether we have an output or not,
 // we return the tokens or write them to disk
@@ -41,6 +16,7 @@ function convertWorkspace(
     [key: string]: unknown
   } & { output?: never }
 ): Promise<ConvertedWorkspace>
+
 function convertWorkspace(
   workspacePath: string,
   helpers: Helpers,
@@ -56,35 +32,43 @@ async function convertWorkspace(
     [key: string]: unknown
   }
 ): Promise<ConvertedWorkspace | void> {
-  let workspace: ConvertedWorkspace
-
-  if (!helpers.evaluationContext) {
-    helpers.reporter.warn('Failed to evaluate workspace.')
-    workspace = { flatTokensSchemaVersion: '0.0.1', files: [] }
-  } else {
-    workspace = {
-      files: await Promise.all(
-        helpers.config.logicPaths
-          .concat(helpers.config.documentPaths)
-          .map(x => convertFile(x, helpers))
-      ),
-      flatTokensSchemaVersion: '0.0.1',
-    }
+  let workspace: ConvertedWorkspace = {
+    files: helpers.module.documentFiles.map(file =>
+      convertFile(workspacePath, file, helpers)
+    ),
+    flatTokensSchemaVersion: '0.0.1',
   }
 
-  if (!options.output) {
-    return workspace
-  }
+  if (typeof options.output !== 'string') return workspace
 
-  await helpers.fs.writeFile(
-    'tokens.json',
-    JSON.stringify(workspace, null, '  ')
+  helpers.fs.writeFileSync(
+    options.output,
+    JSON.stringify(workspace, null, 2),
+    'utf8'
   )
 }
 
-type ExpectedOptions = {}
-const plugin: Plugin<ExpectedOptions, ConvertedWorkspace | void> = {
+function convertFile(workspacePath: string, file: LogicFile, helpers: Helpers) {
+  const filePath = file.sourcePath
+  const name = path.basename(filePath, path.extname(filePath))
+  const outputPath = path.join(path.dirname(filePath), `${name}.flat.json`)
+
+  const result: ConvertedFile = {
+    inputPath: path.relative(workspacePath, filePath),
+    outputPath: path.relative(workspacePath, outputPath),
+    name,
+    contents: {
+      type: 'flatTokens',
+      value: convert(file.rootNode, helpers),
+    },
+  }
+
+  return result
+}
+
+const plugin: Plugin<{}, ConvertedWorkspace | void> = {
   format: 'tokens',
   convertWorkspace,
 }
+
 export default plugin

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Swift Example declaration/enumeration.md 1`] = `
+exports[`Swift Fixtures converts: declaration/enumeration.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -9,14 +9,14 @@ exports[`Swift Example declaration/enumeration.md 1`] = `
   import AppKit
 #endif
 
-public indirect struct Optional: Wrapped {
+public indirect struct Foo: Wrapped {
   case value(Wrapped)
   case none
 }
 "
 `;
 
-exports[`Swift Example declaration/function.md 1`] = `
+exports[`Swift Fixtures converts: declaration/function.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -25,15 +25,11 @@ exports[`Swift Example declaration/function.md 1`] = `
   import AppKit
 #endif
 
-func add(a: T, b: T = 0) -> T {}
-func add(a: T, b: T = 0) -> T {
-  return Number.add(a: a, b: b)
-}
-func add() -> T {}
+func addA(a: T, b: T = 0) -> T {}
 "
 `;
 
-exports[`Swift Example declaration/import.md 1`] = `
+exports[`Swift Fixtures converts: declaration/import.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -46,7 +42,7 @@ exports[`Swift Example declaration/import.md 1`] = `
 "
 `;
 
-exports[`Swift Example declaration/namespace.md 1`] = `
+exports[`Swift Fixtures converts: declaration/namespace.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -56,13 +52,13 @@ exports[`Swift Example declaration/namespace.md 1`] = `
 #endif
 
 public indirect struct Boolean {
-  func or(a: Bool, b: Bool) -> Bool {}
-  func and(a: Bool, b: Bool) -> Bool {}
+  func foo(a: Bool, b: Bool) -> Bool {}
+  func bar(a: Bool, b: Bool) -> Bool {}
 }
 "
 `;
 
-exports[`Swift Example declaration/record.md 1`] = `
+exports[`Swift Fixtures converts: declaration/record.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -85,7 +81,7 @@ public struct ThemedColor: Equatable {
 "
 `;
 
-exports[`Swift Example declaration/variable.md 1`] = `
+exports[`Swift Fixtures converts: declaration/variable.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -98,7 +94,7 @@ public let x: Array = [42]
 "
 `;
 
-exports[`Swift Example expression/assignment.md 1`] = `
+exports[`Swift Fixtures converts: expression/assignment.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -113,7 +109,7 @@ func assignment(a: CGFloat) -> CGFloat {
 "
 `;
 
-exports[`Swift Example expression/functionCall.md 1`] = `
+exports[`Swift Fixtures converts: expression/functionCall.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -122,21 +118,14 @@ exports[`Swift Example expression/functionCall.md 1`] = `
   import AppKit
 #endif
 
-func functionCall(a: CGFloat) -> CGFloat {
-  ThemedColor(
-    light: #colorLiteral(red: 1, green: 0.7529411764705882, blue: 0.796078431372549, alpha: 1),
-    dark: #colorLiteral(red: 0.5019607843137255, green: 0, blue: 0.5019607843137255, alpha: 1))
-  Optional.none()
-}
 func colorIdentity(a: Color) -> Color {
   return a
 }
-public let pinkWithDetour: Color = colorIdentity(a:
-#colorLiteral(red: 1, green: 0.7529411764705882, blue: 0.796078431372549, alpha: 1))
+public let pinkWithDetour: Color = Color(named: \\"pinkWithDetour\\")!
 "
 `;
 
-exports[`Swift Example expression/identifier.md 1`] = `
+exports[`Swift Fixtures converts: expression/identifier.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -145,13 +134,14 @@ exports[`Swift Example expression/identifier.md 1`] = `
   import AppKit
 #endif
 
+public let x: CGFloat = 4
 func identifier(a: CGFloat) -> CGFloat {
   a = x
 }
 "
 `;
 
-exports[`Swift Example expression/member.md 1`] = `
+exports[`Swift Fixtures converts: expression/member.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -160,14 +150,14 @@ exports[`Swift Example expression/member.md 1`] = `
   import AppKit
 #endif
 
-func member(a: CGFloat) -> CGFloat {
-  a = Colors.primary
-  a.test = Colors.primary
+public indirect struct Foo {
+  static public let primary: Color = Color(named: \\"primary\\")!
 }
+public let b: Color = Foo.primary
 "
 `;
 
-exports[`Swift Example literal/array.md 1`] = `
+exports[`Swift Fixtures converts: literal/array.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -180,7 +170,7 @@ public let x: Array = [42, 35]
 "
 `;
 
-exports[`Swift Example literal/boolean.md 1`] = `
+exports[`Swift Fixtures converts: literal/boolean.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -194,7 +184,7 @@ public let falseBoolean: Bool = false
 "
 `;
 
-exports[`Swift Example literal/color.md 1`] = `
+exports[`Swift Fixtures converts: literal/color.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -208,7 +198,7 @@ public let hexColor: Color = Color(named: \\"hexColor\\")!
 "
 `;
 
-exports[`Swift Example literal/number.md 1`] = `
+exports[`Swift Fixtures converts: literal/number.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -223,7 +213,7 @@ public let negative: CGFloat = -1
 "
 `;
 
-exports[`Swift Example literal/string.md 1`] = `
+exports[`Swift Fixtures converts: literal/string.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -237,7 +227,7 @@ public let stringWithQuote: String = \\"Hello \\\\\\"world\\\\\\"\\"
 "
 `;
 
-exports[`Swift Example statement/branch.md 1`] = `
+exports[`Swift Fixtures converts: statement/branch.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -255,7 +245,7 @@ func branchStatement() -> CGFloat {
 "
 `;
 
-exports[`Swift Example statement/loop.md 1`] = `
+exports[`Swift Fixtures converts: statement/loop.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -272,7 +262,7 @@ func loopStatement() -> CGFloat {
 "
 `;
 
-exports[`Swift Example statement/return.md 1`] = `
+exports[`Swift Fixtures converts: statement/return.md 1`] = `
 "import Foundation
 
 #if canImport(UIKit)
@@ -284,5 +274,118 @@ exports[`Swift Example statement/return.md 1`] = `
 func returnStatement() -> CGFloat {
   return 0
 }
+"
+`;
+
+exports[`Swift converts workspace 1`] = `
+Object {
+  "/output/Assets.xcassets/Contents.json": "{
+  \\"info\\": {
+    \\"version\\": 1,
+    \\"author\\": \\"Lona\\"
+  }
+}",
+  "/output/Assets.xcassets/colors/Contents.json": "{
+  \\"info\\": {
+    \\"version\\": 1,
+    \\"author\\": \\"Lona\\"
+  }
+}",
+  "/output/Assets.xcassets/colors/primary.colorset/Contents.json": "{
+  \\"info\\": {
+    \\"version\\": 1,
+    \\"author\\": \\"Lona\\"
+  },
+  \\"colors\\": [
+    {
+      \\"idiom\\": \\"universal\\",
+      \\"color\\": {
+        \\"color-space\\": \\"srgb\\",
+        \\"components\\": {
+          \\"red\\": \\"0x45\\",
+          \\"alpha\\": \\"1.000\\",
+          \\"blue\\": \\"0xFF\\",
+          \\"green\\": \\"0xCB\\"
+        }
+      }
+    }
+  ]
+}",
+  "/output/Assets.xcassets/colors/testSaturate.colorset/Contents.json": "{
+  \\"info\\": {
+    \\"version\\": 1,
+    \\"author\\": \\"Lona\\"
+  },
+  \\"colors\\": [
+    {
+      \\"idiom\\": \\"universal\\",
+      \\"color\\": {
+        \\"color-space\\": \\"srgb\\",
+        \\"components\\": {
+          \\"red\\": \\"0x29\\",
+          \\"alpha\\": \\"1.000\\",
+          \\"blue\\": \\"0xFF\\",
+          \\"green\\": \\"0xD7\\"
+        }
+      }
+    }
+  ]
+}",
+  "/output/Colors.swift": "import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let primary: Color = Color(named: \\"primary\\")!
+
+public let accent: Color = primary
+
+public let testSaturate: Color = Color(named: \\"testSaturate\\")!
+",
+  "/output/Shadows.swift": "import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let small: Shadow = Shadow(
+  x: 0,
+  y: 2,
+  blur: 2,
+  radius: 0,
+  color: #colorLiteral(red: 0.27058823529411763, green: 0.796078431372549, blue: 1, alpha: 1))
+",
+  "/output/TextStyles.swift": "import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let heading1: TextStyle = TextStyle(
+  fontFamily: \\"Helvetica\\",
+  fontSize: 28,
+  fontWeight: Font.Weight.bold,
+  color: #colorLiteral(red: 0, green: 0.5019607843137255, blue: 0.5019607843137255, alpha: 1))
+",
+}
+`;
+
+exports[`Swift generates swift 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public let color: Color = Color(named: \\"color\\")!
 "
 `;

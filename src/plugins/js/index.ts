@@ -3,41 +3,11 @@ import upperFirst from 'lodash.upperfirst'
 import camelCase from 'lodash.camelcase'
 import { Helpers } from '../../helpers'
 import { Plugin } from '../index'
-import convertLogic from './convert-logic'
-import renderJS from './render-ast'
-import * as JSAST from './js-ast'
-import { resolveImportPath } from './utils'
-
-export const convertFile = async (
-  filePath: string,
-  helpers: Helpers,
-  options: {
-    [key: string]: unknown
-  }
-): Promise<string> => {
-  let jsAST: JSAST.JSNode | undefined
-
-  const logicNode = helpers.config.logicFiles[filePath]
-  if (logicNode) {
-    if (
-      logicNode.type !== 'topLevelDeclarations' ||
-      !logicNode.data.declarations.length
-    ) {
-      return ''
-    }
-    jsAST = convertLogic(logicNode, filePath, helpers)
-  }
-
-  if (!jsAST) {
-    return ''
-  }
-
-  // only output file if we passed an output option
-  const outputFile =
-    typeof options['output'] !== 'undefined' ? helpers.fs.writeFile : undefined
-
-  return `${renderJS(jsAST, { outputFile, reporter: helpers.reporter })}`
-}
+import convertLogic from './convertLogic'
+import renderJS from './renderAst'
+import * as JSAST from './jsAst'
+import { generateTranspiledImport } from './utils'
+import { LogicFile } from '../../logic/module'
 
 const convertWorkspace = async (
   workspacePath: string,
@@ -46,58 +16,77 @@ const convertWorkspace = async (
     [key: string]: unknown
   }
 ): Promise<void> => {
+  if (typeof options.output !== 'string') {
+    throw new Error('Output option required when generating JS')
+  }
+
+  const { output } = options
+
+  try {
+    helpers.fs.mkdirSync(output, { recursive: true })
+  } catch (e) {
+    // Directory already exists
+  }
+
   const imports: string[] = []
 
   await Promise.all(
-    helpers.config.logicPaths
-      .concat(helpers.config.documentPaths)
-      .map(async filePath => {
-        const swiftContent = await convertFile(filePath, helpers, options)
-        if (!swiftContent) {
-          return
-        }
-        const name = upperFirst(
-          camelCase(path.basename(filePath, path.extname(filePath)))
-        )
-        const outputPath = path.join(path.dirname(filePath), `${name}.js`)
+    helpers.module.sourceFiles.map(file => {
+      const outputText = convertFile(file, helpers)
 
-        imports.push(outputPath)
+      if (!outputText) return
 
-        await helpers.fs.writeFile(outputPath, swiftContent)
-      })
-  )
+      const sourcePath = file.sourcePath
 
-  await helpers.fs.writeFile(
-    './index.js',
-    `${imports
-      .map(
-        (x, i) => `var __lona_import_${i} = require("${resolveImportPath(
-          './index.js',
-          x
-        )}");
-Object.keys(__lona_import_${i}).forEach(function (key) {
-  Object.defineProperty(module.exports, key, {
-    enumerable: true,
-    get: function get() {
-      return __lona_import_${i}[key];
-    }
-  });
-})`
+      const name = upperFirst(
+        camelCase(path.basename(sourcePath, path.extname(sourcePath)))
       )
-      .join('\n\n')}`
+
+      const relativePath = path.relative(workspacePath, sourcePath)
+
+      const outputPath = path.join(
+        output,
+        path.dirname(relativePath),
+        `${name}.js`
+      )
+
+      imports.push(outputPath)
+
+      helpers.fs.writeFileSync(outputPath, outputText, 'utf8')
+    })
   )
 
-  // await helpers.fs.copyDir(
-  //   path.join(__dirname, '../../../static/js'),
-  //   './lona-helpers'
-  // )
+  helpers.fs.writeFileSync(
+    path.join(output, 'index.js'),
+    `${imports
+      .map((importPath, i) => generateTranspiledImport(output, importPath, i))
+      .join('\n\n')}`,
+    'utf8'
+  )
+}
+
+function convertFile(file: LogicFile, helpers: Helpers): string {
+  const rootNode = file.rootNode
+
+  if (
+    rootNode.type !== 'topLevelDeclarations' ||
+    !rootNode.data.declarations.length
+  ) {
+    return ''
+  }
+
+  let jsAST: JSAST.JSNode = convertLogic(rootNode, file.sourcePath, helpers)
+
+  return `${renderJS(jsAST, { reporter: helpers.reporter })}`
 }
 
 type ExpectedOptions = {
   framework?: 'react' | 'react-native' | 'react-sketchapp'
 }
+
 const plugin: Plugin<ExpectedOptions, void> = {
   format: 'js',
   convertWorkspace,
 }
+
 export default plugin

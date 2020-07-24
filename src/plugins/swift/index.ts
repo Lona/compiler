@@ -1,52 +1,16 @@
+import * as fs from 'fs'
 import * as path from 'path'
 import upperFirst from 'lodash.upperfirst'
 import camelCase from 'lodash.camelcase'
 import { Plugin } from '../index'
 import { Helpers } from '../../helpers'
-import convertLogic from './convert-logic'
-import renderSwift from './render-ast'
-import * as SwiftAST from './swift-ast'
+import convertLogic from './convertLogic'
+import renderSwift from './renderAst'
+import * as SwiftAST from './swiftAst'
+import { copy, DirectoryJSON, createFs, toJSON } from 'buffs'
+import { LogicFile } from '../../logic/module'
 
-export const convertFile = async (
-  filePath: string,
-  helpers: Helpers & {
-    emitFile?: (filePath: string, data: string) => Promise<void>
-  },
-  options: {
-    [key: string]: unknown
-  }
-): Promise<string> => {
-  let swiftAST: SwiftAST.SwiftNode | undefined
-
-  const logicNode = helpers.config.logicFiles[filePath]
-  if (logicNode) {
-    if (
-      logicNode.type !== 'topLevelDeclarations' ||
-      !logicNode.data.declarations.length
-    ) {
-      return ''
-    }
-    swiftAST = convertLogic(logicNode, helpers)
-  }
-
-  if (!swiftAST) {
-    return ''
-  }
-
-  // only output file if we passed an output option
-  const outputFile =
-    typeof options['output'] !== 'undefined' ? helpers.fs.writeFile : undefined
-
-  return `import Foundation
-
-#if canImport(UIKit)
-  import UIKit
-#elseif canImport(AppKit)
-  import AppKit
-#endif
-
-${renderSwift(swiftAST, { outputFile, reporter: helpers.reporter })}`
-}
+const STATIC_FILES_PATH = path.join(__dirname, '../../../static/swift')
 
 const convertWorkspace = async (
   workspacePath: string,
@@ -55,32 +19,83 @@ const convertWorkspace = async (
     [key: string]: unknown
   }
 ): Promise<void> => {
-  await Promise.all(
-    helpers.config.logicPaths
-      .concat(helpers.config.documentPaths)
-      .map(async filePath => {
-        const swiftContent = await convertFile(filePath, helpers, options)
-        if (!swiftContent) {
-          return
-        }
-        const name = upperFirst(
-          camelCase(path.basename(filePath, path.extname(filePath)))
-        )
-        const outputPath = path.join(path.dirname(filePath), `${name}.swift`)
+  if (typeof options.output !== 'string') {
+    throw new Error('Output option required when generating JS')
+  }
 
-        await helpers.fs.writeFile(outputPath, swiftContent)
-      })
-  )
+  const { output } = options
 
-  await helpers.fs.copyDir(
-    path.join(__dirname, '../../../static/swift'),
-    './lona-helpers'
-  )
+  try {
+    helpers.fs.mkdirSync(output, { recursive: true })
+  } catch (e) {
+    // Directory already exists
+  }
+
+  helpers.module.sourceFiles.map(file => {
+    const [outputText, auxiliaryFiles] = convertFile(file, helpers)
+
+    if (!outputText) return
+
+    const sourcePath = file.sourcePath
+
+    const name = upperFirst(
+      camelCase(path.basename(sourcePath, path.extname(sourcePath)))
+    )
+
+    const relativePath = path.relative(workspacePath, sourcePath)
+
+    const outputPath = path.join(
+      output,
+      path.dirname(relativePath),
+      `${name}.swift`
+    )
+
+    helpers.fs.writeFileSync(outputPath, outputText, 'utf8')
+
+    copy(createFs(auxiliaryFiles), helpers.fs, '/', output)
+  })
+
+  copy(fs, helpers.fs, STATIC_FILES_PATH, path.join(output, './lona-helpers'))
 }
 
-type ExpectedOptions = {}
-const plugin: Plugin<ExpectedOptions, void> = {
+function convertFile(
+  file: LogicFile,
+  helpers: Helpers
+): [string, DirectoryJSON] {
+  const rootNode = file.rootNode
+
+  if (
+    rootNode.type !== 'topLevelDeclarations' ||
+    !rootNode.data.declarations.length
+  ) {
+    return ['', {}]
+  }
+
+  const swiftAST: SwiftAST.SwiftNode = convertLogic(rootNode, helpers)
+
+  // TODO: Consider a separate/better place for determining files to write
+  // instead of as a side effect within renderSwift
+  const files: DirectoryJSON = {}
+
+  const result = renderSwift(swiftAST, { reporter: helpers.reporter, files })
+
+  return [
+    `import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+${result}`,
+    files,
+  ]
+}
+
+const plugin: Plugin<{}, void> = {
   format: 'swift',
   convertWorkspace,
 }
+
 export default plugin
