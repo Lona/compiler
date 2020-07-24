@@ -58,7 +58,10 @@ export type TupleTypeElement = {
 }
 
 export type TypeAnnotation =
-  | { type: 'TypeName'; data: string }
+  | {
+      type: 'TypeName'
+      data: { name: string; genericArguments: TypeAnnotation[] }
+    }
   | {
       type: 'TypeIdentifier'
       data: {

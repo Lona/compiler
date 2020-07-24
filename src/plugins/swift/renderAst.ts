@@ -414,7 +414,7 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
         ast.data.pattern.data.identifier.type === 'SwiftIdentifier' &&
         ast.data.pattern.data.annotation &&
         ast.data.pattern.data.annotation.type === 'TypeName' &&
-        ast.data.pattern.data.annotation.data === 'Color' &&
+        ast.data.pattern.data.annotation.data.name === 'Color' &&
         ast.data.init &&
         ast.data.init.type === 'LiteralExpression' &&
         ast.data.init.data.type === 'Color' &&
@@ -888,8 +888,22 @@ function renderTypeAnnotation(
   options: Options
 ): Doc {
   switch (node.type) {
-    case 'TypeName':
-      return node.data
+    case 'TypeName': {
+      const { name, genericArguments } = node.data
+      const maybeGenericParameters = builders.concat([
+        '<',
+        join(
+          genericArguments.map(x => renderTypeAnnotation(x, options)),
+          ','
+        ),
+        '>',
+      ])
+
+      return builders.concat([
+        name,
+        ...(genericArguments.length > 0 ? [maybeGenericParameters] : []),
+      ])
+    }
     case 'TypeIdentifier':
       return group([
         renderTypeAnnotation(node.data.name, options),

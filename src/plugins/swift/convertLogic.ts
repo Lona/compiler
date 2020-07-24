@@ -235,7 +235,12 @@ const declaration = (
         type: 'StructDeclaration',
         data: {
           name: node.data.name.name,
-          inherits: [{ type: 'TypeName', data: 'Equatable' }],
+          inherits: [
+            {
+              type: 'TypeName',
+              data: { name: 'Equatable', genericArguments: [] },
+            },
+          ],
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
           body: ((memberVariables.length
             ? [initFunction]
@@ -649,18 +654,25 @@ const typeAnnotation = (
     context.helpers.reporter.warn(
       'no type annotation when needed remaining in file'
     )
-    return { type: 'TypeName', data: '_' }
+    return { type: 'TypeName', data: { name: '_', genericArguments: [] } }
   }
   switch (node.type) {
     case 'typeIdentifier': {
+      const { identifier, genericArguments } = node.data
+
       return {
         type: 'TypeName',
-        data: convertNativeType(node.data.identifier.string, context),
+        data: {
+          name: convertNativeType(identifier.string, context),
+          genericArguments: genericArguments.map(arg =>
+            typeAnnotation(arg, context)
+          ),
+        },
       }
     }
     case 'placeholder': {
       context.helpers.reporter.warn('Type placeholder remaining in file')
-      return { type: 'TypeName', data: '_' }
+      return { type: 'TypeName', data: { name: '_', genericArguments: [] } }
     }
     case 'functionType': {
       return {
@@ -678,7 +690,7 @@ const typeAnnotation = (
     }
     default: {
       typeNever(node, context.helpers.reporter.warn)
-      return { type: 'TypeName', data: '_' }
+      return { type: 'TypeName', data: { name: '_', genericArguments: [] } }
     }
   }
 }
@@ -691,18 +703,21 @@ const genericParameter = (
     case 'parameter': {
       return {
         type: 'TypeName',
-        data: convertNativeType(node.data.name.name, context),
+        data: {
+          name: convertNativeType(node.data.name.name, context),
+          genericArguments: [],
+        },
       }
     }
     case 'placeholder': {
       context.helpers.reporter.warn(
         'Generic type placeholder remaining in file'
       )
-      return { type: 'TypeName', data: '_' }
+      return { type: 'TypeName', data: { name: '_', genericArguments: [] } }
     }
     default: {
       typeNever(node, context.helpers.reporter.warn)
-      return { type: 'TypeName', data: '_' }
+      return { type: 'TypeName', data: { name: '_', genericArguments: [] } }
     }
   }
 }

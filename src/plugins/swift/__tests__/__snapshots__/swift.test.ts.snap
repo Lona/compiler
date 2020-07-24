@@ -105,7 +105,7 @@ exports[`Swift Fixtures converts: declaration/variable.md 1`] = `
   import AppKit
 #endif
 
-public let x: Array = [42]
+public let x: Array<CGFloat> = [42]
 "
 `;
 
@@ -181,7 +181,7 @@ exports[`Swift Fixtures converts: literal/array.md 1`] = `
   import AppKit
 #endif
 
-public let x: Array = [42, 35]
+public let x: Array<CGFloat> = [42, 35]
 "
 `;
 
