@@ -147,6 +147,7 @@ const declaration = (
           name: node.data.name.name,
           isIndirect: true,
           inherits: [],
+          genericParameters: [],
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
           body: node.data.declarations
             .filter(x => x.type !== 'placeholder')
@@ -253,9 +254,10 @@ const declaration = (
         data: {
           name: node.data.name.name,
           isIndirect: true,
-          inherits: node.data.genericParameters
+          genericParameters: node.data.genericParameters
             .filter(x => x.type !== 'placeholder')
             .map(x => genericParameter(x, context)),
+          inherits: [],
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
           body: node.data.cases
             .map(x => {

@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`converts Swift language 1`] = `
+"import Foundation
+
+#if canImport(UIKit)
+  import UIKit
+#elseif canImport(AppKit)
+  import AppKit
+#endif
+
+public indirect enum AccessLevelModifier {
+  case PrivateModifier
+  case FileprivateModifier
+  case InternalModifier
+  case PublicModifier
+  case OpenModifier
+}
+public indirect enum MutationModifier {
+  case MutatingModifier
+  case NonmutatingModifier
+}
+public indirect enum OtherModifier {
+  case ClassModifier
+  case ConvenienceModifier
+  case DynamicModifier
+  case FinalModifier
+  case InfixModifier
+  case LazyModifier
+  case OptionalModifier
+  case OverrideModifier
+  case PostfixModifier
+  case PrefixModifier
+  case RequiredModifier
+  case StaticModifier
+  case UnownedModifier
+  case UnownedSafeModifier
+  case UnownedUnsafeModifier
+  case WeakModifier
+}
+"
+`;

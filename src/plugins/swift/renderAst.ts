@@ -328,21 +328,31 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
       ])
     }
     case 'EnumDeclaration': {
+      const { isIndirect, modifier, genericParameters, inherits } = ast.data
+
       /* Copied from ClassDeclaration */
-      const maybeIndirect = ast.data.isIndirect
+      const maybeIndirect = isIndirect
         ? builders.concat(['indirect', builders.line])
         : ''
-      const maybeModifier = ast.data.modifier
-        ? builders.concat([
-            renderDeclarationModifier(ast.data.modifier),
-            builders.line,
-          ])
+      const maybeModifier = modifier
+        ? builders.concat([renderDeclarationModifier(modifier), builders.line])
         : ''
-      const maybeInherits = ast.data.inherits.length
+      const maybeGenericParameters =
+        genericParameters.length > 0
+          ? builders.concat([
+              '<',
+              join(
+                genericParameters.map(x => renderTypeAnnotation(x, options)),
+                ','
+              ),
+              '>',
+            ])
+          : ''
+      const maybeInherits = inherits.length
         ? builders.concat([
             ': ',
             join(
-              ast.data.inherits.map(x => renderTypeAnnotation(x, options)),
+              inherits.map(x => renderTypeAnnotation(x, options)),
               ', '
             ),
           ])
@@ -350,9 +360,10 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
       const opening = group([
         maybeModifier,
         maybeIndirect,
-        'struct',
+        'enum',
         builders.line,
         ast.data.name,
+        maybeGenericParameters,
         maybeInherits,
         builders.line,
         '{',

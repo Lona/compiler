@@ -1,0 +1,31 @@
+enum AccessLevelModifier {
+  case PrivateModifier()
+  case FileprivateModifier()
+  case InternalModifier()
+  case PublicModifier()
+  case OpenModifier()
+}
+
+enum MutationModifier {
+  case MutatingModifier()
+  case NonmutatingModifier()
+}
+
+enum OtherModifier {
+  case ClassModifier()
+  case ConvenienceModifier()
+  case DynamicModifier()
+  case FinalModifier()
+  case InfixModifier()
+  case LazyModifier()
+  case OptionalModifier()
+  case OverrideModifier()
+  case PostfixModifier()
+  case PrefixModifier()
+  case RequiredModifier()
+  case StaticModifier()
+  case UnownedModifier()
+  case UnownedSafeModifier()
+  case UnownedUnsafeModifier()
+  case WeakModifier()
+}

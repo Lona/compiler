@@ -185,6 +185,7 @@ export type SwiftNode =
       data: {
         name: string
         isIndirect: boolean
+        genericParameters: TypeAnnotation[]
         inherits: TypeAnnotation[]
         modifier?: AccessLevelModifier
         body: SwiftNode[]
