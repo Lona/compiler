@@ -9,12 +9,48 @@ exports[`converts Swift language 1`] = `
   import AppKit
 #endif
 
-public indirect enum AccessLevelModifier {
+public indirect enum AccessLevelModifier: Codable {
   case privateModifier
   case fileprivateModifier
   case internalModifier
   case publicModifier
   case openModifier
+  indirect enum CodingKeys: CodingKey {
+    case type
+  }
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    let type = try container.decode(String.self, forKey: CodingKeys.type)
+    switch type {
+      case \\"privateModifier\\":
+        self = AccessLevelModifier.privateModifier
+      case \\"fileprivateModifier\\":
+        self = AccessLevelModifier.fileprivateModifier
+      case \\"internalModifier\\":
+        self = AccessLevelModifier.internalModifier
+      case \\"publicModifier\\":
+        self = AccessLevelModifier.publicModifier
+      case \\"openModifier\\":
+        self = AccessLevelModifier.openModifier
+      default:
+        fatalError(\\"Problem decoding\\")
+    }
+  }
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    switch self {
+      case AccessLevelModifier.privateModifier:
+        try container.encode(\\"privateModifier\\", forKey: CodingKeys.type)
+      case AccessLevelModifier.fileprivateModifier:
+        try container.encode(\\"fileprivateModifier\\", forKey: CodingKeys.type)
+      case AccessLevelModifier.internalModifier:
+        try container.encode(\\"internalModifier\\", forKey: CodingKeys.type)
+      case AccessLevelModifier.publicModifier:
+        try container.encode(\\"publicModifier\\", forKey: CodingKeys.type)
+      case AccessLevelModifier.openModifier:
+        try container.encode(\\"openModifier\\", forKey: CodingKeys.type)
+    }
+  }
 }
 public indirect enum MutationModifier {
   case mutatingModifier

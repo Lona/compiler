@@ -9,8 +9,31 @@ import { TypeCheckerVisitor } from '../typeChecker'
 import { substitute } from '../typeUnifier'
 import { IDeclaration, Node } from './interfaces'
 
+// TODO: Move to serialization?
+function isNode<T extends AST.SyntaxNode>(
+  node: T
+): node is Exclude<T, { type: 'placeholder' }> {
+  return node.type !== 'placeholder'
+}
+
 export class EnumerationDeclaration extends Node<AST.EnumerationDeclaration>
   implements IDeclaration {
+  get name(): string {
+    return this.syntaxNode.data.name.name
+  }
+
+  get cases(): Extract<AST.EnumerationCase, { type: 'enumerationCase' }>[] {
+    return this.syntaxNode.data.cases.flatMap(enumCase =>
+      isNode(enumCase) ? [enumCase] : []
+    )
+  }
+
+  get hasAssociatedData(): boolean {
+    return this.cases.some(
+      enumCase => enumCase.data.associatedValues.filter(isNode).length > 0
+    )
+  }
+
   namespaceEnter(visitor: NamespaceVisitor): void {
     const {
       name: { name, id },

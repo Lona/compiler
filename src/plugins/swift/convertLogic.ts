@@ -4,6 +4,7 @@ import { makeProgram } from '../../logic/ast'
 import * as SwiftAST from './swiftAst'
 import { typeNever, nonNullable } from '../../utils/typeHelpers'
 import { Decode } from '../../logic/runtime/value'
+import { isCodable, createCodableImplementation } from './codable'
 
 type LogicGenerationContext = {
   isStatic: boolean
@@ -254,56 +255,65 @@ const declaration = (
       }
     }
     case 'enumeration': {
+      const { name, genericParameters, cases, attributes } = node.data
+
+      const codableType: SwiftAST.TypeAnnotation = {
+        type: 'TypeName',
+        data: { name: 'Codable', genericArguments: [] },
+      }
+
       return {
         type: 'EnumDeclaration',
         data: {
-          name: node.data.name.name,
+          name: name.name,
           isIndirect: true,
-          genericParameters: node.data.genericParameters
+          genericParameters: genericParameters
             .filter(x => x.type !== 'placeholder')
             .map(x => genericParameter(x, context)),
-          inherits: [],
+          inherits: [...(isCodable(node) ? [codableType] : [])],
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
-          body: node.data.cases
-            .map(x => {
-              if (x.type !== 'enumerationCase') {
-                return undefined
-              }
-              const associatedValues = x.data.associatedValues.filter(
-                y => y.type !== 'placeholder'
-              )
+          body: [
+            ...cases
+              .map(x => {
+                if (x.type !== 'enumerationCase') return
 
-              const associatedTypes: SwiftAST.TupleTypeElement[] = associatedValues.flatMap(
-                associatedValue => {
-                  if (associatedValue.type === 'placeholder') return []
+                const associatedValues = x.data.associatedValues.filter(
+                  y => y.type !== 'placeholder'
+                )
 
-                  const { annotation, label } = associatedValue.data
+                const associatedTypes: SwiftAST.TupleTypeElement[] = associatedValues.flatMap(
+                  associatedValue => {
+                    if (associatedValue.type === 'placeholder') return []
 
-                  return {
-                    elementName: label?.name,
-                    annotation: typeAnnotation(annotation, context),
+                    const { annotation, label } = associatedValue.data
+
+                    return {
+                      elementName: label?.name,
+                      annotation: typeAnnotation(annotation, context),
+                    }
                   }
-                }
-              )
+                )
 
-              const associatedType: SwiftAST.TypeAnnotation | undefined =
-                associatedTypes.length === 0
-                  ? undefined
-                  : { type: 'TupleType', data: associatedTypes }
+                const associatedType: SwiftAST.TypeAnnotation | undefined =
+                  associatedTypes.length === 0
+                    ? undefined
+                    : { type: 'TupleType', data: associatedTypes }
 
-              const enumCase: SwiftAST.SwiftNode = {
-                type: 'EnumCase',
-                data: {
-                  name: {
-                    type: 'SwiftIdentifier',
-                    data: x.data.name.name,
+                const enumCase: SwiftAST.SwiftNode = {
+                  type: 'EnumCase',
+                  data: {
+                    name: {
+                      type: 'SwiftIdentifier',
+                      data: x.data.name.name,
+                    },
+                    parameters: associatedType,
                   },
-                  parameters: associatedType,
-                },
-              }
-              return enumCase
-            })
-            .filter(nonNullable),
+                }
+                return enumCase
+              })
+              .filter(nonNullable),
+            ...(isCodable(node) ? createCodableImplementation(node) : []),
+          ],
         },
       }
     }

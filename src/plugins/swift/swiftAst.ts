@@ -1,4 +1,4 @@
-enum AccessLevelModifier {
+export enum AccessLevelModifier {
   PrivateModifier = 'PrivateModifier',
   FileprivateModifier = 'FileprivateModifier',
   InternalModifier = 'InternalModifier',
@@ -6,12 +6,12 @@ enum AccessLevelModifier {
   OpenModifier = 'OpenModifier',
 }
 
-enum MutationModifier {
+export enum MutationModifier {
   MutatingModifier = 'MutatingModifier',
   NonmutatingModifier = 'NonmutatingModifier',
 }
 
-enum OtherModifier {
+export enum OtherModifier {
   ClassModifier = 'ClassModifier',
   ConvenienceModifier = 'ConvenienceModifier',
   DynamicModifier = 'DynamicModifier',
@@ -136,302 +136,560 @@ export type InitializerBlock =
       }
     }
 
+export type LiteralExpression = { type: 'LiteralExpression'; data: Literal }
+
+export type MemberExpression = { type: 'MemberExpression'; data: SwiftNode[] }
+
+export type TupleExpression = { type: 'TupleExpression'; data: SwiftNode[] }
+
+export type BinaryExpression = {
+  type: 'BinaryExpression'
+  data: {
+    left: SwiftNode
+    operator: string
+    right: SwiftNode
+  }
+}
+
+export type PrefixExpression = {
+  type: 'PrefixExpression'
+  data: {
+    operator: string
+    expression: SwiftNode
+  }
+}
+
+export type TryExpression = {
+  type: 'TryExpression'
+  data: {
+    forced: boolean
+    optional: boolean
+    expression: SwiftNode
+  }
+}
+
+export type ClassDeclaration = {
+  type: 'ClassDeclaration'
+  data: {
+    name: string
+    inherits: TypeAnnotation[]
+    modifier?: AccessLevelModifier
+    isFinal: boolean
+    body: SwiftNode[]
+  }
+}
+
+export type StructDeclaration = {
+  type: 'StructDeclaration'
+  data: {
+    name: string
+    inherits: TypeAnnotation[]
+    modifier?: AccessLevelModifier
+    body: SwiftNode[]
+  }
+}
+
+export type EnumDeclaration = {
+  type: 'EnumDeclaration'
+  data: {
+    name: string
+    isIndirect: boolean
+    genericParameters: TypeAnnotation[]
+    inherits: TypeAnnotation[]
+    modifier?: AccessLevelModifier
+    body: SwiftNode[]
+  }
+}
+
+export type TypealiasDeclaration = {
+  type: 'TypealiasDeclaration'
+  data: {
+    name: string
+    modifier?: AccessLevelModifier
+    annotation: TypeAnnotation
+  }
+}
+
+export type ExtensionDeclaration = {
+  type: 'ExtensionDeclaration'
+  data: {
+    name: string
+    protocols: TypeAnnotation[]
+    where?: SwiftNode
+    modifier?: AccessLevelModifier
+    body: SwiftNode[]
+  }
+}
+
+export type SwiftIdentifier = { type: 'SwiftIdentifier'; data: string }
+
+export type ConstantDeclaration = {
+  type: 'ConstantDeclaration'
+  data: {
+    modifiers: DeclarationModifier[]
+    pattern: Pattern
+    init?: SwiftNode
+  }
+}
+
+export type VariableDeclaration = {
+  type: 'VariableDeclaration'
+  data: {
+    modifiers: DeclarationModifier[]
+    pattern: Pattern
+    init?: SwiftNode
+    block?: InitializerBlock
+  }
+}
+
+export type InitializerDeclaration = {
+  type: 'InitializerDeclaration'
+  data: {
+    modifiers: DeclarationModifier[]
+    parameters: SwiftNode[]
+    failable?: string
+    throws: boolean
+    body: SwiftNode[]
+  }
+}
+
+export type DeinitializerDeclaration = {
+  type: 'DeinitializerDeclaration'
+  data: SwiftNode[]
+}
+
+export type FunctionDeclaration = {
+  type: 'FunctionDeclaration'
+  data: {
+    name: string
+    attributes: Attribute[]
+    modifiers: DeclarationModifier[]
+    parameters: SwiftNode[]
+    result?: TypeAnnotation
+    body: SwiftNode[]
+    throws: boolean
+  }
+}
+
+export type ImportDeclaration = { type: 'ImportDeclaration'; data: string }
+
+export type IfStatement = {
+  type: 'IfStatement'
+  data: {
+    condition: SwiftNode
+    block: SwiftNode[]
+  }
+}
+
+export type WhileStatement = {
+  type: 'WhileStatement'
+  data: {
+    condition: SwiftNode
+    block: SwiftNode[]
+  }
+}
+
+export type ForInStatement = {
+  type: 'ForInStatement'
+  data: {
+    item: Pattern
+    collection: SwiftNode
+    block: SwiftNode[]
+  }
+}
+
+export type SwitchStatement = {
+  type: 'SwitchStatement'
+  data: {
+    expression: SwiftNode
+    cases: SwiftNode[]
+  }
+}
+
+export type CaseLabel = {
+  type: 'CaseLabel'
+  data: {
+    patterns: Pattern[]
+    statements: SwiftNode[]
+  }
+}
+
+export type DefaultCaseLabel = {
+  type: 'DefaultCaseLabel'
+  data: { statements: SwiftNode[] }
+}
+
+export type ReturnStatement = { type: 'ReturnStatement'; data?: SwiftNode }
+
+export type Parameter = {
+  type: 'Parameter'
+  data: {
+    externalName?: string
+    localName: string
+    annotation: TypeAnnotation
+    defaultValue?: SwiftNode
+  }
+}
+
+export type FunctionCallArgument = {
+  type: 'FunctionCallArgument'
+  data: { name?: SwiftNode; value: SwiftNode }
+}
+
+export type FunctionCallExpression = {
+  type: 'FunctionCallExpression'
+  data: { name: SwiftNode; arguments: SwiftNode[] }
+}
+
+export type EnumCase = {
+  type: 'EnumCase'
+  data: { name: SwiftNode; parameters?: TypeAnnotation; value?: SwiftNode }
+}
+
+export type ConditionList = { type: 'ConditionList'; data: SwiftNode[] }
+
+export type OptionalBindingCondition = {
+  type: 'OptionalBindingCondition'
+  data: { const: boolean; pattern: Pattern; init: SwiftNode }
+}
+
+export type CaseCondition = {
+  type: 'CaseCondition'
+  data: { pattern: Pattern; init: SwiftNode }
+}
+
+export type Empty = { type: 'Empty' }
+
+export type LineComment = { type: 'LineComment'; data: string }
+
+export type DocComment = { type: 'DocComment'; data: string }
+
+export type LineEndComment = {
+  type: 'LineEndComment'
+  data: { comment: string; line: SwiftNode }
+}
+
+export type CodeBlock = { type: 'CodeBlock'; data: { statements: SwiftNode[] } }
+
+export type StatementListHelper = {
+  type: 'StatementListHelper'
+  data: SwiftNode[]
+}
+
+export type TopLevelDeclaration = {
+  type: 'TopLevelDeclaration'
+  data: { statements: SwiftNode[] }
+}
+
 export type SwiftNode =
-  /* | Operator(string) */
-  | { type: 'LiteralExpression'; data: Literal }
-  | { type: 'MemberExpression'; data: SwiftNode[] }
-  | { type: 'TupleExpression'; data: SwiftNode[] }
-  | {
-      type: 'BinaryExpression'
-      data: {
-        left: SwiftNode
-        operator: string
-        right: SwiftNode
-      }
-    }
-  | {
-      type: 'PrefixExpression'
-      data: {
-        operator: string
-        expression: SwiftNode
-      }
-    }
-  | {
-      type: 'TryExpression'
-      data: {
-        forced: boolean
-        optional: boolean
-        expression: SwiftNode
-      }
-    }
-  | {
-      type: 'ClassDeclaration'
-      data: {
-        name: string
-        inherits: TypeAnnotation[]
-        modifier?: AccessLevelModifier
-        isFinal: boolean
-        body: SwiftNode[]
-      }
-    }
-  | {
-      type: 'StructDeclaration'
-      data: {
-        name: string
-        inherits: TypeAnnotation[]
-        modifier?: AccessLevelModifier
-        body: SwiftNode[]
-      }
-    }
-  | {
-      type: 'EnumDeclaration'
-      data: {
-        name: string
-        isIndirect: boolean
-        genericParameters: TypeAnnotation[]
-        inherits: TypeAnnotation[]
-        modifier?: AccessLevelModifier
-        body: SwiftNode[]
-      }
-    }
-  | {
-      type: 'TypealiasDeclaration'
-      data: {
-        name: string
-        modifier?: AccessLevelModifier
-        annotation: TypeAnnotation
-      }
-    }
-  | {
-      type: 'ExtensionDeclaration'
-      data: {
-        name: string
-        protocols: TypeAnnotation[]
-        where?: SwiftNode
-        modifier?: AccessLevelModifier
-        body: SwiftNode[]
-      }
-    }
-  /* | {type: 'VariableDeclaration', data: {"pattern": Pattern, "init"?: SwiftNode}} */
-  | { type: 'SwiftIdentifier'; data: string }
-  | {
-      type: 'ConstantDeclaration'
-      data: {
-        modifiers: DeclarationModifier[]
-        pattern: Pattern
-        init?: SwiftNode
-      }
-    }
-  | {
-      type: 'VariableDeclaration'
-      data: {
-        modifiers: DeclarationModifier[]
-        pattern: Pattern
-        init?: SwiftNode
-        block?: InitializerBlock
-      }
-    }
-  | {
-      type: 'InitializerDeclaration'
-      data: {
-        modifiers: DeclarationModifier[]
-        parameters: SwiftNode[]
-        failable?: string
-        throws: boolean
-        body: SwiftNode[]
-      }
-    }
-  | { type: 'DeinitializerDeclaration'; data: SwiftNode[] }
-  | {
-      type: 'FunctionDeclaration'
-      data: {
-        name: string
-        attributes: Attribute[]
-        modifiers: DeclarationModifier[]
-        parameters: SwiftNode[]
-        result?: TypeAnnotation
-        body: SwiftNode[]
-        throws: boolean
-      }
-    }
-  | { type: 'ImportDeclaration'; data: string }
-  | {
-      type: 'IfStatement'
-      data: {
-        condition: SwiftNode
-        block: SwiftNode[]
-      }
-    }
-  | {
-      type: 'WhileStatement'
-      data: {
-        condition: SwiftNode
-        block: SwiftNode[]
-      }
-    }
-  | {
-      type: 'ForInStatement'
-      data: {
-        item: Pattern
-        collection: SwiftNode
-        block: SwiftNode[]
-      }
-    }
-  | {
-      type: 'SwitchStatement'
-      data: {
-        expression: SwiftNode
-        cases: SwiftNode[]
-      }
-    }
-  | {
-      type: 'CaseLabel'
-      data: {
-        patterns: Pattern[]
-        statements: SwiftNode[]
-      }
-    }
-  | { type: 'DefaultCaseLabel'; data: { statements: SwiftNode[] } }
-  | { type: 'ReturnStatement'; data?: SwiftNode }
-  | {
-      type: 'Parameter'
-      data: {
-        externalName?: string
-        localName: string
-        annotation: TypeAnnotation
-        defaultValue?: SwiftNode
-      }
-    }
-  | {
-      type: 'FunctionCallArgument'
-      data: {
-        name?: SwiftNode
-        value: SwiftNode
-      }
-    }
-  | {
-      type: 'FunctionCallExpression'
-      data: {
-        name: SwiftNode
-        arguments: SwiftNode[]
-      }
-    }
-  | {
-      type: 'EnumCase'
-      data: {
-        name: SwiftNode
-        parameters?: TypeAnnotation
-        value?: SwiftNode
-      }
-    }
-  | { type: 'ConditionList'; data: SwiftNode[] }
-  | {
-      type: 'OptionalBindingCondition'
-      data: {
-        const: boolean
-        pattern: Pattern
-        init: SwiftNode
-      }
-    }
-  | {
-      type: 'CaseCondition'
-      data: {
-        pattern: Pattern
-        init: SwiftNode
-      }
-    }
-  | { type: 'Empty' }
-  | { type: 'LineComment'; data: string }
-  | { type: 'DocComment'; data: string }
-  | {
-      type: 'LineEndComment'
-      data: {
-        comment: string
-        line: SwiftNode
-      }
-    }
-  | { type: 'CodeBlock'; data: { statements: SwiftNode[] } }
-  | { type: 'StatementListHelper'; data: SwiftNode[] }
-  | { type: 'TopLevelDeclaration'; data: { statements: SwiftNode[] } }
+  | LiteralExpression
+  | MemberExpression
+  | TupleExpression
+  | BinaryExpression
+  | PrefixExpression
+  | TryExpression
+  | ClassDeclaration
+  | StructDeclaration
+  | EnumDeclaration
+  | TypealiasDeclaration
+  | ExtensionDeclaration
+  | SwiftIdentifier
+  | ConstantDeclaration
+  | VariableDeclaration
+  | InitializerDeclaration
+  | DeinitializerDeclaration
+  | FunctionDeclaration
+  | ImportDeclaration
+  | IfStatement
+  | WhileStatement
+  | ForInStatement
+  | SwitchStatement
+  | CaseLabel
+  | DefaultCaseLabel
+  | ReturnStatement
+  | Parameter
+  | FunctionCallArgument
+  | FunctionCallExpression
+  | EnumCase
+  | ConditionList
+  | OptionalBindingCondition
+  | CaseCondition
+  | Empty
+  | LineComment
+  | DocComment
+  | LineEndComment
+  | CodeBlock
+  | StatementListHelper
+  | TopLevelDeclaration
 
-// /* Ast builders for convenience, agnostic to the kind of data they use */
-// module Builders = {
-//   let memberExpression = (list: list(string)): node =>
-//     switch (list) {
-//     | [item] => SwiftIdentifier(item)
-//     | _ => MemberExpression(list |> List.map(item => SwiftIdentifier(item)))
-//     };
+export function identifier(name: string): SwiftIdentifier {
+  return { type: 'SwiftIdentifier', data: name }
+}
 
-//   let functionCall =
-//       (
-//         name: list(string),
-//         arguments: list((option(string), list(string))),
-//       )
-//       : node =>
-//     FunctionCallExpression({
-//       "name": memberExpression(name),
-//       "arguments":
-//         arguments
-//         |> List.map(((label, expr)) =>
-//              FunctionCallArgument({
-//                "name":
-//                  switch (label) {
-//                  | Some(value) => Some(SwiftIdentifier(value))
-//                  | None => None
-//                  },
-//                "value": memberExpression(expr),
-//              })
-//            ),
-//     });
+export function tryExpression(
+  expression: SwiftNode,
+  options: { forced?: boolean; optional?: boolean } = {}
+): TryExpression {
+  return {
+    type: 'TryExpression',
+    data: {
+      forced: options.forced ?? false,
+      optional: options.optional ?? false,
+      expression: expression,
+    },
+  }
+}
 
-//   let privateVariableDeclaration =
-//       (name: string, annotation: option(typeAnnotation), init: option(node)) =>
-//     VariableDeclaration({
-//       "modifiers": [AccessLevelModifier(PrivateModifier)],
-//       "pattern":
-//         IdentifierPattern({
-//           "identifier": SwiftIdentifier(name),
-//           "annotation": annotation,
-//         }),
-//       "init": init,
-//       "block": None,
-//     });
+export function functionCallExpression(
+  name: string,
+  args: SwiftNode[] = []
+): FunctionCallExpression {
+  return {
+    type: 'FunctionCallExpression',
+    data: {
+      name: identifier(name),
+      arguments: args,
+    },
+  }
+}
 
-//   let publicVariableDeclaration =
-//       (name: string, annotation: option(typeAnnotation), init: option(node)) =>
-//     VariableDeclaration({
-//       "modifiers": [AccessLevelModifier(PublicModifier)],
-//       "pattern":
-//         IdentifierPattern({
-//           "identifier": SwiftIdentifier(name),
-//           "annotation": annotation,
-//         }),
-//       "init": init,
-//       "block": None,
-//     });
+export function functionCallArgument(
+  name: string | undefined,
+  value: SwiftNode
+): FunctionCallArgument {
+  return {
+    type: 'FunctionCallArgument',
+    data: {
+      ...(name && { name: identifier(name) }),
+      value,
+    },
+  }
+}
 
-//   let convenienceInit = (body: list(node)): node =>
-//     InitializerDeclaration({
-//       "modifiers": [
-//         AccessLevelModifier(PublicModifier),
-//         ConvenienceModifier,
-//       ],
-//       "parameters": [],
-//       "failable": None,
-//       "throws": false,
-//       "body": body,
-//     });
+export function memberExpression(nodes: SwiftNode[]): MemberExpression {
+  return {
+    type: 'MemberExpression',
+    data: nodes,
+  }
+}
 
-//   let memberOrSelfExpression = (firstIdentifier, statements) =>
-//     switch (firstIdentifier) {
-//     | "self" => MemberExpression(statements)
-//     | _ => MemberExpression([SwiftIdentifier(firstIdentifier)] @ statements)
-//     };
-// };
+export function literalExpression(literal: Literal): LiteralExpression {
+  return {
+    type: 'LiteralExpression',
+    data: literal,
+  }
+}
 
-// /* Fixes reason complication where field names weren't importing from this module */
-// let makeTupleElement =
-//     (elementName: option(string), annotation: typeAnnotation) => {
-//   elementName,
-//   annotation,
-// };
+export function binaryExpression(
+  left: SwiftNode,
+  operator: string,
+  right: SwiftNode
+): BinaryExpression {
+  return {
+    type: 'BinaryExpression',
+    data: {
+      left,
+      operator,
+      right,
+    },
+  }
+}
+
+export function constantDeclaration(
+  name: string,
+  expression: SwiftNode,
+  options: {
+    typeAnnotation?: TypeAnnotation
+    modifiers?: DeclarationModifier[]
+  } = {}
+): ConstantDeclaration {
+  return {
+    type: 'ConstantDeclaration',
+    data: {
+      pattern: {
+        type: 'IdentifierPattern',
+        data: {
+          identifier: identifier(name),
+          ...(options.typeAnnotation && { annotation: options.typeAnnotation }),
+        },
+      },
+      modifiers: options.modifiers ?? [],
+      init: expression,
+    },
+  }
+}
+
+export function variableDeclaration(
+  name: string,
+  expression: SwiftNode,
+  options: {
+    typeAnnotation?: TypeAnnotation
+    modifiers?: DeclarationModifier[]
+  } = {}
+): VariableDeclaration {
+  return {
+    type: 'VariableDeclaration',
+    data: {
+      pattern: {
+        type: 'IdentifierPattern',
+        data: {
+          identifier: identifier(name),
+          ...(options.typeAnnotation && { annotation: options.typeAnnotation }),
+        },
+      },
+      modifiers: options.modifiers ?? [],
+      init: expression,
+    },
+  }
+}
+
+export function parameter(
+  name: string,
+  typeAnnotation: TypeAnnotation,
+  options: {
+    defaultValue?: SwiftNode
+    externalName?: string
+  } = {}
+): Parameter {
+  return {
+    type: 'Parameter',
+    data: {
+      localName: name,
+      annotation: typeAnnotation,
+      externalName: options.externalName,
+      defaultValue: options.defaultValue,
+    },
+  }
+}
+
+export function functionDeclaration(
+  name: string,
+  parameters: Parameter[],
+  returnType: TypeAnnotation | undefined,
+  body: SwiftNode[],
+  options: {
+    typeAnnotation?: TypeAnnotation
+    modifiers?: DeclarationModifier[]
+    attributes?: Attribute[]
+    throws?: boolean
+  } = {}
+): FunctionDeclaration {
+  return {
+    type: 'FunctionDeclaration',
+    data: {
+      name,
+      body,
+      parameters,
+      attributes: options.attributes ?? [],
+      modifiers: options.modifiers ?? [],
+      throws: options.throws ?? false,
+      result: returnType,
+    },
+  }
+}
+
+export function initializerDeclaration(
+  parameters: Parameter[],
+  body: SwiftNode[],
+  options: {
+    typeAnnotation?: TypeAnnotation
+    modifiers?: DeclarationModifier[]
+    attributes?: Attribute[]
+    throws?: boolean
+    failable?: string
+  } = {}
+): InitializerDeclaration {
+  return {
+    type: 'InitializerDeclaration',
+    data: {
+      body,
+      parameters,
+      modifiers: options.modifiers ?? [],
+      throws: options.throws ?? false,
+      failable: options.failable,
+    },
+  }
+}
+
+export function typeName(
+  name: string,
+  genericArguments: TypeAnnotation[] = []
+): TypeAnnotation {
+  return {
+    type: 'TypeName',
+    data: { name, genericArguments },
+  }
+}
+
+export function switchStatement(
+  expression: SwiftNode,
+  cases: (CaseLabel | DefaultCaseLabel)[]
+): SwitchStatement {
+  return {
+    type: 'SwitchStatement',
+    data: {
+      expression,
+      cases,
+    },
+  }
+}
+
+export function caseLabel(
+  patterns: Pattern[],
+  statements: SwiftNode[]
+): CaseLabel {
+  return {
+    type: 'CaseLabel',
+    data: {
+      patterns,
+      statements,
+    },
+  }
+}
+
+export function defaultCaseLabel(
+  statements: SwiftNode[] = []
+): DefaultCaseLabel {
+  return {
+    type: 'DefaultCaseLabel',
+    data: {
+      statements,
+    },
+  }
+}
+
+export function expressionPattern(expression: SwiftNode): Pattern {
+  return { type: 'ExpressionPattern', data: { value: expression } }
+}
+
+export function nil(data: undefined): Literal {
+  return { type: 'Nil', data }
+}
+
+export function boolean(data: boolean): Literal {
+  return { type: 'Boolean', data }
+}
+
+export function integer(data: number): Literal {
+  return { type: 'Integer', data }
+}
+
+export function floatingPoint(data: number): Literal {
+  return { type: 'FloatingPoint', data }
+}
+
+export function string(data: string): Literal {
+  return { type: 'String', data }
+}
+
+export function color(data: string): Literal {
+  return { type: 'Color', data }
+}
+
+export function image(data: string): Literal {
+  return { type: 'Image', data }
+}
+
+export function array(data: SwiftNode[]): Literal {
+  return { type: 'Array', data }
+}

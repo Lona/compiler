@@ -1,3 +1,4 @@
+@codable()
 enum AccessLevelModifier {
   case privateModifier()
   case fileprivateModifier()

@@ -654,7 +654,7 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
       ])
     case 'SwitchStatement':
       return group([
-        'while',
+        'switch',
         builders.line,
         render(ast.data.expression, options),
         builders.line,

@@ -1,19 +1,14 @@
 import { LogicAST as AST } from '@lona/serialization'
+import { EnterReturnValue, LeaveReturnValue } from 'tree-visit'
+import { EvaluationVisitor } from '../evaluationVisitor'
 import NamespaceVisitor from '../namespaceVisitor'
 import { ScopeVisitor } from '../scopeVisitor'
 import { TypeCheckerVisitor } from '../typeChecker'
-import { EvaluationVisitor } from '../evaluationVisitor'
-import { createNode } from './createNode'
-import { compact } from '../../utils/sequence'
-import { findNode, findNodes } from '../traversal'
-import { FunctionCallExpression } from './FunctionCallExpression'
-import { EnterReturnValue, LeaveReturnValue } from 'tree-visit'
 
 export type SyntaxNodeType = AST.SyntaxNode['type']
 
 export interface INode {
   syntaxNode: AST.SyntaxNode
-  children(): INode[]
   type: SyntaxNodeType
   id: string
 }
@@ -31,20 +26,6 @@ export class Node<T extends AST.SyntaxNode> implements INode {
 
   get id(): string {
     return this.syntaxNode.data.id
-  }
-
-  children() {
-    return compact(AST.subNodes(this.syntaxNode).map(createNode))
-  }
-
-  find(
-    predicate: (node: AST.SyntaxNode) => boolean
-  ): AST.SyntaxNode | undefined {
-    return findNode(this.syntaxNode, predicate)
-  }
-
-  findAll(predicate: (node: AST.SyntaxNode) => boolean): AST.SyntaxNode[] {
-    return findNodes(this.syntaxNode, predicate)
   }
 }
 
