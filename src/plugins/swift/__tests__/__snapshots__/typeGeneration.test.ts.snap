@@ -92,5 +92,43 @@ public indirect enum Literal: Codable {
     }
   }
 }
+public struct Identifier: Codable, Equatable {
+  public init(id: String = \\"\\", name: String = \\"\\") {
+    self.id = id
+    self.name = name
+  }
+  public let id: String
+  public let name: String
+}
+public indirect enum Declaration: Codable {
+  case functionDeclaration(name: String, parameters: Array<String>)
+  fileprivate enum _DeclarationType: String, Codable {
+    case functionDeclaration
+  }
+  fileprivate struct _TypeContainer: Codable {
+    let type: _DeclarationType
+  }
+  fileprivate struct _FunctionDeclaration: Codable {
+    let type: _DeclarationType
+    let value0: String
+    let value1: Array<String>
+  }
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    switch try container.decode(_TypeContainer.self).type {
+      case _DeclarationType.functionDeclaration:
+        let decoded = try container.decode(_FunctionDeclaration.self)
+        self = Declaration.functionDeclaration(name: decoded.value0, parameters: decoded.value1)
+    }
+  }
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    switch self {
+      case Declaration.functionDeclaration(let value0, let value1):
+        try container
+          .encode(_FunctionDeclaration(type: _DeclarationType.functionDeclaration, value0: value0, value1: value1))
+    }
+  }
+}
 "
 `;

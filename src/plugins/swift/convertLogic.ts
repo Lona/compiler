@@ -202,29 +202,16 @@ const declaration = (
             },
           })),
           throws: false,
-          body: memberVariables.map(x => ({
-            type: 'BinaryExpression',
-            data: {
-              left: {
-                type: 'MemberExpression',
-                data: [
-                  {
-                    type: 'SwiftIdentifier',
-                    data: 'self',
-                  },
-                  {
-                    type: 'SwiftIdentifier',
-                    data: x.data.name.name,
-                  },
-                ],
-              },
-              operator: '=',
-              right: {
-                type: 'SwiftIdentifier',
-                data: x.data.name.name,
-              },
-            },
-          })),
+          body: memberVariables.map(x =>
+            SwiftAST.binaryExpression(
+              SwiftAST.memberExpression([
+                SwiftAST.identifier('self'),
+                SwiftAST.identifier(x.data.name.name),
+              ]),
+              '=',
+              SwiftAST.identifier(x.data.name.name)
+            )
+          ),
         },
       }
 
@@ -233,17 +220,15 @@ const declaration = (
         data: {
           name: node.data.name.name,
           inherits: [
-            {
-              type: 'TypeName',
-              data: { name: 'Equatable', genericArguments: [] },
-            },
+            ...(isCodable(node) ? [SwiftAST.typeName('Codable')] : []),
+            SwiftAST.typeName('Equatable'),
           ],
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
           body: ((memberVariables.length
             ? [initFunction]
             : []) as SwiftAST.SwiftNode[]).concat(
-            memberVariables.map(x =>
-              declaration({ type: 'variable', data: { ...x.data } }, newContext)
+            memberVariables.map(({ data: { initializer, ...rest } }) =>
+              declaration({ type: 'variable', data: rest }, newContext)
             )
           ),
           /* TODO: Other declarations */
@@ -253,11 +238,6 @@ const declaration = (
     case 'enumeration': {
       const { name, genericParameters, cases, attributes } = node.data
 
-      const codableType: SwiftAST.TypeAnnotation = {
-        type: 'TypeName',
-        data: { name: 'Codable', genericArguments: [] },
-      }
-
       return {
         type: 'EnumDeclaration',
         data: {
@@ -266,7 +246,9 @@ const declaration = (
           genericParameters: genericParameters
             .filter(x => x.type !== 'placeholder')
             .map(x => genericParameter(x, context)),
-          inherits: [...(isCodable(node) ? [codableType] : [])],
+          inherits: [
+            ...(isCodable(node) ? [SwiftAST.typeName('Codable')] : []),
+          ],
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
           body: [
             ...cases

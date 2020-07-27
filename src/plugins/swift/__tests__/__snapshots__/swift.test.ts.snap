@@ -90,8 +90,8 @@ public struct ThemedColor: Equatable {
     self.light = light
     self.dark = dark
   }
-  public let light: Color = Color(named: \\"light\\")!
-  public let dark: Color = Color(named: \\"dark\\")!
+  public let light: Color
+  public let dark: Color
 }
 "
 `;

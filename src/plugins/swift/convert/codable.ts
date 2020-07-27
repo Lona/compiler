@@ -156,7 +156,7 @@ export function createDecoder(
         name: { name },
       } = enumCase.data
 
-      //=> let data = try try container.decode(_PrivateModifier.self)
+      //=> let decoded = try container.decode(_PrivateModifier.self)
       const decoded = S.constantDeclaration(
         'decoded',
         S.tryExpression(
@@ -184,12 +184,15 @@ export function createDecoder(
           ? S.functionCallExpression(
               member,
               associatedValues.map((associatedValue, index, array) =>
-                S.memberExpression([
-                  S.identifier('decoded'),
-                  S.identifier(
-                    valueBindingName(associatedValue, index, array.length)
-                  ),
-                ])
+                S.functionCallArgument(
+                  associatedValue.data.label?.name,
+                  S.memberExpression([
+                    S.identifier('decoded'),
+                    S.identifier(
+                      valueBindingName(associatedValue, index, array.length)
+                    ),
+                  ])
+                )
               )
             )
           : member

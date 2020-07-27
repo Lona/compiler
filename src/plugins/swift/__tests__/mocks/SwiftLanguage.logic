@@ -10,3 +10,14 @@ enum Literal {
   case floatingPoint(Number)
   case array(Array<Literal>)
 }
+
+@codable()
+struct Identifier {
+  let id: String = ""
+  let name: String = ""
+}
+
+@codable()
+enum Declaration {
+  case functionDeclaration(name: String, parameters: Array<String>)
+}
