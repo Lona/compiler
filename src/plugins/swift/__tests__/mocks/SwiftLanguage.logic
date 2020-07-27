@@ -27,7 +27,6 @@ struct ExistingType {
   let id: UUID = UUID()
 }
 
-@codable()
 @existingImplementation()
 struct UUID {
   let value: String = ""
