@@ -11,78 +11,86 @@ exports[`converts Swift language 1`] = `
 
 public indirect enum AccessLevelModifier: Codable {
   case privateModifier
-  case fileprivateModifier
-  case internalModifier
   case publicModifier
-  case openModifier
-  indirect enum CodingKeys: CodingKey {
-    case type
+  fileprivate enum _AccessLevelModifierType: String, Codable {
+    case privateModifier
+    case publicModifier
+  }
+  fileprivate struct _TypeContainer: Codable {
+    let type: _AccessLevelModifierType
+  }
+  fileprivate struct _PrivateModifier: Codable {
+    let type: _AccessLevelModifierType
+  }
+  fileprivate struct _PublicModifier: Codable {
+    let type: _AccessLevelModifierType
   }
   public init(from decoder: Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    let type = try container.decode(String.self, forKey: CodingKeys.type)
-    switch type {
-      case \\"privateModifier\\":
+    let container = try decoder.singleValueContainer()
+    switch try container.decode(_TypeContainer.self).type {
+      case _AccessLevelModifierType.privateModifier:
         self = AccessLevelModifier.privateModifier
-      case \\"fileprivateModifier\\":
-        self = AccessLevelModifier.fileprivateModifier
-      case \\"internalModifier\\":
-        self = AccessLevelModifier.internalModifier
-      case \\"publicModifier\\":
+      case _AccessLevelModifierType.publicModifier:
         self = AccessLevelModifier.publicModifier
-      case \\"openModifier\\":
-        self = AccessLevelModifier.openModifier
-      default:
-        fatalError(\\"Problem decoding\\")
     }
   }
   public func encode(to encoder: Encoder) throws {
-    var container = encoder.container(keyedBy: CodingKeys.self)
+    var container = encoder.singleValueContainer()
     switch self {
       case AccessLevelModifier.privateModifier:
-        try container.encode(\\"privateModifier\\", forKey: CodingKeys.type)
-      case AccessLevelModifier.fileprivateModifier:
-        try container.encode(\\"fileprivateModifier\\", forKey: CodingKeys.type)
-      case AccessLevelModifier.internalModifier:
-        try container.encode(\\"internalModifier\\", forKey: CodingKeys.type)
+        try container.encode(_PrivateModifier(type: _AccessLevelModifierType.privateModifier))
       case AccessLevelModifier.publicModifier:
-        try container.encode(\\"publicModifier\\", forKey: CodingKeys.type)
-      case AccessLevelModifier.openModifier:
-        try container.encode(\\"openModifier\\", forKey: CodingKeys.type)
+        try container.encode(_PublicModifier(type: _AccessLevelModifierType.publicModifier))
     }
   }
 }
-public indirect enum MutationModifier {
-  case mutatingModifier
-  case nonmutatingModifier
-}
-public indirect enum OtherModifier {
-  case classModifier
-  case convenienceModifier
-  case dynamicModifier
-  case finalModifier
-  case infixModifier
-  case lazyModifier
-  case optionalModifier
-  case overrideModifier
-  case postfixModifier
-  case prefixModifier
-  case requiredModifier
-  case staticModifier
-  case unownedModifier
-  case unownedSafeModifier
-  case unownedUnsafeModifier
-  case weakModifier
-}
-public indirect enum Literal {
-  case nil
-  case boolean(Bool)
-  case integer(CGFloat)
+public indirect enum Literal: Codable {
+  case \`nil\`
   case floatingPoint(CGFloat)
-  case string(String)
-  case color(String)
-  case image(String)
   case array(Array<Literal>)
+  fileprivate enum _LiteralType: String, Codable {
+    case \`nil\`
+    case floatingPoint
+    case array
+  }
+  fileprivate struct _TypeContainer: Codable {
+    let type: _LiteralType
+  }
+  fileprivate struct _Nil: Codable {
+    let type: _LiteralType
+  }
+  fileprivate struct _FloatingPoint: Codable {
+    let type: _LiteralType
+    let value: CGFloat
+  }
+  fileprivate struct _Array: Codable {
+    let type: _LiteralType
+    let value: Array<Literal>
+  }
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    switch try container.decode(_TypeContainer.self).type {
+      case _LiteralType.nil:
+        self = Literal.nil
+      case _LiteralType.floatingPoint:
+        let decoded = try container.decode(_FloatingPoint.self)
+        self = Literal.floatingPoint(decoded.value)
+      case _LiteralType.array:
+        let decoded = try container.decode(_Array.self)
+        self = Literal.array(decoded.value)
+    }
+  }
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    switch self {
+      case Literal.nil:
+        try container.encode(_Nil(type: _LiteralType.nil))
+      case Literal.floatingPoint(let value):
+        try container.encode(_FloatingPoint(type: _LiteralType.floatingPoint, value: value))
+      case Literal.array(let value):
+        try container.encode(_Array(type: _LiteralType.array, value: value))
+    }
+  }
 }
 "
 `;

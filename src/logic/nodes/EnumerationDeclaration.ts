@@ -8,13 +8,7 @@ import { StaticType } from '../staticType'
 import { TypeCheckerVisitor } from '../typeChecker'
 import { substitute } from '../typeUnifier'
 import { IDeclaration, Node } from './interfaces'
-
-// TODO: Move to serialization?
-function isNode<T extends AST.SyntaxNode>(
-  node: T
-): node is Exclude<T, { type: 'placeholder' }> {
-  return node.type !== 'placeholder'
-}
+import { isNode } from '../ast'
 
 export class EnumerationDeclaration extends Node<AST.EnumerationDeclaration>
   implements IDeclaration {

@@ -1,43 +1,12 @@
 @codable()
 enum AccessLevelModifier {
   case privateModifier()
-  case fileprivateModifier()
-  case internalModifier()
   case publicModifier()
-  case openModifier()
 }
 
-enum MutationModifier {
-  case mutatingModifier()
-  case nonmutatingModifier()
-}
-
-enum OtherModifier {
-  case classModifier()
-  case convenienceModifier()
-  case dynamicModifier()
-  case finalModifier()
-  case infixModifier()
-  case lazyModifier()
-  case optionalModifier()
-  case overrideModifier()
-  case postfixModifier()
-  case prefixModifier()
-  case requiredModifier()
-  case staticModifier()
-  case unownedModifier()
-  case unownedSafeModifier()
-  case unownedUnsafeModifier()
-  case weakModifier()
-}
-
+@codable()
 enum Literal {
   case nil()
-  case boolean(Boolean)
-  case integer(Number)
   case floatingPoint(Number)
-  case string(String)
-  case color(String)
-  case image(String)
   case array(Array<Literal>)
 }

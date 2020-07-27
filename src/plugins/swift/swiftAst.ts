@@ -422,6 +422,50 @@ export type SwiftNode =
   | StatementListHelper
   | TopLevelDeclaration
 
+export function enumDeclaration(
+  name: string,
+  options: {
+    isIndirect?: boolean
+    genericParameters?: TypeAnnotation[]
+    inherits?: TypeAnnotation[]
+    modifier?: AccessLevelModifier
+  },
+  body: SwiftNode[]
+): EnumDeclaration {
+  return {
+    type: 'EnumDeclaration',
+    data: {
+      name,
+      isIndirect: options.isIndirect ?? false,
+      genericParameters: options.genericParameters ?? [],
+      inherits: options.inherits ?? [],
+      modifier: options.modifier,
+      body,
+    },
+  }
+}
+
+export function structDeclaration(
+  name: string,
+  options: {
+    isIndirect?: boolean
+    genericParameters?: TypeAnnotation[]
+    inherits?: TypeAnnotation[]
+    modifier?: AccessLevelModifier
+  },
+  body: SwiftNode[]
+): StructDeclaration {
+  return {
+    type: 'StructDeclaration',
+    data: {
+      name,
+      inherits: options.inherits ?? [],
+      modifier: options.modifier,
+      body,
+    },
+  }
+}
+
 export function identifier(name: string): SwiftIdentifier {
   return { type: 'SwiftIdentifier', data: name }
 }
@@ -441,13 +485,13 @@ export function tryExpression(
 }
 
 export function functionCallExpression(
-  name: string,
+  name: string | SwiftNode,
   args: SwiftNode[] = []
 ): FunctionCallExpression {
   return {
     type: 'FunctionCallExpression',
     data: {
-      name: identifier(name),
+      name: typeof name === 'string' ? identifier(name) : name,
       arguments: args,
     },
   }
@@ -497,7 +541,7 @@ export function binaryExpression(
 
 export function constantDeclaration(
   name: string,
-  expression: SwiftNode,
+  expression?: SwiftNode,
   options: {
     typeAnnotation?: TypeAnnotation
     modifiers?: DeclarationModifier[]
@@ -634,6 +678,16 @@ export function switchStatement(
   }
 }
 
+export function caseCondition(
+  pattern: Pattern,
+  init: SwiftNode
+): CaseCondition {
+  return {
+    type: 'CaseCondition',
+    data: { pattern, init },
+  }
+}
+
 export function caseLabel(
   patterns: Pattern[],
   statements: SwiftNode[]
@@ -643,6 +697,19 @@ export function caseLabel(
     data: {
       patterns,
       statements,
+    },
+  }
+}
+
+export function enumCase(
+  name: string,
+  typeAnnotation?: TypeAnnotation
+): EnumCase {
+  return {
+    type: 'EnumCase',
+    data: {
+      name: identifier(name),
+      parameters: typeAnnotation,
     },
   }
 }
@@ -658,8 +725,50 @@ export function defaultCaseLabel(
   }
 }
 
+export function identifierPattern(
+  name: string,
+  annotation?: TypeAnnotation
+): Pattern {
+  return {
+    type: 'IdentifierPattern',
+    data: { identifier: identifier(name), annotation },
+  }
+}
+
 export function expressionPattern(expression: SwiftNode): Pattern {
   return { type: 'ExpressionPattern', data: { value: expression } }
+}
+
+export function tuplePattern(patterns: Pattern[]): Pattern {
+  return { type: 'TuplePattern', data: patterns }
+}
+
+export function valueBindingPattern(
+  pattern: Pattern,
+  options: { kind?: string } = {}
+): Pattern {
+  return {
+    type: 'ValueBindingPattern',
+    data: {
+      kind: options.kind || 'let',
+      pattern,
+    },
+  }
+}
+
+export function enumCasePattern(
+  typeIdentifier: string | undefined,
+  name: string,
+  tuplePattern: Pattern
+): Pattern {
+  return {
+    type: 'EnumCasePattern',
+    data: {
+      caseName: name,
+      tuplePattern,
+      typeIdentifier,
+    },
+  }
 }
 
 export function nil(data: undefined): Literal {

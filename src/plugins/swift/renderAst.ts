@@ -23,7 +23,7 @@ type Options = {
 
 const printerOptions = { printWidth: 120, tabWidth: 2, useTabs: false }
 
-const reservedWords = ['true', 'false', 'default', 'case', 'break']
+const reservedWords = ['true', 'false', 'default', 'case', 'break', 'nil']
 
 const stringWithSafeIdentifier = (id: string) => {
   if (/^\d/.test(id)) {

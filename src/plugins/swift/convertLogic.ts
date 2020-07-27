@@ -4,13 +4,9 @@ import { makeProgram } from '../../logic/ast'
 import * as SwiftAST from './swiftAst'
 import { typeNever, nonNullable } from '../../utils/typeHelpers'
 import { Decode } from '../../logic/runtime/value'
-import { isCodable, createCodableImplementation } from './codable'
-
-type LogicGenerationContext = {
-  isStatic: boolean
-  isTopLevel: boolean
-  helpers: Helpers
-}
+import { isCodable, createCodableImplementation } from './convert/codable'
+import { LogicGenerationContext } from './convert/LogicGenerationContext'
+import { convertNativeType } from './convert/nativeType'
 
 function fontWeight(weight: string): SwiftAST.SwiftNode {
   return {
@@ -312,7 +308,9 @@ const declaration = (
                 return enumCase
               })
               .filter(nonNullable),
-            ...(isCodable(node) ? createCodableImplementation(node) : []),
+            ...(isCodable(node)
+              ? createCodableImplementation(node, context)
+              : []),
           ],
         },
       }
@@ -629,30 +627,6 @@ const literal = (
       typeNever(node, context.helpers.reporter.warn)
       return { type: 'Empty' }
     }
-  }
-}
-
-const convertNativeType = (
-  typeName: string,
-  _context: LogicGenerationContext
-): string => {
-  switch (typeName) {
-    case 'Boolean':
-      return 'Bool'
-    case 'Number':
-      return 'CGFloat'
-    case 'WholeNumber':
-      return 'Int'
-    case 'String':
-      return 'String'
-    case 'Optional':
-      return 'Optional'
-    case 'URL':
-      return 'Image'
-    case 'Color':
-      return 'Color'
-    default:
-      return typeName
   }
 }
 
