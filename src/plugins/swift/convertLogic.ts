@@ -8,6 +8,19 @@ import { isCodable, createCodableImplementation } from './convert/codable'
 import { LogicGenerationContext } from './convert/LogicGenerationContext'
 import { convertNativeType } from './convert/nativeType'
 
+export function hasExistingImplementation(
+  node: LogicAST.EnumerationDeclaration | LogicAST.RecordDeclaration
+): boolean {
+  const { attributes } = node.data
+
+  return !!attributes.find(
+    attribute =>
+      attribute.data.expression.type === 'identifierExpression' &&
+      attribute.data.expression.data.identifier.string ===
+        'existingImplementation'
+  )
+}
+
 function fontWeight(weight: string): SwiftAST.SwiftNode {
   return {
     type: 'MemberExpression',
@@ -181,6 +194,8 @@ const declaration = (
       }
     }
     case 'record': {
+      if (hasExistingImplementation(node)) return { type: 'Empty' }
+
       const newContext = { ...context, isStatic: false }
 
       const memberVariables = node.data.declarations.filter(
@@ -236,6 +251,8 @@ const declaration = (
       }
     }
     case 'enumeration': {
+      if (hasExistingImplementation(node)) return { type: 'Empty' }
+
       const { name, genericParameters, cases, attributes } = node.data
 
       return {

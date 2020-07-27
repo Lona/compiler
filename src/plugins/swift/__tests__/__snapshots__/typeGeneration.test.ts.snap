@@ -130,5 +130,12 @@ public indirect enum Declaration: Codable {
     }
   }
 }
+public struct ExistingType: Codable, Equatable {
+  public init(id: UUID = UUID()) {
+    self.id = id
+  }
+  public let id: UUID
+}
+
 "
 `;

@@ -21,3 +21,14 @@ struct Identifier {
 enum Declaration {
   case functionDeclaration(name: String, parameters: Array<String>)
 }
+
+@codable()
+struct ExistingType {
+  let id: UUID = UUID()
+}
+
+@codable()
+@existingImplementation()
+struct UUID {
+  let value: String = ""
+}
