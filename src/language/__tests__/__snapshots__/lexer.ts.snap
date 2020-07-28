@@ -1,0 +1,135 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`captures groups 1`] = `
+Array [
+  Object {
+    "groups": Array [
+      "hi",
+    ],
+    "position": Object {
+      "end": 4,
+      "start": 0,
+    },
+    "type": "tag",
+    "value": "<hi>",
+  },
+]
+`;
+
+exports[`supports states 1`] = `
+Array [
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 12,
+      "start": 0,
+    },
+    "type": "content",
+    "value": "hello world ",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 13,
+      "start": 12,
+    },
+    "type": "quote",
+    "value": "\\"",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 29,
+      "start": 13,
+    },
+    "type": "string",
+    "value": "this is a string",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 30,
+      "start": 29,
+    },
+    "type": "quote",
+    "value": "\\"",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 33,
+      "start": 30,
+    },
+    "type": "content",
+    "value": " ok",
+  },
+]
+`;
+
+exports[`tokenizes simple tokens 1`] = `
+Array [
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 6,
+      "start": 0,
+    },
+    "type": "select",
+    "value": "select",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 7,
+      "start": 6,
+    },
+    "type": "_",
+    "value": " ",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 10,
+      "start": 7,
+    },
+    "type": "identifier",
+    "value": "foo",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 11,
+      "start": 10,
+    },
+    "type": "_",
+    "value": " ",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 15,
+      "start": 11,
+    },
+    "type": "from",
+    "value": "from",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 16,
+      "start": 15,
+    },
+    "type": "_",
+    "value": " ",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 19,
+      "start": 16,
+    },
+    "type": "integer",
+    "value": "123",
+  },
+]
+`;
