@@ -14,6 +14,7 @@ import { ReturnStatement } from './ReturnStatement'
 import { FunctionParameter } from './FunctionParameter'
 import { createNode } from './createNode'
 import implementations from '../implementations'
+import { findNodes } from '../traversal'
 
 export class FunctionDeclaration extends Node<AST.FunctionDeclaration>
   implements IDeclaration {
@@ -26,7 +27,8 @@ export class FunctionDeclaration extends Node<AST.FunctionDeclaration>
   }
 
   get returnStatements(): ReturnStatement[] {
-    const syntaxNodes = this.findAll(
+    const syntaxNodes = findNodes(
+      this.syntaxNode,
       node => node.type === 'return'
     ) as AST.ReturnStatement[]
 
