@@ -47,7 +47,7 @@ struct XMLAttribute {
   let value: String = ""
 }
 
-@parse(pattern: or(self.charData, self.comment, self.element))
+@parse()
 enum XMLElementContent {
 
   @parse(pattern: Token.text)
