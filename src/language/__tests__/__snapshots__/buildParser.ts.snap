@@ -10,7 +10,7 @@ Object {
           "pattern": Object {
             "type": "reference",
             "value": Object {
-              "name": "Token.name",
+              "name": "name",
               "type": "token",
             },
           },
@@ -20,7 +20,7 @@ Object {
           "pattern": Object {
             "type": "reference",
             "value": Object {
-              "name": "Token.string",
+              "name": "string",
               "type": "token",
             },
           },
@@ -41,7 +41,7 @@ Object {
           Object {
             "type": "reference",
             "value": Object {
-              "name": "Token.equals",
+              "name": "equals",
               "type": "token",
             },
           },
@@ -64,7 +64,7 @@ Object {
           "pattern": Object {
             "type": "reference",
             "value": Object {
-              "name": "Token.open",
+              "name": "open",
               "type": "token",
             },
           },
@@ -88,7 +88,7 @@ Object {
                   "value": Object {
                     "type": "reference",
                     "value": Object {
-                      "name": "Token.whitespace",
+                      "name": "whitespace",
                       "type": "token",
                     },
                   },
@@ -128,7 +128,7 @@ Object {
             "value": Object {
               "type": "reference",
               "value": Object {
-                "name": "Token.whitespace",
+                "name": "whitespace",
                 "type": "token",
               },
             },
@@ -150,7 +150,7 @@ Object {
                   Object {
                     "type": "reference",
                     "value": Object {
-                      "name": "Token.close",
+                      "name": "close",
                       "type": "token",
                     },
                   },
@@ -165,21 +165,21 @@ Object {
                   Object {
                     "type": "reference",
                     "value": Object {
-                      "name": "Token.slashOpen",
+                      "name": "slashOpen",
                       "type": "token",
                     },
                   },
                   Object {
                     "type": "reference",
                     "value": Object {
-                      "name": "Token.name",
+                      "name": "name",
                       "type": "token",
                     },
                   },
                   Object {
                     "type": "reference",
                     "value": Object {
-                      "name": "Token.close",
+                      "name": "close",
                       "type": "token",
                     },
                   },
@@ -188,7 +188,7 @@ Object {
               Object {
                 "type": "reference",
                 "value": Object {
-                  "name": "Token.slashClose",
+                  "name": "slashClose",
                   "type": "token",
                 },
               },
@@ -205,7 +205,7 @@ Object {
           "pattern": Object {
             "type": "reference",
             "value": Object {
-              "name": "Token.text",
+              "name": "text",
               "type": "token",
             },
           },
@@ -215,7 +215,7 @@ Object {
           "pattern": Object {
             "type": "reference",
             "value": Object {
-              "name": "Token.comment",
+              "name": "comment",
               "type": "token",
             },
           },

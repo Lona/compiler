@@ -19,7 +19,7 @@ function createToken(type: string): Token {
 it('parses token references', () => {
   const tokens = [createToken('hello')]
 
-  const reference: Reference = { type: 'token', name: 'Token.hello' }
+  const reference: Reference = { type: 'token', name: 'hello' }
 
   const pattern: ReferencePattern = {
     type: 'reference',
@@ -45,7 +45,7 @@ it('parses token references', () => {
 it('parses field references', () => {
   const tokens = [createToken('hello')]
 
-  const tokenReference: Reference = { type: 'token', name: 'Token.hello' }
+  const tokenReference: Reference = { type: 'token', name: 'hello' }
   const fieldReference: FieldReference = {
     type: 'field',
     nodeName: 'Root',
@@ -79,8 +79,8 @@ it('parses field references', () => {
 it('parses sequences', () => {
   const tokens = [createToken('hello'), createToken('world')]
 
-  const reference1: Reference = { type: 'token', name: 'Token.hello' }
-  const reference2: Reference = { type: 'token', name: 'Token.world' }
+  const reference1: Reference = { type: 'token', name: 'hello' }
+  const reference2: Reference = { type: 'token', name: 'world' }
 
   const pattern: SequencePattern = {
     type: 'sequence',
@@ -105,8 +105,8 @@ it('parses sequences', () => {
 })
 
 it('parses or', () => {
-  const reference1: Reference = { type: 'token', name: 'Token.hello' }
-  const reference2: Reference = { type: 'token', name: 'Token.world' }
+  const reference1: Reference = { type: 'token', name: 'hello' }
+  const reference2: Reference = { type: 'token', name: 'world' }
 
   const pattern: OrPattern = {
     type: 'or',
@@ -132,7 +132,7 @@ it('parses or', () => {
 })
 
 it('parses many', () => {
-  const reference: Reference = { type: 'token', name: 'Token.hello' }
+  const reference: Reference = { type: 'token', name: 'hello' }
 
   const pattern: ManyPattern = {
     type: 'many',
@@ -161,7 +161,7 @@ it('parses many', () => {
 })
 
 it('parses option', () => {
-  const reference: Reference = { type: 'token', name: 'Token.hello' }
+  const reference: Reference = { type: 'token', name: 'hello' }
 
   const innerPattern: ReferencePattern = {
     type: 'reference',
@@ -227,14 +227,14 @@ it('parses records', () => {
         name: 'name',
         pattern: {
           type: 'reference',
-          value: { type: 'token', name: 'Token.hello' },
+          value: { type: 'token', name: 'hello' },
         },
       },
       {
         name: 'value',
         pattern: {
           type: 'reference',
-          value: { type: 'token', name: 'Token.world' },
+          value: { type: 'token', name: 'world' },
         },
       },
     ],
@@ -253,7 +253,7 @@ it('parses records', () => {
           type: 'reference',
           value: {
             type: 'token',
-            name: 'Token.equals',
+            name: 'equals',
           },
         },
         {
@@ -309,7 +309,7 @@ it('parses enums', () => {
         name: 'name',
         pattern: {
           type: 'reference',
-          value: { type: 'token', name: 'Token.hello' },
+          value: { type: 'token', name: 'hello' },
         },
       },
     ],
@@ -344,14 +344,14 @@ it('parses enums', () => {
         name: 'name',
         pattern: {
           type: 'reference',
-          value: { type: 'token', name: 'Token.hello' },
+          value: { type: 'token', name: 'hello' },
         },
       },
       {
         name: 'value',
         pattern: {
           type: 'reference',
-          value: { type: 'token', name: 'Token.world' },
+          value: { type: 'token', name: 'world' },
         },
       },
     ],
@@ -370,7 +370,7 @@ it('parses enums', () => {
           type: 'reference',
           value: {
             type: 'token',
-            name: 'Token.equals',
+            name: 'equals',
           },
         },
         {

@@ -69,7 +69,7 @@ function getPattern(resolvedSelf: string, node: IExpression): Pattern {
         type: 'reference',
         value: {
           type: 'token',
-          name: `Token.${names[1]}`,
+          name: names[1],
         },
       }
     } else {

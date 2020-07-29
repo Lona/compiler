@@ -424,7 +424,7 @@ export class Parser {
       case 'token': {
         const [token, ...rest] = tokens
 
-        if (token && `Token.${token.type}` === reference.name) {
+        if (token && token.type === reference.name) {
           return success(
             { type: reference.type, reference, match: token },
             rest

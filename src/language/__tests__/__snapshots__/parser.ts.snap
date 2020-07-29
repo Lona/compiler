@@ -44,7 +44,7 @@ Object {
           "value": "hello",
         },
         "reference": Object {
-          "name": "Token.hello",
+          "name": "hello",
           "type": "token",
         },
         "type": "token",
@@ -52,7 +52,7 @@ Object {
       "pattern": Object {
         "type": "reference",
         "value": Object {
-          "name": "Token.hello",
+          "name": "hello",
           "type": "token",
         },
       },
@@ -79,7 +79,7 @@ Object {
       "value": Object {
         "type": "reference",
         "value": Object {
-          "name": "Token.hello",
+          "name": "hello",
           "type": "token",
         },
       },
@@ -109,7 +109,7 @@ Object {
             "value": "hello",
           },
           "reference": Object {
-            "name": "Token.hello",
+            "name": "hello",
             "type": "token",
           },
           "type": "token",
@@ -117,7 +117,7 @@ Object {
         "pattern": Object {
           "type": "reference",
           "value": Object {
-            "name": "Token.hello",
+            "name": "hello",
             "type": "token",
           },
         },
@@ -137,7 +137,7 @@ Object {
             "value": "hello",
           },
           "reference": Object {
-            "name": "Token.hello",
+            "name": "hello",
             "type": "token",
           },
           "type": "token",
@@ -145,7 +145,7 @@ Object {
         "pattern": Object {
           "type": "reference",
           "value": Object {
-            "name": "Token.hello",
+            "name": "hello",
             "type": "token",
           },
         },
@@ -165,7 +165,7 @@ Object {
             "value": "hello",
           },
           "reference": Object {
-            "name": "Token.hello",
+            "name": "hello",
             "type": "token",
           },
           "type": "token",
@@ -173,7 +173,7 @@ Object {
         "pattern": Object {
           "type": "reference",
           "value": Object {
-            "name": "Token.hello",
+            "name": "hello",
             "type": "token",
           },
         },
@@ -185,7 +185,7 @@ Object {
       "value": Object {
         "type": "reference",
         "value": Object {
-          "name": "Token.hello",
+          "name": "hello",
           "type": "token",
         },
       },
@@ -237,7 +237,7 @@ Object {
               "value": "hello",
             },
             "reference": Object {
-              "name": "Token.hello",
+              "name": "hello",
               "type": "token",
             },
             "type": "token",
@@ -245,7 +245,7 @@ Object {
           "pattern": Object {
             "type": "reference",
             "value": Object {
-              "name": "Token.hello",
+              "name": "hello",
               "type": "token",
             },
           },
@@ -303,7 +303,7 @@ Object {
           "value": "hello",
         },
         "reference": Object {
-          "name": "Token.hello",
+          "name": "hello",
           "type": "token",
         },
         "type": "token",
@@ -311,7 +311,7 @@ Object {
       "pattern": Object {
         "type": "reference",
         "value": Object {
-          "name": "Token.hello",
+          "name": "hello",
           "type": "token",
         },
       },
@@ -323,14 +323,14 @@ Object {
         Object {
           "type": "reference",
           "value": Object {
-            "name": "Token.hello",
+            "name": "hello",
             "type": "token",
           },
         },
         Object {
           "type": "reference",
           "value": Object {
-            "name": "Token.world",
+            "name": "world",
             "type": "token",
           },
         },
@@ -360,7 +360,7 @@ Object {
           "value": "world",
         },
         "reference": Object {
-          "name": "Token.world",
+          "name": "world",
           "type": "token",
         },
         "type": "token",
@@ -368,7 +368,7 @@ Object {
       "pattern": Object {
         "type": "reference",
         "value": Object {
-          "name": "Token.world",
+          "name": "world",
           "type": "token",
         },
       },
@@ -380,14 +380,14 @@ Object {
         Object {
           "type": "reference",
           "value": Object {
-            "name": "Token.hello",
+            "name": "hello",
             "type": "token",
           },
         },
         Object {
           "type": "reference",
           "value": Object {
-            "name": "Token.world",
+            "name": "world",
             "type": "token",
           },
         },
@@ -442,7 +442,7 @@ Object {
             "value": "hello",
           },
           "reference": Object {
-            "name": "Token.hello",
+            "name": "hello",
             "type": "token",
           },
           "type": "token",
@@ -450,7 +450,7 @@ Object {
         "pattern": Object {
           "type": "reference",
           "value": Object {
-            "name": "Token.hello",
+            "name": "hello",
             "type": "token",
           },
         },
@@ -470,7 +470,7 @@ Object {
             "value": "world",
           },
           "reference": Object {
-            "name": "Token.world",
+            "name": "world",
             "type": "token",
           },
           "type": "token",
@@ -478,7 +478,7 @@ Object {
         "pattern": Object {
           "type": "reference",
           "value": Object {
-            "name": "Token.world",
+            "name": "world",
             "type": "token",
           },
         },
@@ -491,14 +491,14 @@ Object {
         Object {
           "type": "reference",
           "value": Object {
-            "name": "Token.hello",
+            "name": "hello",
             "type": "token",
           },
         },
         Object {
           "type": "reference",
           "value": Object {
-            "name": "Token.world",
+            "name": "world",
             "type": "token",
           },
         },
@@ -526,7 +526,7 @@ Object {
       "value": "hello",
     },
     "reference": Object {
-      "name": "Token.hello",
+      "name": "hello",
       "type": "token",
     },
     "type": "token",
@@ -552,7 +552,7 @@ Object {
         "value": "hello",
       },
       "reference": Object {
-        "name": "Token.hello",
+        "name": "hello",
         "type": "token",
       },
       "type": "token",
@@ -560,7 +560,7 @@ Object {
     "pattern": Object {
       "type": "reference",
       "value": Object {
-        "name": "Token.hello",
+        "name": "hello",
         "type": "token",
       },
     },
