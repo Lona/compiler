@@ -3,7 +3,7 @@ import { Helpers } from '../helpers'
 import { Lexer, Rule, Token, StateDefinition, Action } from './Lexer'
 import { IdentifierExpression } from '../logic/nodes/IdentifierExpression'
 import { LiteralExpression } from '../logic/nodes/LiteralExpression'
-import { StringLiteral } from '../logic/nodes/literals'
+import { StringLiteral, BooleanLiteral } from '../logic/nodes/literals'
 import { LogicAST } from '@lona/serialization'
 import { FunctionCallExpression } from '../logic/nodes/FunctionCallExpression'
 import { isNode } from '../logic/ast'
@@ -12,6 +12,11 @@ import { IExpression } from '../logic/nodes/interfaces'
 
 const getStringLiteral = (node: IExpression): string | undefined =>
   node instanceof LiteralExpression && node.literal instanceof StringLiteral
+    ? node.literal.value
+    : undefined
+
+const getBooleanLiteral = (node: IExpression): boolean | undefined =>
+  node instanceof LiteralExpression && node.literal instanceof BooleanLiteral
     ? node.literal.value
     : undefined
 
@@ -61,11 +66,17 @@ export function getTokenAttributes(
         attribute.callee instanceof IdentifierExpression &&
         attribute.callee.name === 'token'
       ) {
-        const { pattern, state, action } = attribute.argumentExpressionNodes
+        const {
+          pattern,
+          state,
+          action,
+          discard,
+        } = attribute.argumentExpressionNodes
 
-        const rule = {
+        const rule: Rule = {
           name: node.data.name.name,
           pattern: getStringLiteral(pattern) ?? node.data.name.name,
+          discard: getBooleanLiteral(discard) ?? false,
           ...(action && { action: getAction(action) }),
         }
 

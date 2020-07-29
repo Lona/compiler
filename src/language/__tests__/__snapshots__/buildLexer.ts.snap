@@ -35,9 +35,6 @@ Array [
     "value": "hello",
   },
   Object {
-    "type": "whitespace",
-  },
-  Object {
     "type": "name",
     "value": "a",
   },
@@ -49,9 +46,6 @@ Array [
     "value": "test",
   },
   Object {
-    "type": "whitespace",
-  },
-  Object {
     "type": "name",
     "value": "b",
   },
@@ -61,9 +55,6 @@ Array [
   Object {
     "type": "string",
     "value": "foo",
-  },
-  Object {
-    "type": "whitespace",
   },
   Object {
     "type": "slashClose",

@@ -3,6 +3,7 @@ import { Lexer, Rule } from '../Lexer'
 const keyword = (string: string): Rule => ({
   name: string,
   pattern: new RegExp(string),
+  discard: false,
 })
 
 it('tokenizes simple tokens', () => {

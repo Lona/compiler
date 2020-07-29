@@ -74,26 +74,11 @@ Object {
           "pattern": Object {
             "type": "many",
             "value": Object {
-              "type": "sequence",
-              "value": Array [
-                Object {
-                  "type": "reference",
-                  "value": Object {
-                    "name": "XMLAttribute",
-                    "type": "node",
-                  },
-                },
-                Object {
-                  "type": "option",
-                  "value": Object {
-                    "type": "reference",
-                    "value": Object {
-                      "name": "whitespace",
-                      "type": "token",
-                    },
-                  },
-                },
-              ],
+              "type": "reference",
+              "value": Object {
+                "name": "XMLAttribute",
+                "type": "node",
+              },
             },
           },
         },
@@ -121,16 +106,6 @@ Object {
               "fieldName": "name",
               "nodeName": "XMLElement",
               "type": "field",
-            },
-          },
-          Object {
-            "type": "option",
-            "value": Object {
-              "type": "reference",
-              "value": Object {
-                "name": "whitespace",
-                "type": "token",
-              },
             },
           },
           Object {

@@ -10,6 +10,7 @@ export type Rule = {
   name: string
   pattern: string | RegExp
   action?: Action
+  discard?: boolean
 }
 
 export type StateDefinition = {
@@ -102,15 +103,17 @@ export class Lexer {
             )
           }
 
-          tokens.push({
-            type: rule.name,
-            value,
-            groups,
-            position: {
-              start: pos,
-              end: pos + value.length,
-            },
-          })
+          if (rule.discard !== true) {
+            tokens.push({
+              type: rule.name,
+              value,
+              groups,
+              position: {
+                start: pos,
+                end: pos + value.length,
+              },
+            })
+          }
 
           if (rule.action) {
             switch (rule.action.type) {

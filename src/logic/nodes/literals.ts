@@ -22,6 +22,10 @@ export class NoneLiteral extends Node<AST.NoneLiteral> implements ILiteral {
 
 export class BooleanLiteral extends Node<AST.BooleanLiteral>
   implements ILiteral {
+  get value(): boolean {
+    return this.syntaxNode.data.value
+  }
+
   typeCheckerEnter(visitor: TypeCheckerVisitor): void {}
 
   typeCheckerLeave(visitor: TypeCheckerVisitor): void {
