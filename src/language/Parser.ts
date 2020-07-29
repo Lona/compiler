@@ -158,12 +158,10 @@ type RecordValue = {
   [key: string]: unknown
 }
 
-type EnumValue = [
-  string,
-  {
-    [key: string]: unknown
-  }
-]
+type EnumValue = {
+  type: string
+  [key: string]: unknown
+}
 
 type Value = RecordValue | EnumValue
 
@@ -246,6 +244,38 @@ export class Parser {
     }
   }
 
+  parseRecord(node: RecordNode, tokens: Token[]): ParseResult<RecordValue> {
+    const { pattern } = node
+
+    const result = this.parsePattern(pattern, tokens)
+
+    if (result.type !== 'success') return result
+
+    const recordValue: RecordValue = {}
+
+    matchTree.visit(result.value, patternMatch => {
+      if (
+        patternMatch.type === 'reference' &&
+        patternMatch.match.type === 'field' &&
+        patternMatch.match.reference.nodeName === node.name
+      ) {
+        const fieldName = patternMatch.match.reference.fieldName
+
+        if (fieldName in recordValue) {
+          throw new Error(
+            `Field ${fieldName} of ${node.name} already set in another path (or recursively?)`
+          )
+        }
+
+        recordValue[fieldName] = resolveReference(patternMatch.match.match)
+      }
+    })
+
+    // console.log('record', inspect(recordValue, undefined, null, true))
+
+    return success(recordValue, result.tokens)
+  }
+
   parseEnum(node: EnumNode, tokens: Token[]): ParseResult<EnumValue> {
     const { pattern } = node
 
@@ -266,41 +296,15 @@ export class Parser {
       throw new Error('Invalid enum match')
     }
 
-    const enumValue: EnumValue = [field.name, {}]
+    const enumValue: EnumValue = {
+      type: field.name,
+      ...(result.value.match.type === 'reference' &&
+        result.value.match.match.type === 'field' && {
+          value: resolveReference(result.value.match.match.match),
+        }),
+    }
 
     return success(enumValue, result.tokens)
-  }
-
-  parseRecord(node: RecordNode, tokens: Token[]): ParseResult<RecordValue> {
-    const { pattern } = node
-
-    const result = this.parsePattern(pattern, tokens)
-
-    if (result.type !== 'success') return result
-
-    const recordValue: RecordValue = {}
-
-    matchTree.visit(result.value, patternMatch => {
-      if (
-        patternMatch.type === 'reference' &&
-        patternMatch.match.type === 'field' &&
-        patternMatch.match.reference.nodeName === node.name
-      ) {
-        const fieldName = patternMatch.match.reference.fieldName
-
-        if (fieldName in recordValue) {
-          throw new Error(
-            `Field ${fieldName} of ${node.name} already set in another path`
-          )
-        }
-
-        recordValue[fieldName] = resolveReference(patternMatch.match.match)
-      }
-    })
-
-    // console.log('record', inspect(recordValue, undefined, null, true))
-
-    return success(recordValue, result.tokens)
   }
 
   parsePattern(pattern: Pattern, tokens: Token[]): ParseResult<PatternMatch> {

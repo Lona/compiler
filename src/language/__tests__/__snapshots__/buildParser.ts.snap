@@ -198,74 +198,78 @@ Object {
       },
       "type": "record",
     },
+    Object {
+      "fields": Array [
+        Object {
+          "name": "charData",
+          "pattern": Object {
+            "type": "reference",
+            "value": Object {
+              "name": "Token.text",
+              "type": "token",
+            },
+          },
+        },
+        Object {
+          "name": "comment",
+          "pattern": Object {
+            "type": "reference",
+            "value": Object {
+              "name": "Token.comment",
+              "type": "token",
+            },
+          },
+        },
+        Object {
+          "name": "element",
+          "pattern": Object {
+            "type": "reference",
+            "value": Object {
+              "name": "XMLElement",
+              "type": "node",
+            },
+          },
+        },
+      ],
+      "name": "XMLElementContent",
+      "pattern": Object {
+        "type": "or",
+        "value": Array [
+          Object {
+            "type": "reference",
+            "value": Object {
+              "fieldName": "charData",
+              "nodeName": "XMLElementContent",
+              "type": "field",
+            },
+          },
+          Object {
+            "type": "reference",
+            "value": Object {
+              "fieldName": "comment",
+              "nodeName": "XMLElementContent",
+              "type": "field",
+            },
+          },
+          Object {
+            "type": "reference",
+            "value": Object {
+              "fieldName": "element",
+              "nodeName": "XMLElementContent",
+              "type": "field",
+            },
+          },
+        ],
+      },
+      "type": "enum",
+    },
   ],
 }
 `;
 
 exports[`converts XML language 2`] = `
 Object {
-  "tokens": Array [
-    Object {
-      "groups": Array [
-        "OK",
-      ],
-      "position": Object {
-        "end": 29,
-        "start": 26,
-      },
-      "type": "open",
-      "value": "<OK",
-    },
-    Object {
-      "groups": Array [],
-      "position": Object {
-        "end": 30,
-        "start": 29,
-      },
-      "type": "close",
-      "value": ">",
-    },
-    Object {
-      "groups": Array [
-        "Some Text",
-      ],
-      "position": Object {
-        "end": 39,
-        "start": 30,
-      },
-      "type": "text",
-      "value": "Some Text",
-    },
-    Object {
-      "groups": Array [],
-      "position": Object {
-        "end": 41,
-        "start": 39,
-      },
-      "type": "slashOpen",
-      "value": "</",
-    },
-    Object {
-      "groups": Array [
-        "OK",
-      ],
-      "position": Object {
-        "end": 43,
-        "start": 41,
-      },
-      "type": "name",
-      "value": "OK",
-    },
-    Object {
-      "groups": Array [],
-      "position": Object {
-        "end": 44,
-        "start": 43,
-      },
-      "type": "close",
-      "value": ">",
-    },
-  ],
+  "tokens": Array [],
   "type": "success",
   "value": Object {
     "attributes": Array [
@@ -279,6 +283,30 @@ Object {
       },
     ],
     "name": "hello",
+  },
+}
+`;
+
+exports[`converts XML language 3`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "attributes": Array [],
+    "content": Array [
+      Object {
+        "type": "charData",
+        "value": "Some Text",
+      },
+      Object {
+        "type": "element",
+        "value": Object {
+          "attributes": Array [],
+          "name": "Nested",
+        },
+      },
+    ],
+    "name": "OK",
   },
 }
 `;

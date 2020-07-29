@@ -8,7 +8,15 @@ import { ArrayLiteral } from '../logic/nodes/literals'
 import { MemberExpression } from '../logic/nodes/MemberExpression'
 import { RecordDeclaration } from '../logic/nodes/RecordDeclaration'
 import { VariableDeclaration } from '../logic/nodes/VariableDeclaration'
-import { Definition, Field, Parser, Pattern, RecordNode } from './Parser'
+import {
+  Definition,
+  Field,
+  Parser,
+  Pattern,
+  RecordNode,
+  EnumNode,
+  OrPattern,
+} from './Parser'
 
 export function isParser(
   node: RecordDeclaration | EnumerationDeclaration
@@ -88,9 +96,10 @@ function getPattern(resolvedSelf: string, node: IExpression): Pattern {
 }
 
 export function getParseAttribute(
-  node: VariableDeclaration | RecordDeclaration
+  name: string,
+  attributes: FunctionCallExpression[]
 ): Pattern | undefined {
-  const attribute = node.attributes.find(
+  const attribute = attributes.find(
     attribute =>
       attribute.callee instanceof IdentifierExpression &&
       attribute.callee.name === 'parse'
@@ -100,7 +109,7 @@ export function getParseAttribute(
 
   const { pattern } = attribute.argumentExpressionNodes
 
-  return getPattern(node.name, pattern)
+  return getPattern(name, pattern)
 }
 
 export function buildParserDefinition(
@@ -109,27 +118,50 @@ export function buildParserDefinition(
 ): Definition {
   const parserNodes = nodes.filter(isParser)
 
-  const recordDeclarations = parserNodes.flatMap(node =>
-    node instanceof RecordDeclaration ? [node] : []
-  )
+  const records: RecordNode[] = parserNodes
+    .flatMap(node => (node instanceof RecordDeclaration ? [node] : []))
+    .map(declaration => {
+      return {
+        type: 'record',
+        name: declaration.name,
+        pattern: getParseAttribute(declaration.name, declaration.attributes)!,
+        fields: declaration.variables.flatMap((variable): Field[] => {
+          const pattern = getParseAttribute(variable.name, variable.attributes)
 
-  const records: RecordNode[] = recordDeclarations.map(declaration => {
-    return {
-      type: 'record',
-      name: declaration.name,
-      pattern: getParseAttribute(declaration)!,
-      fields: declaration.variables.flatMap((variable): Field[] => {
-        const pattern = getParseAttribute(variable)
+          if (!pattern) return []
 
-        if (!pattern) return []
+          return [{ name: variable.name, pattern }]
+        }),
+      }
+    })
 
-        return [{ name: variable.name, pattern }]
-      }),
-    }
-  })
+  const enumerations: EnumNode[] = parserNodes
+    .flatMap(node => (node instanceof EnumerationDeclaration ? [node] : []))
+    .map(declaration => {
+      return {
+        type: 'enum',
+        name: declaration.name,
+        pattern: getParseAttribute(
+          declaration.name,
+          declaration.attributes
+        )! as OrPattern,
+        fields: declaration.cases.flatMap((enumCase): Field[] => {
+          const pattern = getParseAttribute(
+            enumCase.data.name.name,
+            enumCase.data.attributes.map(
+              attribute => new FunctionCallExpression(attribute)
+            )
+          )
+
+          if (!pattern) return []
+
+          return [{ name: enumCase.data.name.name, pattern }]
+        }),
+      }
+    })
 
   return {
-    nodes: records,
+    nodes: [...records, ...enumerations],
   }
 }
 

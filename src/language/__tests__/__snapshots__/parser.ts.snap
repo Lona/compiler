@@ -4,10 +4,13 @@ exports[`parses enums 1`] = `
 Object {
   "tokens": Array [],
   "type": "success",
-  "value": Array [
-    "attribute",
-    Object {},
-  ],
+  "value": Object {
+    "type": "attribute",
+    "value": Object {
+      "name": "hello",
+      "value": "world",
+    },
+  },
 }
 `;
 
@@ -15,10 +18,10 @@ exports[`parses enums 2`] = `
 Object {
   "tokens": Array [],
   "type": "success",
-  "value": Array [
-    "name",
-    Object {},
-  ],
+  "value": Object {
+    "type": "name",
+    "value": "hello",
+  },
 }
 `;
 

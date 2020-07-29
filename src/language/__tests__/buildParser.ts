@@ -41,9 +41,6 @@ it('converts XML language', async () => {
 
   const lexer = buildLexer(new EnumerationDeclaration(mainEnum), helpers)
 
-  const tokens = lexer.tokenize(`<hello a="test" b='foo' /><OK>Some Text</OK>`)
-  // const tokens = lexer.tokenize(`<OK>Some Text</OK>`)
-
   const declarations = findNodes(
     logicFile.rootNode,
     node => node.type === 'enumeration' || node.type === 'record'
@@ -60,5 +57,11 @@ it('converts XML language', async () => {
 
   const parser = buildParser(nodes, helpers)
 
-  expect(parser.parse(tokens, 'XMLElement')).toMatchSnapshot()
+  const tokens1 = lexer.tokenize(`<hello a="test" b='foo' />`)
+
+  expect(parser.parse(tokens1, 'XMLElement')).toMatchSnapshot()
+
+  const tokens2 = lexer.tokenize(`<OK>Some Text<Nested /></OK>`)
+
+  expect(parser.parse(tokens2, 'XMLElement')).toMatchSnapshot()
 })
