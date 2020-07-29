@@ -1,0 +1,295 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`parses many 1`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "match": Array [],
+    "pattern": Object {
+      "type": "many",
+      "value": Object {
+        "type": "reference",
+        "value": Object {
+          "type": "token",
+          "value": "Token.hello",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`parses many 2`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "match": Array [
+      Object {
+        "match": Object {
+          "groups": Array [],
+          "position": Object {
+            "end": 0,
+            "start": 0,
+          },
+          "type": "hello",
+          "value": "",
+        },
+        "pattern": Object {
+          "type": "reference",
+          "value": Object {
+            "type": "token",
+            "value": "Token.hello",
+          },
+        },
+      },
+      Object {
+        "match": Object {
+          "groups": Array [],
+          "position": Object {
+            "end": 0,
+            "start": 0,
+          },
+          "type": "hello",
+          "value": "",
+        },
+        "pattern": Object {
+          "type": "reference",
+          "value": Object {
+            "type": "token",
+            "value": "Token.hello",
+          },
+        },
+      },
+      Object {
+        "match": Object {
+          "groups": Array [],
+          "position": Object {
+            "end": 0,
+            "start": 0,
+          },
+          "type": "hello",
+          "value": "",
+        },
+        "pattern": Object {
+          "type": "reference",
+          "value": Object {
+            "type": "token",
+            "value": "Token.hello",
+          },
+        },
+      },
+    ],
+    "pattern": Object {
+      "type": "many",
+      "value": Object {
+        "type": "reference",
+        "value": Object {
+          "type": "token",
+          "value": "Token.hello",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`parses or 1`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "match": Object {
+      "match": Object {
+        "groups": Array [],
+        "position": Object {
+          "end": 0,
+          "start": 0,
+        },
+        "type": "hello",
+        "value": "",
+      },
+      "pattern": Object {
+        "type": "reference",
+        "value": Object {
+          "type": "token",
+          "value": "Token.hello",
+        },
+      },
+    },
+    "pattern": Object {
+      "type": "or",
+      "value": Array [
+        Object {
+          "type": "reference",
+          "value": Object {
+            "type": "token",
+            "value": "Token.hello",
+          },
+        },
+        Object {
+          "type": "reference",
+          "value": Object {
+            "type": "token",
+            "value": "Token.world",
+          },
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`parses or 2`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "match": Object {
+      "match": Object {
+        "groups": Array [],
+        "position": Object {
+          "end": 0,
+          "start": 0,
+        },
+        "type": "world",
+        "value": "",
+      },
+      "pattern": Object {
+        "type": "reference",
+        "value": Object {
+          "type": "token",
+          "value": "Token.world",
+        },
+      },
+    },
+    "pattern": Object {
+      "type": "or",
+      "value": Array [
+        Object {
+          "type": "reference",
+          "value": Object {
+            "type": "token",
+            "value": "Token.hello",
+          },
+        },
+        Object {
+          "type": "reference",
+          "value": Object {
+            "type": "token",
+            "value": "Token.world",
+          },
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`parses references 1`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 0,
+      "start": 0,
+    },
+    "type": "hello",
+    "value": "",
+  },
+}
+`;
+
+exports[`parses references 2`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "match": Object {
+      "groups": Array [],
+      "position": Object {
+        "end": 0,
+        "start": 0,
+      },
+      "type": "hello",
+      "value": "",
+    },
+    "pattern": Object {
+      "type": "reference",
+      "value": Object {
+        "type": "token",
+        "value": "Token.hello",
+      },
+    },
+  },
+}
+`;
+
+exports[`parses sequences 1`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "match": Array [
+      Object {
+        "match": Object {
+          "groups": Array [],
+          "position": Object {
+            "end": 0,
+            "start": 0,
+          },
+          "type": "hello",
+          "value": "",
+        },
+        "pattern": Object {
+          "type": "reference",
+          "value": Object {
+            "type": "token",
+            "value": "Token.hello",
+          },
+        },
+      },
+      Object {
+        "match": Object {
+          "groups": Array [],
+          "position": Object {
+            "end": 0,
+            "start": 0,
+          },
+          "type": "world",
+          "value": "",
+        },
+        "pattern": Object {
+          "type": "reference",
+          "value": Object {
+            "type": "token",
+            "value": "Token.world",
+          },
+        },
+      },
+    ],
+    "pattern": Object {
+      "type": "sequence",
+      "value": Array [
+        Object {
+          "type": "reference",
+          "value": Object {
+            "type": "token",
+            "value": "Token.hello",
+          },
+        },
+        Object {
+          "type": "reference",
+          "value": Object {
+            "type": "token",
+            "value": "Token.world",
+          },
+        },
+      ],
+    },
+  },
+}
+`;

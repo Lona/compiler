@@ -14,7 +14,9 @@ enum Token {
   @token(pattern: "([^<&]+)")
   case text(value: String)
   
-
+  /**
+   * The "inside" state parses the inside of XML tags
+   */
   @token(state: "inside", pattern: "[ \t\r\n]")
   case whitespace()
 
@@ -33,4 +35,46 @@ enum Token {
 
   @token(state: "inside", pattern: "/>", action: pop())
   case slashClose()
+}
+
+@parse(pattern: [self.name, Token.equals, self.string])
+struct XMLAttribute {
+
+  @parse(pattern: Token.name)
+  let name: String = ""
+  
+  @parse(pattern: Token.string)
+  let value: String = ""
+}
+
+@parse(pattern: or(self.charData, self.comment, self.element))
+enum XMLElementContent {
+
+  @parse(pattern: Token.text)
+  case charData(value: String)
+
+  @parse(pattern: Token.comment)
+  case comment(value: String)
+
+  @parse(pattern: XMLElement)
+  case element(value: XMLElement)
+}
+
+@parse(pattern: [
+  self.name, 
+  Token.whitespace,
+  self.attributes,
+  Token.whitespace,
+  or([Token.close, self.content, Token.slashOpen, Token.name, Token.close], Token.slashClose)
+])
+struct XMLElement {
+
+  @parse(pattern: Token.open)
+  let name: String = ""
+
+  @parse(pattern: many(XMLAttribute))
+  let attributes: Array<XMLAttribute> = []
+
+  @parse(pattern: many(XMLElementContent))
+  let content: Array<XMLElementContent> = []
 }
