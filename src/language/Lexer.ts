@@ -121,7 +121,7 @@ export class Lexer {
                 this.state.push(rule.action.value)
                 break
               case 'pop':
-                this.state.pop
+                this.state.pop()
                 break
             }
           }
@@ -133,7 +133,7 @@ export class Lexer {
       }
 
       console.error(
-        `Failed to parse: ${slice.slice}\n`,
+        `Failed to parse: ${slice}\n`,
         currentState,
         rules.map(rule => rule.pattern)
       )

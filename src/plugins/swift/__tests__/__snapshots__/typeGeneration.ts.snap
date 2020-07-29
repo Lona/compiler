@@ -110,23 +110,23 @@ public indirect enum Declaration: Codable {
   }
   fileprivate struct _FunctionDeclaration: Codable {
     let type: _DeclarationType
-    let value0: String
-    let value1: Array<String>
+    let name: String
+    let parameters: Array<String>
   }
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     switch try container.decode(_TypeContainer.self).type {
       case _DeclarationType.functionDeclaration:
         let decoded = try container.decode(_FunctionDeclaration.self)
-        self = Declaration.functionDeclaration(name: decoded.value0, parameters: decoded.value1)
+        self = Declaration.functionDeclaration(name: decoded.name, parameters: decoded.parameters)
     }
   }
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     switch self {
-      case Declaration.functionDeclaration(let value0, let value1):
+      case Declaration.functionDeclaration(let name, let parameters):
         try container
-          .encode(_FunctionDeclaration(type: _DeclarationType.functionDeclaration, value0: value0, value1: value1))
+          .encode(_FunctionDeclaration(type: _DeclarationType.functionDeclaration, name: name, parameters: parameters))
     }
   }
 }

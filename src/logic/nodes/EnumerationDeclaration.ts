@@ -9,6 +9,7 @@ import { TypeCheckerVisitor } from '../typeChecker'
 import { substitute } from '../typeUnifier'
 import { IDeclaration, Node } from './interfaces'
 import { isNode } from '../ast'
+import { FunctionCallExpression } from './FunctionCallExpression'
 
 export class EnumerationDeclaration extends Node<AST.EnumerationDeclaration>
   implements IDeclaration {
@@ -19,6 +20,12 @@ export class EnumerationDeclaration extends Node<AST.EnumerationDeclaration>
   get cases(): Extract<AST.EnumerationCase, { type: 'enumerationCase' }>[] {
     return this.syntaxNode.data.cases.flatMap(enumCase =>
       isNode(enumCase) ? [enumCase] : []
+    )
+  }
+
+  get attributes(): FunctionCallExpression[] {
+    return this.syntaxNode.data.attributes.map(
+      attribute => new FunctionCallExpression(attribute)
     )
   }
 

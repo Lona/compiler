@@ -13,7 +13,7 @@ export function hasExistingImplementation(
 ): boolean {
   const { attributes } = node.data
 
-  return !!attributes.find(
+  return attributes.some(
     attribute =>
       attribute.data.expression.type === 'identifierExpression' &&
       attribute.data.expression.data.identifier.string ===

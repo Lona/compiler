@@ -6,12 +6,12 @@ import { convertNativeType } from './nativeType'
 import { LogicGenerationContext } from './LogicGenerationContext'
 import upperFirst from 'lodash.upperfirst'
 
-function valueBindingName(
+export function valueBindingName(
   node: Extract<LogicAST.AssociatedValue, { type: 'associatedValue' }>,
   index: number,
   total: number
 ): string {
-  return node.data.label?.name ?? total > 1 ? `value${index}` : 'value'
+  return node.data.label?.name ?? (total > 1 ? `value${index}` : 'value')
 }
 
 function convertTypeAnnotation(
@@ -45,13 +45,11 @@ export function isCodable(
 ): boolean {
   const { attributes } = node.data
 
-  const isCodable = !!attributes.find(
+  return attributes.some(
     attribute =>
       attribute.data.expression.type === 'identifierExpression' &&
       attribute.data.expression.data.identifier.string === 'codable'
   )
-
-  return isCodable
 }
 
 export function createUtilityTypes(

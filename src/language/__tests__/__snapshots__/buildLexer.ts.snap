@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`converts SQL language 1`] = `
+Array [
+  Object {
+    "type": "select",
+  },
+  Object {
+    "type": "whitespace",
+  },
+  Object {
+    "type": "identifier",
+    "value": "foo",
+  },
+  Object {
+    "type": "whitespace",
+  },
+  Object {
+    "type": "from",
+  },
+  Object {
+    "type": "whitespace",
+  },
+  Object {
+    "type": "integer",
+    "value": "123",
+  },
+]
+`;
+
+exports[`converts XML language 1`] = `
+Array [
+  Object {
+    "type": "open",
+    "value": "hello",
+  },
+  Object {
+    "type": "whitespace",
+  },
+  Object {
+    "type": "name",
+    "value": "a",
+  },
+  Object {
+    "type": "equals",
+  },
+  Object {
+    "type": "string",
+    "value": "test",
+  },
+  Object {
+    "type": "whitespace",
+  },
+  Object {
+    "type": "name",
+    "value": "b",
+  },
+  Object {
+    "type": "equals",
+  },
+  Object {
+    "type": "string",
+    "value": "foo",
+  },
+  Object {
+    "type": "whitespace",
+  },
+  Object {
+    "type": "slashClose",
+  },
+  Object {
+    "type": "open",
+    "value": "OK",
+  },
+  Object {
+    "type": "close",
+  },
+  Object {
+    "type": "text",
+    "value": "Some Text",
+  },
+  Object {
+    "type": "slashOpen",
+  },
+  Object {
+    "type": "name",
+    "value": "OK",
+  },
+  Object {
+    "type": "close",
+  },
+]
+`;

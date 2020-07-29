@@ -1,0 +1,36 @@
+@codable()
+@tokenize()
+enum Token {
+
+  @token(pattern: "<!--(.*?)-->")
+  case comment(value: String)
+
+  @token(pattern: "<([a-zA-Z]+)", action: push("inside"))
+  case open(value: String)
+
+  @token(pattern: "</", action: push("inside"))
+  case slashOpen()
+
+  @token(pattern: "([^<&]+)")
+  case text(value: String)
+  
+
+  @token(state: "inside", pattern: "[ \t\r\n]")
+  case whitespace()
+
+  @token(state: "inside", pattern: "\"([^<\"]*)\"")
+  @token(state: "inside", pattern: "'([^<']*)'")
+  case string(value: String)
+
+  @token(state: "inside", pattern: "([a-zA-Z]+)")
+  case name(value: String)
+
+  @token(state: "inside", pattern: "=")
+  case equals()
+
+  @token(state: "inside", pattern: ">", action: pop())
+  case close()
+
+  @token(state: "inside", pattern: "/>", action: pop())
+  case slashClose()
+}

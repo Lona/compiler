@@ -48,6 +48,10 @@ export class NumberLiteral extends Node<AST.NumberLiteral> implements ILiteral {
 }
 
 export class StringLiteral extends Node<AST.StringLiteral> implements ILiteral {
+  get value(): string {
+    return this.syntaxNode.data.value
+  }
+
   typeCheckerEnter(visitor: TypeCheckerVisitor): void {}
 
   typeCheckerLeave(visitor: TypeCheckerVisitor): void {
