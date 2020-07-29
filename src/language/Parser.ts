@@ -1,5 +1,6 @@
 import { Token } from './Lexer'
 import { inspect } from 'util'
+import { withOptions } from 'tree-visit'
 
 type Result<T> =
   | {
@@ -20,15 +21,21 @@ function failure<T>(value: string[], tokens: Token[]): ParseResult<T> {
 
 export type TokenReference = {
   type: 'token'
-  value: string
+  name: string
 }
 
 export type NodeReference = {
   type: 'node'
-  value: string
+  name: string
 }
 
-export type Reference = TokenReference | NodeReference
+export type FieldReference = {
+  type: 'field'
+  nodeName: string
+  fieldName: string
+}
+
+export type Reference = TokenReference | NodeReference | FieldReference
 
 export type ReferencePattern = {
   type: 'reference'
@@ -81,22 +88,49 @@ export type Definition = {
   nodes: Node[]
 }
 
-type ReferencePatternMatch = {
-  pattern: ReferencePattern
+type TokenReferenceMatch = {
+  type: 'token'
+  reference: TokenReference
   match: Token
 }
 
+type FieldReferenceMatch = {
+  type: 'field'
+  reference: FieldReference
+  match: PatternMatch
+}
+
+type NodeReferenceMatch = {
+  type: 'node'
+  reference: NodeReference
+  match: Value
+}
+
+type ReferenceMatch =
+  | TokenReferenceMatch
+  | FieldReferenceMatch
+  | NodeReferenceMatch
+
+type ReferencePatternMatch = {
+  type: 'reference'
+  pattern: ReferencePattern
+  match: ReferenceMatch
+}
+
 type SequencePatternMatch = {
+  type: 'sequence'
   pattern: SequencePattern
   match: PatternMatch[]
 }
 
 type OrPatternMatch = {
+  type: 'or'
   pattern: OrPattern
   match: PatternMatch
 }
 
 type ManyPatternMatch = {
+  type: 'many'
   pattern: ManyPattern
   match: PatternMatch[]
 }
@@ -106,6 +140,51 @@ type PatternMatch =
   | SequencePatternMatch
   | OrPatternMatch
   | ManyPatternMatch
+
+type RecordValue = {
+  [key: string]: unknown
+}
+
+type Value = RecordValue
+
+const matchTree = withOptions({
+  getChildren: (match: PatternMatch): PatternMatch[] => {
+    switch (match.type) {
+      case 'reference':
+        switch (match.match.type) {
+          case 'token':
+            return []
+          case 'field':
+            return [match.match.match]
+          case 'node':
+            return []
+        }
+      case 'sequence':
+        return match.match
+      case 'or':
+        return [match.match]
+      case 'many':
+        return match.match
+    }
+  },
+})
+
+function resolveReference(match: PatternMatch): unknown {
+  switch (match.type) {
+    case 'reference': {
+      switch (match.match.type) {
+        case 'token':
+          return match.match.match.groups[0]
+        case 'field':
+          throw new Error('No way to resolve match')
+        case 'node':
+          return match.match.match
+      }
+    }
+    default:
+      throw new Error('No way to resolve match')
+  }
+}
 
 export class Parser {
   definition: Definition
@@ -126,16 +205,16 @@ export class Parser {
       throw new Error(`Failed to find node: ${startNode}`)
     }
 
-    switch (currentNode.type) {
+    return this.parseNode(currentNode, tokens)
+  }
+
+  parseNode(node: Node, tokens: Token[]): ParseResult<Value> {
+    switch (node.type) {
       case 'enum': {
         return failure(['enum not supported'], tokens)
       }
       case 'record': {
-        const result = this.parseRecord(currentNode, tokens)
-
-        if (result.type === 'failure') return result
-
-        return { type: 'success', value: result.value }
+        return this.parseRecord(node, tokens)
       }
     }
   }
@@ -146,13 +225,36 @@ export class Parser {
   //   }
   // }
 
-  parseRecord(node: RecordNode, tokens: Token[]): ParseResult<PatternMatch> {
+  parseRecord(node: RecordNode, tokens: Token[]): ParseResult<RecordValue> {
     const { pattern } = node
 
-    const match = this.parsePattern(pattern, tokens)
+    const result = this.parsePattern(pattern, tokens)
 
-    return match
-    // return success(, tokens)
+    if (result.type !== 'success') return result
+
+    const recordValue: RecordValue = {}
+
+    matchTree.visit(result.value, patternMatch => {
+      if (
+        patternMatch.type === 'reference' &&
+        patternMatch.match.type === 'field' &&
+        patternMatch.match.reference.nodeName === node.name
+      ) {
+        const fieldName = patternMatch.match.reference.fieldName
+
+        if (fieldName in recordValue) {
+          throw new Error(
+            `Field ${fieldName} of ${node.name} already set in another path`
+          )
+        }
+
+        recordValue[fieldName] = resolveReference(patternMatch.match.match)
+      }
+    })
+
+    // console.log('record', inspect(recordValue, undefined, null, true))
+
+    return success(recordValue, result.tokens)
   }
 
   parsePattern(pattern: Pattern, tokens: Token[]): ParseResult<PatternMatch> {
@@ -162,11 +264,14 @@ export class Parser {
 
         if (result.type === 'failure') return result
 
-        return success({ pattern, match: result.value }, result.tokens)
+        return success(
+          { type: 'reference', pattern, match: result.value },
+          result.tokens
+        )
       }
       case 'sequence': {
         const initialValue: ParseResult<SequencePatternMatch> = success(
-          { pattern, match: [] },
+          { type: 'sequence', pattern, match: [] },
           tokens
         )
 
@@ -179,6 +284,7 @@ export class Parser {
 
           return success(
             {
+              type: 'sequence',
               pattern,
               match: [...result.value.match, newResult.value],
             },
@@ -201,6 +307,7 @@ export class Parser {
 
           return success(
             {
+              type: 'or',
               pattern,
               match: newResult.value,
             },
@@ -210,7 +317,7 @@ export class Parser {
       }
       case 'many': {
         let result: ParseResult<ManyPatternMatch> = success(
-          { pattern, match: [] },
+          { type: 'many', pattern, match: [] },
           tokens
         )
 
@@ -223,7 +330,11 @@ export class Parser {
           if (result.type == 'failure') break
 
           result = success(
-            { pattern, match: [...result.value.match, maybeResult.value] },
+            {
+              type: 'many',
+              pattern,
+              match: [...result.value.match, maybeResult.value],
+            },
             maybeResult.tokens
           )
         }
@@ -233,14 +344,70 @@ export class Parser {
     }
   }
 
-  parseReference(reference: Reference, tokens: Token[]): ParseResult<Token> {
+  parseReference(
+    reference: Reference,
+    tokens: Token[]
+  ): ParseResult<ReferenceMatch> {
     switch (reference.type) {
       case 'token': {
         const [token, ...rest] = tokens
 
-        if (token && `Token.${token.type}` === reference.value) {
-          return success(token, rest)
+        if (token && `Token.${token.type}` === reference.name) {
+          return success(
+            { type: reference.type, reference, match: token },
+            rest
+          )
         }
+
+        break
+      }
+      case 'field': {
+        const { nodeName, fieldName } = reference
+
+        const currentNode = this.definition.nodes.find(
+          node => node.name === nodeName
+        )
+
+        if (!currentNode) {
+          throw new Error(`Invalid node reference: ${nodeName}`)
+        }
+
+        const currentField = currentNode.fields.find(
+          field => field.name === fieldName
+        )
+
+        if (!currentField) {
+          throw new Error(`Invalid field reference: ${fieldName}`)
+        }
+
+        const result = this.parsePattern(currentField.pattern, tokens)
+
+        if (result.type === 'failure') return result
+
+        return success(
+          { type: reference.type, reference, match: result.value },
+          result.tokens
+        )
+      }
+      case 'node': {
+        const { name: nodeName } = reference
+
+        const currentNode = this.definition.nodes.find(
+          node => node.name === nodeName
+        )
+
+        if (!currentNode) {
+          throw new Error(`Invalid node reference: ${nodeName}`)
+        }
+
+        const result = this.parseNode(currentNode, tokens)
+
+        if (result.type === 'failure') return result
+
+        return success(
+          { type: reference.type, reference, match: result.value },
+          result.tokens
+        )
       }
     }
 

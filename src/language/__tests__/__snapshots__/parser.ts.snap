@@ -1,5 +1,48 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`parses field references 1`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "match": Object {
+      "match": Object {
+        "match": Object {
+          "groups": Array [
+            "hello",
+          ],
+          "position": Object {
+            "end": 0,
+            "start": 0,
+          },
+          "type": "hello",
+          "value": "hello",
+        },
+        "reference": Object {
+          "name": "Token.hello",
+          "type": "token",
+        },
+        "type": "token",
+      },
+      "pattern": Object {
+        "type": "reference",
+        "value": Object {
+          "name": "Token.hello",
+          "type": "token",
+        },
+      },
+      "type": "reference",
+    },
+    "reference": Object {
+      "fieldName": "name",
+      "nodeName": "Root",
+      "type": "field",
+    },
+    "type": "field",
+  },
+}
+`;
+
 exports[`parses many 1`] = `
 Object {
   "tokens": Array [],
@@ -11,11 +54,12 @@ Object {
       "value": Object {
         "type": "reference",
         "value": Object {
+          "name": "Token.hello",
           "type": "token",
-          "value": "Token.hello",
         },
       },
     },
+    "type": "many",
   },
 }
 `;
@@ -28,57 +72,87 @@ Object {
     "match": Array [
       Object {
         "match": Object {
-          "groups": Array [],
-          "position": Object {
-            "end": 0,
-            "start": 0,
+          "match": Object {
+            "groups": Array [
+              "hello",
+            ],
+            "position": Object {
+              "end": 0,
+              "start": 0,
+            },
+            "type": "hello",
+            "value": "hello",
           },
-          "type": "hello",
-          "value": "",
+          "reference": Object {
+            "name": "Token.hello",
+            "type": "token",
+          },
+          "type": "token",
         },
         "pattern": Object {
           "type": "reference",
           "value": Object {
+            "name": "Token.hello",
             "type": "token",
-            "value": "Token.hello",
           },
         },
+        "type": "reference",
       },
       Object {
         "match": Object {
-          "groups": Array [],
-          "position": Object {
-            "end": 0,
-            "start": 0,
+          "match": Object {
+            "groups": Array [
+              "hello",
+            ],
+            "position": Object {
+              "end": 0,
+              "start": 0,
+            },
+            "type": "hello",
+            "value": "hello",
           },
-          "type": "hello",
-          "value": "",
+          "reference": Object {
+            "name": "Token.hello",
+            "type": "token",
+          },
+          "type": "token",
         },
         "pattern": Object {
           "type": "reference",
           "value": Object {
+            "name": "Token.hello",
             "type": "token",
-            "value": "Token.hello",
           },
         },
+        "type": "reference",
       },
       Object {
         "match": Object {
-          "groups": Array [],
-          "position": Object {
-            "end": 0,
-            "start": 0,
+          "match": Object {
+            "groups": Array [
+              "hello",
+            ],
+            "position": Object {
+              "end": 0,
+              "start": 0,
+            },
+            "type": "hello",
+            "value": "hello",
           },
-          "type": "hello",
-          "value": "",
+          "reference": Object {
+            "name": "Token.hello",
+            "type": "token",
+          },
+          "type": "token",
         },
         "pattern": Object {
           "type": "reference",
           "value": Object {
+            "name": "Token.hello",
             "type": "token",
-            "value": "Token.hello",
           },
         },
+        "type": "reference",
       },
     ],
     "pattern": Object {
@@ -86,11 +160,12 @@ Object {
       "value": Object {
         "type": "reference",
         "value": Object {
+          "name": "Token.hello",
           "type": "token",
-          "value": "Token.hello",
         },
       },
     },
+    "type": "many",
   },
 }
 `;
@@ -102,21 +177,31 @@ Object {
   "value": Object {
     "match": Object {
       "match": Object {
-        "groups": Array [],
-        "position": Object {
-          "end": 0,
-          "start": 0,
+        "match": Object {
+          "groups": Array [
+            "hello",
+          ],
+          "position": Object {
+            "end": 0,
+            "start": 0,
+          },
+          "type": "hello",
+          "value": "hello",
         },
-        "type": "hello",
-        "value": "",
+        "reference": Object {
+          "name": "Token.hello",
+          "type": "token",
+        },
+        "type": "token",
       },
       "pattern": Object {
         "type": "reference",
         "value": Object {
+          "name": "Token.hello",
           "type": "token",
-          "value": "Token.hello",
         },
       },
+      "type": "reference",
     },
     "pattern": Object {
       "type": "or",
@@ -124,19 +209,20 @@ Object {
         Object {
           "type": "reference",
           "value": Object {
+            "name": "Token.hello",
             "type": "token",
-            "value": "Token.hello",
           },
         },
         Object {
           "type": "reference",
           "value": Object {
+            "name": "Token.world",
             "type": "token",
-            "value": "Token.world",
           },
         },
       ],
     },
+    "type": "or",
   },
 }
 `;
@@ -148,21 +234,31 @@ Object {
   "value": Object {
     "match": Object {
       "match": Object {
-        "groups": Array [],
-        "position": Object {
-          "end": 0,
-          "start": 0,
+        "match": Object {
+          "groups": Array [
+            "world",
+          ],
+          "position": Object {
+            "end": 0,
+            "start": 0,
+          },
+          "type": "world",
+          "value": "world",
         },
-        "type": "world",
-        "value": "",
+        "reference": Object {
+          "name": "Token.world",
+          "type": "token",
+        },
+        "type": "token",
       },
       "pattern": Object {
         "type": "reference",
         "value": Object {
+          "name": "Token.world",
           "type": "token",
-          "value": "Token.world",
         },
       },
+      "type": "reference",
     },
     "pattern": Object {
       "type": "or",
@@ -170,59 +266,43 @@ Object {
         Object {
           "type": "reference",
           "value": Object {
+            "name": "Token.hello",
             "type": "token",
-            "value": "Token.hello",
           },
         },
         Object {
           "type": "reference",
           "value": Object {
+            "name": "Token.world",
             "type": "token",
-            "value": "Token.world",
           },
         },
       ],
     },
+    "type": "or",
   },
 }
 `;
 
-exports[`parses references 1`] = `
+exports[`parses records 1`] = `
 Object {
   "tokens": Array [],
   "type": "success",
   "value": Object {
-    "groups": Array [],
-    "position": Object {
-      "end": 0,
-      "start": 0,
-    },
-    "type": "hello",
-    "value": "",
+    "name": "hello",
+    "value": "world",
   },
 }
 `;
 
-exports[`parses references 2`] = `
+exports[`parses records 2`] = `
 Object {
   "tokens": Array [],
   "type": "success",
   "value": Object {
-    "match": Object {
-      "groups": Array [],
-      "position": Object {
-        "end": 0,
-        "start": 0,
-      },
-      "type": "hello",
-      "value": "",
-    },
-    "pattern": Object {
-      "type": "reference",
-      "value": Object {
-        "type": "token",
-        "value": "Token.hello",
-      },
+    "attribute": Object {
+      "name": "hello",
+      "value": "world",
     },
   },
 }
@@ -236,39 +316,59 @@ Object {
     "match": Array [
       Object {
         "match": Object {
-          "groups": Array [],
-          "position": Object {
-            "end": 0,
-            "start": 0,
+          "match": Object {
+            "groups": Array [
+              "hello",
+            ],
+            "position": Object {
+              "end": 0,
+              "start": 0,
+            },
+            "type": "hello",
+            "value": "hello",
           },
-          "type": "hello",
-          "value": "",
+          "reference": Object {
+            "name": "Token.hello",
+            "type": "token",
+          },
+          "type": "token",
         },
         "pattern": Object {
           "type": "reference",
           "value": Object {
+            "name": "Token.hello",
             "type": "token",
-            "value": "Token.hello",
           },
         },
+        "type": "reference",
       },
       Object {
         "match": Object {
-          "groups": Array [],
-          "position": Object {
-            "end": 0,
-            "start": 0,
+          "match": Object {
+            "groups": Array [
+              "world",
+            ],
+            "position": Object {
+              "end": 0,
+              "start": 0,
+            },
+            "type": "world",
+            "value": "world",
           },
-          "type": "world",
-          "value": "",
+          "reference": Object {
+            "name": "Token.world",
+            "type": "token",
+          },
+          "type": "token",
         },
         "pattern": Object {
           "type": "reference",
           "value": Object {
+            "name": "Token.world",
             "type": "token",
-            "value": "Token.world",
           },
         },
+        "type": "reference",
       },
     ],
     "pattern": Object {
@@ -277,19 +377,80 @@ Object {
         Object {
           "type": "reference",
           "value": Object {
+            "name": "Token.hello",
             "type": "token",
-            "value": "Token.hello",
           },
         },
         Object {
           "type": "reference",
           "value": Object {
+            "name": "Token.world",
             "type": "token",
-            "value": "Token.world",
           },
         },
       ],
     },
+    "type": "sequence",
+  },
+}
+`;
+
+exports[`parses token references 1`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "match": Object {
+      "groups": Array [
+        "hello",
+      ],
+      "position": Object {
+        "end": 0,
+        "start": 0,
+      },
+      "type": "hello",
+      "value": "hello",
+    },
+    "reference": Object {
+      "name": "Token.hello",
+      "type": "token",
+    },
+    "type": "token",
+  },
+}
+`;
+
+exports[`parses token references 2`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "match": Object {
+      "match": Object {
+        "groups": Array [
+          "hello",
+        ],
+        "position": Object {
+          "end": 0,
+          "start": 0,
+        },
+        "type": "hello",
+        "value": "hello",
+      },
+      "reference": Object {
+        "name": "Token.hello",
+        "type": "token",
+      },
+      "type": "token",
+    },
+    "pattern": Object {
+      "type": "reference",
+      "value": Object {
+        "name": "Token.hello",
+        "type": "token",
+      },
+    },
+    "type": "reference",
   },
 }
 `;
