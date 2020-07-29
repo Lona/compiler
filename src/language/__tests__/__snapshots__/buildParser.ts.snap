@@ -60,6 +60,71 @@ Object {
     Object {
       "fields": Array [
         Object {
+          "name": "charData",
+          "pattern": Object {
+            "type": "reference",
+            "value": Object {
+              "name": "text",
+              "type": "token",
+            },
+          },
+        },
+        Object {
+          "name": "comment",
+          "pattern": Object {
+            "type": "reference",
+            "value": Object {
+              "name": "comment",
+              "type": "token",
+            },
+          },
+        },
+        Object {
+          "name": "element",
+          "pattern": Object {
+            "type": "reference",
+            "value": Object {
+              "name": "XMLElement",
+              "type": "node",
+            },
+          },
+        },
+      ],
+      "name": "XMLElementContent",
+      "pattern": Object {
+        "type": "or",
+        "value": Array [
+          Object {
+            "type": "reference",
+            "value": Object {
+              "fieldName": "charData",
+              "nodeName": "XMLElementContent",
+              "type": "field",
+            },
+          },
+          Object {
+            "type": "reference",
+            "value": Object {
+              "fieldName": "comment",
+              "nodeName": "XMLElementContent",
+              "type": "field",
+            },
+          },
+          Object {
+            "type": "reference",
+            "value": Object {
+              "fieldName": "element",
+              "nodeName": "XMLElementContent",
+              "type": "field",
+            },
+          },
+        ],
+      },
+      "type": "enum",
+    },
+    Object {
+      "fields": Array [
+        Object {
           "name": "name",
           "pattern": Object {
             "type": "reference",
@@ -172,71 +237,6 @@ Object {
         ],
       },
       "type": "record",
-    },
-    Object {
-      "fields": Array [
-        Object {
-          "name": "charData",
-          "pattern": Object {
-            "type": "reference",
-            "value": Object {
-              "name": "text",
-              "type": "token",
-            },
-          },
-        },
-        Object {
-          "name": "comment",
-          "pattern": Object {
-            "type": "reference",
-            "value": Object {
-              "name": "comment",
-              "type": "token",
-            },
-          },
-        },
-        Object {
-          "name": "element",
-          "pattern": Object {
-            "type": "reference",
-            "value": Object {
-              "name": "XMLElement",
-              "type": "node",
-            },
-          },
-        },
-      ],
-      "name": "XMLElementContent",
-      "pattern": Object {
-        "type": "or",
-        "value": Array [
-          Object {
-            "type": "reference",
-            "value": Object {
-              "fieldName": "charData",
-              "nodeName": "XMLElementContent",
-              "type": "field",
-            },
-          },
-          Object {
-            "type": "reference",
-            "value": Object {
-              "fieldName": "comment",
-              "nodeName": "XMLElementContent",
-              "type": "field",
-            },
-          },
-          Object {
-            "type": "reference",
-            "value": Object {
-              "fieldName": "element",
-              "nodeName": "XMLElementContent",
-              "type": "field",
-            },
-          },
-        ],
-      },
-      "type": "enum",
     },
   ],
 }

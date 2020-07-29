@@ -1,4 +1,5 @@
 import { Helpers } from '../helpers'
+import { LogicAST as AST } from '@lona/serialization'
 import { EnumerationDeclaration } from '../logic/nodes/EnumerationDeclaration'
 import { FunctionCallExpression } from '../logic/nodes/FunctionCallExpression'
 import { IdentifierExpression } from '../logic/nodes/IdentifierExpression'
@@ -145,7 +146,65 @@ export function getEnumParseAttribute(
   }
 }
 
-function getRecordNode(declaration: RecordDeclaration): RecordNode {
+function inferFieldPattern(
+  fieldName: string,
+  annotation: Extract<AST.TypeAnnotation, { type: 'typeIdentifier' }>,
+  nodeNames: string[]
+): Pattern | undefined {
+  const typeName = annotation.data.identifier.string
+
+  if (nodeNames.includes(typeName)) {
+    return {
+      type: 'reference',
+      value: { type: 'node', name: typeName },
+    }
+  } else if (
+    typeName === 'Array' &&
+    annotation.data.genericArguments[0].type === 'typeIdentifier'
+  ) {
+    const pattern = inferFieldPattern(
+      fieldName,
+      annotation.data.genericArguments[0],
+      nodeNames
+    )
+
+    if (!pattern) return
+
+    return {
+      type: 'many',
+      value: pattern,
+    }
+  } else if (
+    typeName === 'Optional' &&
+    annotation.data.genericArguments[0].type === 'typeIdentifier'
+  ) {
+    const pattern = inferFieldPattern(
+      fieldName,
+      annotation.data.genericArguments[0],
+      nodeNames
+    )
+
+    if (!pattern) return
+
+    return {
+      type: 'option',
+      value: pattern,
+    }
+  } else if (typeName === 'String') {
+    return {
+      type: 'reference',
+      value: {
+        type: 'token',
+        name: fieldName,
+      },
+    }
+  }
+}
+
+function getRecordNode(
+  declaration: RecordDeclaration,
+  nodeNames: string[]
+): RecordNode {
   return {
     type: 'record',
     name: declaration.name,
@@ -153,14 +212,30 @@ function getRecordNode(declaration: RecordDeclaration): RecordNode {
     fields: declaration.variables.flatMap((variable): Field[] => {
       const pattern = getParseAttribute(variable.name, variable.attributes)
 
-      if (!pattern) return []
+      if (pattern) {
+        return [{ name: variable.name, pattern }]
+      }
 
-      return [{ name: variable.name, pattern }]
+      const annotation = variable.syntaxNode.data.annotation
+
+      // Try to infer a pattern from the type annotation
+      if (annotation && annotation.type === 'typeIdentifier') {
+        const pattern = inferFieldPattern(variable.name, annotation, nodeNames)
+
+        if (pattern) {
+          return [{ name: variable.name, pattern }]
+        }
+      }
+
+      return []
     }),
   }
 }
 
-function getEnumNode(declaration: EnumerationDeclaration): EnumNode {
+function getEnumNode(
+  declaration: EnumerationDeclaration,
+  nodeNames: string[]
+): EnumNode {
   return {
     type: 'enum',
     name: declaration.name,
@@ -173,9 +248,31 @@ function getEnumNode(declaration: EnumerationDeclaration): EnumNode {
         )
       )
 
-      if (!pattern) return []
+      if (pattern) {
+        return [{ name: enumCase.data.name.name, pattern }]
+      }
 
-      return [{ name: enumCase.data.name.name, pattern }]
+      // Try to infer a pattern from the type annotation
+      if (
+        enumCase.data.associatedValues[0] &&
+        enumCase.data.associatedValues[0].type === 'associatedValue'
+      ) {
+        const annotation = enumCase.data.associatedValues[0].data.annotation
+
+        if (annotation && annotation.type === 'typeIdentifier') {
+          const pattern = inferFieldPattern(
+            enumCase.data.name.name,
+            annotation,
+            nodeNames
+          )
+
+          if (pattern) {
+            return [{ name: enumCase.data.name.name, pattern }]
+          }
+        }
+      }
+
+      return []
     }),
   }
 }
@@ -185,17 +282,16 @@ export function buildParserDefinition(
   context: Helpers
 ): Definition {
   const parserNodes = nodes.filter(isParser)
-
-  const records: RecordNode[] = parserNodes
-    .flatMap(node => (node instanceof RecordDeclaration ? [node] : []))
-    .map(getRecordNode)
-
-  const enumerations: EnumNode[] = parserNodes
-    .flatMap(node => (node instanceof EnumerationDeclaration ? [node] : []))
-    .map(getEnumNode)
+  const nodeNames = parserNodes.map(node => node.name)
 
   return {
-    nodes: [...records, ...enumerations],
+    nodes: parserNodes.map(node => {
+      if (node instanceof RecordDeclaration) {
+        return getRecordNode(node, nodeNames)
+      } else {
+        return getEnumNode(node, nodeNames)
+      }
+    }),
   }
 }
 

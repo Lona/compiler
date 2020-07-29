@@ -40,7 +40,6 @@ enum Token {
 @parse(pattern: [self.name, Token.equals, self.value])
 struct XMLAttribute {
 
-  @parse(pattern: Token.name)
   let name: String = ""
   
   @parse(pattern: Token.string)
@@ -53,10 +52,8 @@ enum XMLElementContent {
   @parse(pattern: Token.text)
   case charData(value: String)
 
-  @parse(pattern: Token.comment)
   case comment(value: String)
 
-  @parse(pattern: XMLElement)
   case element(value: XMLElement)
 }
 
@@ -77,9 +74,7 @@ struct XMLElement {
   @parse(pattern: Token.open)
   let name: String = ""
 
-  @parse(pattern: many(XMLAttribute))
   let attributes: Array<XMLAttribute> = []
 
-  @parse(pattern: many(XMLElementContent))
   let content: Array<XMLElementContent> = []
 }
