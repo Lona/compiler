@@ -185,6 +185,13 @@ Object {
             "type": "or",
             "value": Array [
               Object {
+                "type": "reference",
+                "value": Object {
+                  "name": "slashClose",
+                  "type": "token",
+                },
+              },
+              Object {
                 "type": "sequence",
                 "value": Array [
                   Object {
@@ -224,13 +231,6 @@ Object {
                     },
                   },
                 ],
-              },
-              Object {
-                "type": "reference",
-                "value": Object {
-                  "name": "slashClose",
-                  "type": "token",
-                },
               },
             ],
           },

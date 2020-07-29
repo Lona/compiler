@@ -2,7 +2,7 @@ import { Lexer, Rule } from '../Lexer'
 
 const keyword = (string: string): Rule => ({
   name: string,
-  pattern: new RegExp(string),
+  pattern: string,
   discard: false,
 })
 
@@ -12,9 +12,9 @@ it('tokenizes simple tokens', () => {
       keyword('from'),
       keyword('select'),
       keyword('where'),
-      { name: 'identifier', pattern: /[a-zA-Z]\w*/ },
-      { name: 'integer', pattern: /0|[1-9]\d*/ },
-      { name: '_', pattern: /\W+/ },
+      { name: 'identifier', pattern: '[a-zA-Z]\\w*' },
+      { name: 'integer', pattern: '0|[1-9]\\d*' },
+      { name: '_', pattern: '\\W+' },
     ],
   })
 
@@ -28,7 +28,7 @@ it('captures groups', () => {
     rules: [
       {
         name: 'tag',
-        pattern: /<(\w+)>/,
+        pattern: '<(\\w+)>',
       },
     ],
   })
@@ -45,7 +45,7 @@ it('supports states', () => {
       rules: [
         {
           name: 'quote',
-          pattern: /"/,
+          pattern: '"',
           action: {
             type: 'next',
             value: 'string',
@@ -53,7 +53,7 @@ it('supports states', () => {
         },
         {
           name: 'content',
-          pattern: /[^"]+/,
+          pattern: '[^"]+',
         },
       ],
     },
@@ -62,7 +62,7 @@ it('supports states', () => {
       rules: [
         {
           name: 'quote',
-          pattern: /"/,
+          pattern: '"',
           action: {
             type: 'next',
             value: 'main',
@@ -70,7 +70,7 @@ it('supports states', () => {
         },
         {
           name: 'string',
-          pattern: /[^"]+/,
+          pattern: '[^"]+',
         },
       ],
     },

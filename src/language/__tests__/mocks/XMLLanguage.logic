@@ -60,14 +60,15 @@ enum XMLElementContent {
 @parse(pattern: [
   self.name, 
   self.attributes,
-  or([
+  or(
+    Token.slashClose, 
+    [
       Token.close, 
       self.content, 
       Token.slashOpen, 
       Token.name,
       Token.close
-    ],
-    Token.slashClose)
+    ])
 ])
 struct XMLElement {
 

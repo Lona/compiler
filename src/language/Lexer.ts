@@ -8,7 +8,7 @@ export type Action = NextAction | PushAction | PopAction
 
 export type Rule = {
   name: string
-  pattern: string | RegExp
+  pattern: string
   action?: Action
   discard?: boolean
 }
@@ -33,6 +33,22 @@ export type Token = {
   }
 }
 
+function memoize<I, O>(f: (value: I) => O): (value: I) => O {
+  const cache: Map<I, O> = new Map()
+
+  return (value: I): O => {
+    if (!cache.has(value)) {
+      cache.set(value, f(value))
+    }
+
+    return cache.get(value)!
+  }
+}
+
+const getRegExp = memoize(
+  (pattern: string): RegExp => new RegExp('^(?:' + pattern + ')')
+)
+
 export class Lexer {
   state: string[]
   stateDefinitions: StateDefinition[]
@@ -51,22 +67,6 @@ export class Lexer {
 
   get currentState() {
     return this.state[this.state.length - 1]
-  }
-
-  private regExpCache: { [key: string]: RegExp } = {}
-
-  getRegExp(pattern: string | RegExp) {
-    const key = typeof pattern === 'string' ? pattern : pattern.source
-
-    if (key in this.regExpCache) {
-      return this.regExpCache[key]
-    }
-
-    const regExp = getRegExp(pattern)
-
-    this.regExpCache[key] = regExp
-
-    return regExp
   }
 
   tokenize(source: string) {
@@ -90,7 +90,7 @@ export class Lexer {
       const slice = source.slice(pos)
 
       for (let rule of rules) {
-        let regExp = this.getRegExp(rule.pattern)
+        let regExp = getRegExp(rule.pattern)
 
         const match = slice.match(regExp)
 
@@ -146,23 +146,4 @@ export class Lexer {
 
     return tokens
   }
-}
-
-function getRegExp(re: string | RegExp): RegExp {
-  let source
-  if (typeof re === 'string') {
-    source = re
-  } else if (re instanceof RegExp) {
-    source = re.source
-  } else {
-    throw new Error(
-      'rules must start with a match string or regular expression'
-    )
-  }
-
-  const matchOnlyAtLineStart = source.length > 0 && source[0] === '^'
-
-  return new RegExp(
-    '^(?:' + (matchOnlyAtLineStart ? source.substr(1) : source) + ')'
-  )
 }
