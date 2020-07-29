@@ -7,6 +7,8 @@ import {
   ManyPattern,
   FieldReference,
   Node,
+  OptionPattern,
+  EnumNode,
 } from '../Parser'
 import { Token } from '../Lexer'
 
@@ -158,6 +160,42 @@ it('parses many', () => {
   ).toMatchSnapshot()
 })
 
+it('parses option', () => {
+  const reference: Reference = { type: 'token', name: 'Token.hello' }
+
+  const innerPattern: ReferencePattern = {
+    type: 'reference',
+    value: { type: 'field', nodeName: 'Root', fieldName: 'name' },
+  }
+
+  const pattern: OptionPattern = {
+    type: 'option',
+    value: innerPattern,
+  }
+
+  const parser = new Parser({
+    nodes: [
+      {
+        type: 'record',
+        name: 'Root',
+        pattern,
+        fields: [
+          {
+            name: 'name',
+            pattern: {
+              type: 'reference',
+              value: reference,
+            },
+          },
+        ],
+      },
+    ],
+  })
+
+  expect(parser.parsePattern(pattern, [])).toMatchSnapshot()
+  expect(parser.parsePattern(pattern, [createToken('hello')])).toMatchSnapshot()
+})
+
 it('parses records', () => {
   const rootNode: Node = {
     type: 'record',
@@ -249,6 +287,119 @@ it('parses records', () => {
     createToken('equals'),
     createToken('world'),
   ])
+
+  expect(result2).toMatchSnapshot()
+
+  expect(result2.type).toEqual('success')
+})
+
+it('parses enums', () => {
+  const rootNode: EnumNode = {
+    type: 'enum',
+    name: 'Root',
+    fields: [
+      {
+        name: 'attribute',
+        pattern: {
+          type: 'reference',
+          value: { type: 'node', name: 'Attribute' },
+        },
+      },
+      {
+        name: 'name',
+        pattern: {
+          type: 'reference',
+          value: { type: 'token', name: 'Token.hello' },
+        },
+      },
+    ],
+    pattern: {
+      type: 'or',
+      value: [
+        {
+          type: 'reference',
+          value: {
+            type: 'field',
+            nodeName: 'Root',
+            fieldName: 'attribute',
+          },
+        },
+        {
+          type: 'reference',
+          value: {
+            type: 'field',
+            nodeName: 'Root',
+            fieldName: 'name',
+          },
+        },
+      ],
+    },
+  }
+
+  const attributeNode: Node = {
+    type: 'record',
+    name: 'Attribute',
+    fields: [
+      {
+        name: 'name',
+        pattern: {
+          type: 'reference',
+          value: { type: 'token', name: 'Token.hello' },
+        },
+      },
+      {
+        name: 'value',
+        pattern: {
+          type: 'reference',
+          value: { type: 'token', name: 'Token.world' },
+        },
+      },
+    ],
+    pattern: {
+      type: 'sequence',
+      value: [
+        {
+          type: 'reference',
+          value: {
+            type: 'field',
+            nodeName: 'Attribute',
+            fieldName: 'name',
+          },
+        },
+        {
+          type: 'reference',
+          value: {
+            type: 'token',
+            name: 'Token.equals',
+          },
+        },
+        {
+          type: 'reference',
+          value: {
+            type: 'field',
+            nodeName: 'Attribute',
+            fieldName: 'value',
+          },
+        },
+      ],
+    },
+  }
+
+  const parser = new Parser({
+    nodes: [rootNode, attributeNode],
+  })
+
+  const result1 = parser.parseEnum(rootNode, [
+    createToken('hello'),
+    createToken('equals'),
+    createToken('world'),
+  ])
+
+  expect(result1).toMatchSnapshot()
+
+  expect(result1.type).toEqual('success')
+
+  const result2 = parser.parseEnum(rootNode, [createToken('hello')])
 
   expect(result2).toMatchSnapshot()
 

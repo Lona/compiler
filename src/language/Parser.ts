@@ -57,11 +57,17 @@ export type ManyPattern = {
   value: Pattern
 }
 
+export type OptionPattern = {
+  type: 'option'
+  value: Pattern
+}
+
 export type Pattern =
   | ReferencePattern
   | SequencePattern
   | OrPattern
   | ManyPattern
+  | OptionPattern
 
 export type Field = {
   name: string
@@ -71,7 +77,7 @@ export type Field = {
 export type EnumNode = {
   type: 'enum'
   name: string
-  pattern: SequencePattern
+  pattern: OrPattern
   fields: Field[]
 }
 
@@ -135,17 +141,31 @@ type ManyPatternMatch = {
   match: PatternMatch[]
 }
 
+type OptionPatternMatch = {
+  type: 'option'
+  pattern: OptionPattern
+  match?: PatternMatch
+}
+
 type PatternMatch =
   | ReferencePatternMatch
   | SequencePatternMatch
   | OrPatternMatch
   | ManyPatternMatch
+  | OptionPatternMatch
 
 type RecordValue = {
   [key: string]: unknown
 }
 
-type Value = RecordValue
+type EnumValue = [
+  string,
+  {
+    [key: string]: unknown
+  }
+]
+
+type Value = RecordValue | EnumValue
 
 const matchTree = withOptions({
   getChildren: (match: PatternMatch): PatternMatch[] => {
@@ -165,6 +185,8 @@ const matchTree = withOptions({
         return [match.match]
       case 'many':
         return match.match
+      case 'option':
+        return match.match ? [match.match] : []
     }
   },
 })
@@ -176,13 +198,21 @@ function resolveReference(match: PatternMatch): unknown {
         case 'token':
           return match.match.match.groups[0]
         case 'field':
-          throw new Error('No way to resolve match')
+          throw new Error('No way to resolve field match')
         case 'node':
           return match.match.match
       }
     }
+    case 'many': {
+      // TODO: Is choosing the first match the right default?
+      return match.match.map(resolveReference)
+    }
+    case 'sequence': {
+      // TODO: Is choosing the first match the right default?
+      return resolveReference(match.match[0])
+    }
     default:
-      throw new Error('No way to resolve match')
+      throw new Error(`No way to resolve match ${inspect(match)}`)
   }
 }
 
@@ -193,10 +223,7 @@ export class Parser {
     this.definition = definition
   }
 
-  parse(
-    tokens: Token[],
-    startNode: string = this.definition.nodes[0].name
-  ): Result<unknown> {
+  parse(tokens: Token[], startNode: string): ParseResult<Value> {
     const currentNode = this.definition.nodes.find(
       node => node.name === startNode
     )
@@ -211,7 +238,7 @@ export class Parser {
   parseNode(node: Node, tokens: Token[]): ParseResult<Value> {
     switch (node.type) {
       case 'enum': {
-        return failure(['enum not supported'], tokens)
+        return this.parseEnum(node, tokens)
       }
       case 'record': {
         return this.parseRecord(node, tokens)
@@ -219,11 +246,30 @@ export class Parser {
     }
   }
 
-  // parseEnum(node: EnumNode, tokens: Token[]): Result<unknown> {
-  //   for (let pattern of node.pattern.value) {
-  //     if ()
-  //   }
-  // }
+  parseEnum(node: EnumNode, tokens: Token[]): ParseResult<EnumValue> {
+    const { pattern } = node
+
+    const result = this.parsePattern(pattern, tokens) as ParseResult<
+      OrPatternMatch
+    >
+
+    if (result.type !== 'success') return result
+
+    const field = node.fields.find(
+      field =>
+        result.value.match.pattern.type === 'reference' &&
+        result.value.match.pattern.value.type === 'field' &&
+        result.value.match.pattern.value.fieldName === field.name
+    )
+
+    if (!field) {
+      throw new Error('Invalid enum match')
+    }
+
+    const enumValue: EnumValue = [field.name, {}]
+
+    return success(enumValue, result.tokens)
+  }
 
   parseRecord(node: RecordNode, tokens: Token[]): ParseResult<RecordValue> {
     const { pattern } = node
@@ -294,7 +340,7 @@ export class Parser {
       }
       case 'or': {
         const initialValue: ParseResult<OrPatternMatch> = failure(
-          [`Failed to match 'or' pattern: ${inspect(pattern)}`],
+          [`Failed to match 'or' pattern: ${inspect(pattern, false, 5)}`],
           tokens
         )
 
@@ -341,6 +387,28 @@ export class Parser {
 
         return result
       }
+      case 'option': {
+        const result = this.parsePattern(pattern.value, tokens)
+
+        if (result.type === 'failure') {
+          return success(
+            {
+              type: 'option',
+              pattern,
+            },
+            result.tokens
+          )
+        }
+
+        return success(
+          {
+            type: 'option',
+            pattern,
+            match: result.value,
+          },
+          result.tokens
+        )
+      }
     }
   }
 
@@ -359,10 +427,15 @@ export class Parser {
           )
         }
 
-        break
+        return failure(
+          [`Failed to parse token reference: ${inspect(reference)}`],
+          tokens
+        )
       }
       case 'field': {
         const { nodeName, fieldName } = reference
+
+        // console.log('find field', nodeName, fieldName)
 
         const currentNode = this.definition.nodes.find(
           node => node.name === nodeName
@@ -392,6 +465,8 @@ export class Parser {
       case 'node': {
         const { name: nodeName } = reference
 
+        // console.log('find node name', nodeName)
+
         const currentNode = this.definition.nodes.find(
           node => node.name === nodeName
         )
@@ -410,7 +485,5 @@ export class Parser {
         )
       }
     }
-
-    return failure([`Failed to parse reference: ${inspect(reference)}`], tokens)
   }
 }

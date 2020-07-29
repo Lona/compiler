@@ -96,7 +96,7 @@ export function getTokenAttributes(
 export function buildLexer(
   node: EnumerationDeclaration,
   context: Helpers
-): (source: string) => unknown {
+): Lexer {
   const generators = node.cases.flatMap(getTokenAttributes)
 
   const states: StateDefinition[] = []
@@ -111,16 +111,25 @@ export function buildLexer(
     }
   })
 
-  const lexer = new Lexer(states, 'main')
+  return new Lexer(states, 'main')
+}
 
-  return source => {
-    const tokens = lexer.tokenize(source)
+export function buildTokenTransformer(
+  node: EnumerationDeclaration,
+  context: Helpers
+): (tokens: Token[]) => unknown[] {
+  const generators = node.cases.flatMap(getTokenAttributes)
 
-    return tokens.map(token => {
+  return tokens =>
+    tokens.map(token => {
       const generator = generators.find(
         generator => generator.rule.name === token.type
-      )!
+      )
+
+      if (!generator) {
+        throw new Error(`Missing token generator for: ${token.type}`)
+      }
+
       return generator.transform(token)
     })
-  }
 }

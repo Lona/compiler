@@ -37,7 +37,7 @@ enum Token {
   case slashClose()
 }
 
-@parse(pattern: [self.name, Token.equals, self.string])
+@parse(pattern: [self.name, Token.equals, self.value])
 struct XMLAttribute {
 
   @parse(pattern: Token.name)
@@ -62,17 +62,23 @@ enum XMLElementContent {
 
 @parse(pattern: [
   self.name, 
-  Token.whitespace,
+  option(Token.whitespace),
   self.attributes,
-  Token.whitespace,
-  or([Token.close, self.content, Token.slashOpen, Token.name, Token.close], Token.slashClose)
+  or([
+      Token.close, 
+      self.content, 
+      Token.slashOpen, 
+      Token.name, 
+      Token.close
+    ],
+    Token.slashClose)
 ])
 struct XMLElement {
 
   @parse(pattern: Token.open)
   let name: String = ""
 
-  @parse(pattern: many(XMLAttribute))
+  @parse(pattern: many([XMLAttribute, option(Token.whitespace)]))
   let attributes: Array<XMLAttribute> = []
 
   @parse(pattern: many(XMLElementContent))

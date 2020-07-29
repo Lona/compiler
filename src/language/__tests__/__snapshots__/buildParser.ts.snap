@@ -1,0 +1,284 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`converts XML language 1`] = `
+Object {
+  "nodes": Array [
+    Object {
+      "fields": Array [
+        Object {
+          "name": "name",
+          "pattern": Object {
+            "type": "reference",
+            "value": Object {
+              "name": "Token.name",
+              "type": "token",
+            },
+          },
+        },
+        Object {
+          "name": "value",
+          "pattern": Object {
+            "type": "reference",
+            "value": Object {
+              "name": "Token.string",
+              "type": "token",
+            },
+          },
+        },
+      ],
+      "name": "XMLAttribute",
+      "pattern": Object {
+        "type": "sequence",
+        "value": Array [
+          Object {
+            "type": "reference",
+            "value": Object {
+              "fieldName": "name",
+              "nodeName": "XMLAttribute",
+              "type": "field",
+            },
+          },
+          Object {
+            "type": "reference",
+            "value": Object {
+              "name": "Token.equals",
+              "type": "token",
+            },
+          },
+          Object {
+            "type": "reference",
+            "value": Object {
+              "fieldName": "value",
+              "nodeName": "XMLAttribute",
+              "type": "field",
+            },
+          },
+        ],
+      },
+      "type": "record",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "name": "name",
+          "pattern": Object {
+            "type": "reference",
+            "value": Object {
+              "name": "Token.open",
+              "type": "token",
+            },
+          },
+        },
+        Object {
+          "name": "attributes",
+          "pattern": Object {
+            "type": "many",
+            "value": Object {
+              "type": "sequence",
+              "value": Array [
+                Object {
+                  "type": "reference",
+                  "value": Object {
+                    "name": "XMLAttribute",
+                    "type": "node",
+                  },
+                },
+                Object {
+                  "type": "option",
+                  "value": Object {
+                    "type": "reference",
+                    "value": Object {
+                      "name": "Token.whitespace",
+                      "type": "token",
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+        Object {
+          "name": "content",
+          "pattern": Object {
+            "type": "many",
+            "value": Object {
+              "type": "reference",
+              "value": Object {
+                "name": "XMLElementContent",
+                "type": "node",
+              },
+            },
+          },
+        },
+      ],
+      "name": "XMLElement",
+      "pattern": Object {
+        "type": "sequence",
+        "value": Array [
+          Object {
+            "type": "reference",
+            "value": Object {
+              "fieldName": "name",
+              "nodeName": "XMLElement",
+              "type": "field",
+            },
+          },
+          Object {
+            "type": "option",
+            "value": Object {
+              "type": "reference",
+              "value": Object {
+                "name": "Token.whitespace",
+                "type": "token",
+              },
+            },
+          },
+          Object {
+            "type": "reference",
+            "value": Object {
+              "fieldName": "attributes",
+              "nodeName": "XMLElement",
+              "type": "field",
+            },
+          },
+          Object {
+            "type": "or",
+            "value": Array [
+              Object {
+                "type": "sequence",
+                "value": Array [
+                  Object {
+                    "type": "reference",
+                    "value": Object {
+                      "name": "Token.close",
+                      "type": "token",
+                    },
+                  },
+                  Object {
+                    "type": "reference",
+                    "value": Object {
+                      "fieldName": "content",
+                      "nodeName": "XMLElement",
+                      "type": "field",
+                    },
+                  },
+                  Object {
+                    "type": "reference",
+                    "value": Object {
+                      "name": "Token.slashOpen",
+                      "type": "token",
+                    },
+                  },
+                  Object {
+                    "type": "reference",
+                    "value": Object {
+                      "name": "Token.name",
+                      "type": "token",
+                    },
+                  },
+                  Object {
+                    "type": "reference",
+                    "value": Object {
+                      "name": "Token.close",
+                      "type": "token",
+                    },
+                  },
+                ],
+              },
+              Object {
+                "type": "reference",
+                "value": Object {
+                  "name": "Token.slashClose",
+                  "type": "token",
+                },
+              },
+            ],
+          },
+        ],
+      },
+      "type": "record",
+    },
+  ],
+}
+`;
+
+exports[`converts XML language 2`] = `
+Object {
+  "tokens": Array [
+    Object {
+      "groups": Array [
+        "OK",
+      ],
+      "position": Object {
+        "end": 29,
+        "start": 26,
+      },
+      "type": "open",
+      "value": "<OK",
+    },
+    Object {
+      "groups": Array [],
+      "position": Object {
+        "end": 30,
+        "start": 29,
+      },
+      "type": "close",
+      "value": ">",
+    },
+    Object {
+      "groups": Array [
+        "Some Text",
+      ],
+      "position": Object {
+        "end": 39,
+        "start": 30,
+      },
+      "type": "text",
+      "value": "Some Text",
+    },
+    Object {
+      "groups": Array [],
+      "position": Object {
+        "end": 41,
+        "start": 39,
+      },
+      "type": "slashOpen",
+      "value": "</",
+    },
+    Object {
+      "groups": Array [
+        "OK",
+      ],
+      "position": Object {
+        "end": 43,
+        "start": 41,
+      },
+      "type": "name",
+      "value": "OK",
+    },
+    Object {
+      "groups": Array [],
+      "position": Object {
+        "end": 44,
+        "start": 43,
+      },
+      "type": "close",
+      "value": ">",
+    },
+  ],
+  "type": "success",
+  "value": Object {
+    "attributes": Array [
+      Object {
+        "name": "a",
+        "value": "test",
+      },
+      Object {
+        "name": "b",
+        "value": "foo",
+      },
+    ],
+    "name": "hello",
+  },
+}
+`;

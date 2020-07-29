@@ -5,7 +5,7 @@ import path from 'path'
 import { createHelpers } from '../../helpers'
 import { EnumerationDeclaration } from '../../logic/nodes/EnumerationDeclaration'
 import { findNode } from '../../logic/traversal'
-import { buildLexer } from '../buildLexer'
+import { buildLexer, buildTokenTransformer } from '../buildLexer'
 
 it('converts SQL language', async () => {
   const source = createFs({
@@ -36,11 +36,13 @@ it('converts SQL language', async () => {
     throw new Error('Failed to find tokens enum')
   }
 
-  const lexer = buildLexer(new EnumerationDeclaration(mainEnum), helpers)
+  const node = new EnumerationDeclaration(mainEnum)
+  const lexer = buildLexer(node, helpers)
+  const transformer = buildTokenTransformer(node, helpers)
 
-  const tokens = lexer('SELECT foo FROM 123')
+  const tokens = lexer.tokenize('SELECT foo FROM 123')
 
-  expect(tokens).toMatchSnapshot()
+  expect(transformer(tokens)).toMatchSnapshot()
 })
 
 it('converts XML language', async () => {
@@ -72,9 +74,11 @@ it('converts XML language', async () => {
     throw new Error('Failed to find tokens enum')
   }
 
-  const lexer = buildLexer(new EnumerationDeclaration(mainEnum), helpers)
+  const node = new EnumerationDeclaration(mainEnum)
+  const lexer = buildLexer(node, helpers)
+  const transformer = buildTokenTransformer(node, helpers)
 
-  const tokens = lexer(`<hello a="test" b='foo' /><OK>Some Text</OK>`)
+  const tokens = lexer.tokenize(`<hello a="test" b='foo' /><OK>Some Text</OK>`)
 
-  expect(tokens).toMatchSnapshot()
+  expect(transformer(tokens)).toMatchSnapshot()
 })
