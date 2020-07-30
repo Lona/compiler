@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`prints simple tokens 1`] = `
+Object {
+  "parts": Array [
+    "hello",
+    "=",
+    "!",
+    Object {
+      "parts": Array [
+        "1",
+        "2",
+        "3",
+      ],
+      "type": "concat",
+    },
+  ],
+  "type": "concat",
+}
+`;

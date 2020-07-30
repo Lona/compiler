@@ -82,3 +82,53 @@ Array [
   },
 ]
 `;
+
+exports[`converts XML language 2`] = `
+Object {
+  "parts": Array [
+    Object {
+      "parts": Array [
+        "<",
+        "hello",
+      ],
+      "type": "concat",
+    },
+    "a",
+    "=",
+    Object {
+      "parts": Array [
+        "\\"",
+        "test",
+        "\\"",
+      ],
+      "type": "concat",
+    },
+    "b",
+    "=",
+    Object {
+      "parts": Array [
+        "\\"",
+        "foo",
+        "\\"",
+      ],
+      "type": "concat",
+    },
+    "/>",
+    Object {
+      "parts": Array [
+        "<",
+        "OK",
+      ],
+      "type": "concat",
+    },
+    ">",
+    "Some Text",
+    "</",
+    "OK",
+    ">",
+  ],
+  "type": "concat",
+}
+`;
+
+exports[`converts XML language 3`] = `"<helloa=\\"test\\"b=\\"foo\\"/><OK>Some Text</OK>"`;

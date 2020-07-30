@@ -1,9 +1,22 @@
 import { EnumerationDeclaration } from '../logic/nodes/EnumerationDeclaration'
 import { Helpers } from '../helpers'
-import { Lexer, Rule, Token, StateDefinition, Action } from './Lexer'
+import {
+  Lexer,
+  Rule,
+  Token,
+  StateDefinition,
+  Action,
+  rule as createRule,
+  PrintPattern,
+} from './Lexer'
 import { IdentifierExpression } from '../logic/nodes/IdentifierExpression'
 import { LiteralExpression } from '../logic/nodes/LiteralExpression'
-import { StringLiteral, BooleanLiteral } from '../logic/nodes/literals'
+import {
+  StringLiteral,
+  BooleanLiteral,
+  ArrayLiteral,
+  NumberLiteral,
+} from '../logic/nodes/literals'
 import { LogicAST } from '@lona/serialization'
 import { FunctionCallExpression } from '../logic/nodes/FunctionCallExpression'
 import { isNode } from '../logic/ast'
@@ -19,6 +32,11 @@ const getBooleanLiteral = (node: IExpression): boolean | undefined =>
   node instanceof LiteralExpression && node.literal instanceof BooleanLiteral
     ? node.literal.value
     : undefined
+
+// const getNumberLiteral = (node: IExpression): number | undefined =>
+//   node instanceof LiteralExpression && node.literal instanceof NumberLiteral
+//     ? node.literal.value
+//     : undefined
 
 export function isTokenizer(node: EnumerationDeclaration): boolean {
   return node.attributes.some(
@@ -56,9 +74,50 @@ function getAction(node: IExpression): Action {
   throw new Error('Invalid action')
 }
 
+function getPrintPattern(node: IExpression): PrintPattern {
+  if (node instanceof LiteralExpression) {
+    if (node.literal instanceof ArrayLiteral) {
+      return {
+        type: 'sequence',
+        value: node.literal.elements.map(getPrintPattern),
+      }
+    } else if (node.literal instanceof NumberLiteral) {
+      return {
+        type: 'reference',
+        value: node.literal.value,
+      }
+    } else if (node.literal instanceof StringLiteral) {
+      return {
+        type: 'literal',
+        value: node.literal.value,
+      }
+    }
+  }
+
+  throw new Error('Invalid print pattern')
+}
+
 export function getTokenAttributes(
   node: Extract<LogicAST.EnumerationCase, { type: 'enumerationCase' }>
 ): TokenGenerator[] {
+  const printAttribute = node.data.attributes
+    .map(attribute => new FunctionCallExpression(attribute))
+    .find(
+      attribute =>
+        attribute.callee instanceof IdentifierExpression &&
+        attribute.callee.name === 'print'
+    )
+
+  let printPattern: PrintPattern | undefined
+
+  if (printAttribute) {
+    const { pattern } = printAttribute.argumentExpressionNodes
+
+    if (pattern) {
+      printPattern = getPrintPattern(pattern)
+    }
+  }
+
   return node.data.attributes
     .map(attribute => new FunctionCallExpression(attribute))
     .flatMap(attribute => {
@@ -73,12 +132,16 @@ export function getTokenAttributes(
           discard,
         } = attribute.argumentExpressionNodes
 
-        const rule: Rule = {
-          name: node.data.name.name,
-          pattern: getStringLiteral(pattern) ?? node.data.name.name,
-          discard: getBooleanLiteral(discard) ?? false,
+        const {
+          name: { name },
+        } = node.data
+
+        const rule: Rule = createRule(name, {
+          pattern: getStringLiteral(pattern),
+          discard: getBooleanLiteral(discard),
+          ...(printPattern && { print: printPattern }),
           ...(action && { action: getAction(action) }),
-        }
+        })
 
         const parentState = getStringLiteral(state) ?? 'main'
 

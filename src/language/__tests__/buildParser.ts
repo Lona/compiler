@@ -3,12 +3,12 @@ import { createFs } from 'buffs'
 import fs from 'fs'
 import path from 'path'
 import { createHelpers } from '../../helpers'
+import { createDeclarationNode } from '../../logic/nodes/createNode'
 import { EnumerationDeclaration } from '../../logic/nodes/EnumerationDeclaration'
+import { RecordDeclaration } from '../../logic/nodes/RecordDeclaration'
 import { findNode, findNodes } from '../../logic/traversal'
 import { buildLexer } from '../buildLexer'
 import { buildParser, buildParserDefinition } from '../buildParser'
-import { createDeclarationNode } from '../../logic/nodes/createNode'
-import { RecordDeclaration } from '../../logic/nodes/RecordDeclaration'
 
 it('converts XML language', async () => {
   const source = createFs({

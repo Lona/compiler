@@ -1,20 +1,14 @@
-import { Lexer, Rule } from '../Lexer'
-
-const keyword = (string: string): Rule => ({
-  name: string,
-  pattern: string,
-  discard: false,
-})
+import { Lexer, Rule, Action, rule } from '../Lexer'
 
 it('tokenizes simple tokens', () => {
   const lexer = new Lexer({
     rules: [
-      keyword('from'),
-      keyword('select'),
-      keyword('where'),
-      { name: 'identifier', pattern: '[a-zA-Z]\\w*' },
-      { name: 'integer', pattern: '0|[1-9]\\d*' },
-      { name: '_', pattern: '\\W+' },
+      rule('from'),
+      rule('select'),
+      rule('where'),
+      rule('identifier', { pattern: '[a-zA-Z]\\w*' }),
+      rule('integer', { pattern: '0|[1-9]\\d*' }),
+      rule('_', { pattern: '\\W+' }),
     ],
   })
 
@@ -25,12 +19,7 @@ it('tokenizes simple tokens', () => {
 
 it('captures groups', () => {
   const lexer = new Lexer({
-    rules: [
-      {
-        name: 'tag',
-        pattern: '<(\\w+)>',
-      },
-    ],
+    rules: [rule('tag', { pattern: '<(\\w+)>' })],
   })
 
   const tokens = lexer.tokenize('<hi>')
@@ -43,35 +32,31 @@ it('supports states', () => {
     {
       name: 'main',
       rules: [
-        {
-          name: 'quote',
+        rule('quote', {
           pattern: '"',
           action: {
             type: 'next',
             value: 'string',
           },
-        },
-        {
-          name: 'content',
+        }),
+        rule('content', {
           pattern: '[^"]+',
-        },
+        }),
       ],
     },
     {
       name: 'string',
       rules: [
-        {
-          name: 'quote',
+        rule('quote', {
           pattern: '"',
           action: {
             type: 'next',
             value: 'main',
           },
-        },
-        {
-          name: 'string',
+        }),
+        rule('string', {
           pattern: '[^"]+',
-        },
+        }),
       ],
     },
   ])
@@ -82,14 +67,7 @@ it('supports states', () => {
 })
 
 it('fails if no input is consumed', () => {
-  const lexer = new Lexer({
-    rules: [
-      {
-        name: 'nothing',
-        pattern: '',
-      },
-    ],
-  })
+  const lexer = new Lexer({ rules: [rule('nothing', { pattern: '' })] })
 
   expect(() => {
     lexer.tokenize('hello world "this is a string" ok')

@@ -6,11 +6,32 @@ export type PopAction = { type: 'pop' }
 
 export type Action = NextAction | PushAction | PopAction
 
+export type LiteralPrintPattern = {
+  type: 'literal'
+  value: string
+}
+
+export type SequencePrintPattern = {
+  type: 'sequence'
+  value: PrintPattern[]
+}
+
+export type ReferencePrintPattern = {
+  type: 'reference'
+  value: number
+}
+
+export type PrintPattern =
+  | LiteralPrintPattern
+  | SequencePrintPattern
+  | ReferencePrintPattern
+
 export type Rule = {
   name: string
   pattern: string
   action?: Action
-  discard?: boolean
+  discard: boolean
+  print: PrintPattern
 }
 
 export type StateDefinition = {
@@ -145,5 +166,25 @@ export class Lexer {
     }
 
     return tokens
+  }
+}
+
+export function rule(
+  name: string,
+  options: {
+    pattern?: string
+    discard?: boolean
+    action?: Action
+    print?: PrintPattern
+  } = {}
+): Rule {
+  const pattern = options.pattern ?? name
+
+  return {
+    name,
+    pattern,
+    discard: options.discard ?? false,
+    print: options.print ?? { type: 'literal', value: pattern },
+    action: options.action,
   }
 }

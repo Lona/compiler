@@ -9,7 +9,7 @@ type Result<T> =
     }
   | { type: 'failure'; value: string[] }
 
-type ParseResult<T> = Result<T> & { tokens: Token[] }
+export type ParseResult<T> = Result<T> & { tokens: Token[] }
 
 function success<T>(value: T, tokens: Token[]): ParseResult<T> {
   return { type: 'success', value, tokens }
@@ -94,76 +94,76 @@ export type Definition = {
   nodes: Node[]
 }
 
-type TokenReferenceMatch = {
+export type TokenReferenceMatch = {
   type: 'token'
   reference: TokenReference
   match: Token
 }
 
-type FieldReferenceMatch = {
+export type FieldReferenceMatch = {
   type: 'field'
   reference: FieldReference
   match: PatternMatch
 }
 
-type NodeReferenceMatch = {
+export type NodeReferenceMatch = {
   type: 'node'
   reference: NodeReference
   match: Value
 }
 
-type ReferenceMatch =
+export type ReferenceMatch =
   | TokenReferenceMatch
   | FieldReferenceMatch
   | NodeReferenceMatch
 
-type ReferencePatternMatch = {
+export type ReferencePatternMatch = {
   type: 'reference'
   pattern: ReferencePattern
   match: ReferenceMatch
 }
 
-type SequencePatternMatch = {
+export type SequencePatternMatch = {
   type: 'sequence'
   pattern: SequencePattern
   match: PatternMatch[]
 }
 
-type OrPatternMatch = {
+export type OrPatternMatch = {
   type: 'or'
   pattern: OrPattern
   match: PatternMatch
 }
 
-type ManyPatternMatch = {
+export type ManyPatternMatch = {
   type: 'many'
   pattern: ManyPattern
   match: PatternMatch[]
 }
 
-type OptionPatternMatch = {
+export type OptionPatternMatch = {
   type: 'option'
   pattern: OptionPattern
   match?: PatternMatch
 }
 
-type PatternMatch =
+export type PatternMatch =
   | ReferencePatternMatch
   | SequencePatternMatch
   | OrPatternMatch
   | ManyPatternMatch
   | OptionPatternMatch
 
-type RecordValue = {
+export type RecordValue = {
   [key: string]: unknown
 }
 
-type EnumValue = {
+export type EnumValue = {
   type: string
   [key: string]: unknown
 }
 
-type Value = RecordValue | EnumValue
+export type Value = RecordValue | EnumValue
 
 const matchTree = withOptions({
   getChildren: (match: PatternMatch): PatternMatch[] => {

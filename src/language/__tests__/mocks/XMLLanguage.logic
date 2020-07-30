@@ -3,15 +3,18 @@
 enum Token {
 
   @token(pattern: "<!--(.*?)-->")
+  @print(pattern: ["<!--", 0, "-->"])
   case comment(value: String)
 
   @token(pattern: "<([a-zA-Z]+)", action: push("inside"))
+  @print(pattern: ["<", 0])
   case open(value: String)
 
   @token(pattern: "</", action: push("inside"))
   case slashOpen()
 
   @token(pattern: "([^<&]+)")
+  @print(pattern: 0)
   case text(value: String)
   
   /**
@@ -22,9 +25,11 @@ enum Token {
 
   @token(state: "inside", pattern: "\"([^<\"]*)\"")
   @token(state: "inside", pattern: "'([^<']*)'")
+  @print(pattern: ["\"", 0, "\""])
   case string(value: String)
 
   @token(state: "inside", pattern: "([a-zA-Z]+)")
+  @print(pattern: 0)
   case name(value: String)
 
   @token(state: "inside", pattern: "=")

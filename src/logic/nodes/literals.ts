@@ -39,6 +39,10 @@ export class BooleanLiteral extends Node<AST.BooleanLiteral>
 }
 
 export class NumberLiteral extends Node<AST.NumberLiteral> implements ILiteral {
+  get value(): number {
+    return this.syntaxNode.data.value
+  }
+
   typeCheckerEnter(visitor: TypeCheckerVisitor): void {}
 
   typeCheckerLeave(visitor: TypeCheckerVisitor): void {
