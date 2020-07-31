@@ -79,7 +79,10 @@ Object {
               "type": "token",
             },
           },
-          "print": undefined,
+          "print": Object {
+            "type": "token",
+            "value": "text",
+          },
           "type": "standard",
         },
         Object {
@@ -91,7 +94,10 @@ Object {
               "type": "token",
             },
           },
-          "print": undefined,
+          "print": Object {
+            "type": "token",
+            "value": "comment",
+          },
           "type": "standard",
         },
         Object {
@@ -103,7 +109,10 @@ Object {
               "type": "node",
             },
           },
-          "print": undefined,
+          "print": Object {
+            "type": "node",
+            "value": "XMLElement",
+          },
           "type": "standard",
         },
       ],

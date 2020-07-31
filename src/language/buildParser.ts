@@ -216,25 +216,6 @@ function inferFieldPattern(
   }
 }
 
-function inferFieldPrintPattern(pattern: Pattern): FieldPrintPattern {
-  switch (pattern.type) {
-    case 'many':
-      return joinCommandPrintPattern(inferFieldPrintPattern(pattern.value))
-    case 'reference': {
-      const reference = pattern.value
-
-      switch (reference.type) {
-        case 'token':
-          return tokenReferencePrintPattern(reference.name)
-        case 'node':
-          return nodeReferencePrintPattern(reference.name)
-      }
-    }
-  }
-
-  throw new Error(`Can't infer print pattern: ${inspect(pattern, false, null)}`)
-}
-
 function getRecordNode(
   declaration: RecordDeclaration,
   nodeNames: string[]
@@ -251,15 +232,13 @@ function getRecordNode(
       const printAttribute = getPrintAttributeExpression(variable.attributes)
 
       if (pattern) {
-        const print = printAttribute
-          ? getFieldPrintPattern(printAttribute)
-          : inferFieldPrintPattern(pattern)
-
         return [
           field({
             name: variable.name,
             pattern,
-            print,
+            ...(printAttribute && {
+              print: getFieldPrintPattern(printAttribute),
+            }),
           }),
         ]
       }
@@ -271,16 +250,14 @@ function getRecordNode(
         const pattern = inferFieldPattern(variable.name, annotation, nodeNames)
 
         if (pattern) {
-          const print = printAttribute
-            ? getFieldPrintPattern(printAttribute)
-            : inferFieldPrintPattern(pattern)
-
           if (pattern.type === 'many') {
             return [
               manyField({
                 name: variable.name,
                 pattern,
-                print,
+                ...(printAttribute && {
+                  print: getFieldPrintPattern(printAttribute),
+                }),
               }),
             ]
           }
@@ -289,7 +266,9 @@ function getRecordNode(
             field({
               name: variable.name,
               pattern,
-              print,
+              ...(printAttribute && {
+                print: getFieldPrintPattern(printAttribute),
+              }),
             }),
           ]
         }

@@ -1,7 +1,13 @@
 import { withOptions } from 'tree-visit'
 import { inspect } from 'util'
 import { Token } from './Lexer'
-import { FieldPrintPattern, NodePrintPattern } from './Printer'
+import {
+  FieldPrintPattern,
+  NodePrintPattern,
+  joinCommandPrintPattern,
+  tokenReferencePrintPattern,
+  nodeReferencePrintPattern,
+} from './Printer'
 
 type Result<T> =
   | {
@@ -573,6 +579,25 @@ export function optionPattern(value: Pattern): OptionPattern {
   return { type: 'option', value }
 }
 
+function inferFieldPrintPattern(pattern: Pattern): FieldPrintPattern {
+  switch (pattern.type) {
+    case 'many':
+      return joinCommandPrintPattern(inferFieldPrintPattern(pattern.value))
+    case 'reference': {
+      const reference = pattern.value
+
+      switch (reference.type) {
+        case 'token':
+          return tokenReferencePrintPattern(reference.name)
+        case 'node':
+          return nodeReferencePrintPattern(reference.name)
+      }
+    }
+  }
+
+  throw new Error(`Can't infer print pattern: ${inspect(pattern, false, null)}`)
+}
+
 export function field({
   name,
   pattern,
@@ -582,7 +607,12 @@ export function field({
   pattern: Pattern
   print?: FieldPrintPattern
 }): StandardField {
-  return { type: 'standard', name, pattern, print }
+  return {
+    type: 'standard',
+    name,
+    pattern,
+    print: print ?? inferFieldPrintPattern(pattern),
+  }
 }
 
 export function manyField({
@@ -594,5 +624,10 @@ export function manyField({
   pattern: ManyPattern
   print?: FieldPrintPattern
 }): ManyField {
-  return { type: 'many', name, pattern, print }
+  return {
+    type: 'many',
+    name,
+    pattern,
+    print: print ?? inferFieldPrintPattern(pattern),
+  }
 }
