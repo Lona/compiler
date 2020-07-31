@@ -1,7 +1,7 @@
-import { Token } from './Lexer'
-import { inspect } from 'util'
 import { withOptions } from 'tree-visit'
-import { PrintPattern } from './Printer'
+import { inspect } from 'util'
+import { Token } from './Lexer'
+import { FieldPrintPattern, NodePrintPattern } from './Printer'
 
 type Result<T> =
   | {
@@ -73,7 +73,7 @@ export type Pattern =
 export type Field = {
   name: string
   pattern: Pattern
-  print?: PrintPattern
+  print?: FieldPrintPattern
 }
 
 export type EnumNodeDefinition = {
@@ -81,7 +81,7 @@ export type EnumNodeDefinition = {
   name: string
   pattern: OrPattern
   fields: Field[]
-  print?: PrintPattern
+  print?: NodePrintPattern
 }
 
 export type RecordNodeDefinition = {
@@ -89,7 +89,7 @@ export type RecordNodeDefinition = {
   name: string
   pattern: Pattern
   fields: Field[]
-  print?: PrintPattern
+  print?: NodePrintPattern
 }
 
 export type NodeDefinition = EnumNodeDefinition | RecordNodeDefinition
@@ -500,4 +500,73 @@ export class Parser {
       }
     }
   }
+}
+
+export function recordNodeDefinition(
+  name: string,
+  pattern: Pattern,
+  fields: Field[],
+  print?: NodePrintPattern
+): RecordNodeDefinition {
+  return {
+    type: 'record',
+    name,
+    pattern,
+    fields,
+    print,
+  }
+}
+
+export function enumNodeDefinition(
+  name: string,
+  pattern: OrPattern,
+  fields: Field[],
+  print?: NodePrintPattern
+): EnumNodeDefinition {
+  return {
+    type: 'enum',
+    name,
+    pattern,
+    fields,
+    print,
+  }
+}
+
+export function referencePattern(value: Reference): ReferencePattern {
+  return { type: 'reference', value }
+}
+
+export function tokenReferencePattern(value: string): ReferencePattern {
+  return { type: 'reference', value: { type: 'token', name: value } }
+}
+
+export function fieldReferencePattern(
+  nodeName: string,
+  fieldName: string
+): ReferencePattern {
+  return { type: 'reference', value: { type: 'field', nodeName, fieldName } }
+}
+
+export function sequencePattern(value: Pattern[]): SequencePattern {
+  return { type: 'sequence', value }
+}
+
+export function orPattern(value: Pattern[]): OrPattern {
+  return { type: 'or', value }
+}
+
+export function manyPattern(value: Pattern): ManyPattern {
+  return { type: 'many', value }
+}
+
+export function optionPattern(value: Pattern): OptionPattern {
+  return { type: 'option', value }
+}
+
+export function field(
+  name: string,
+  pattern: Pattern,
+  print?: FieldPrintPattern
+): Field {
+  return { name, pattern, print }
 }

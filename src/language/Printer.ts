@@ -30,31 +30,19 @@ export type LiteralPrintPattern = {
   value: string
 }
 
-export type SequencePrintPattern = {
-  type: 'sequence'
-  value: PrintPattern[]
-}
-
-export type IndexReference = {
+export type IndexReferencePrintPattern = {
   type: 'index'
   value: number
 }
 
-export type TokenReference = {
+export type TokenReferencePrintPattern = {
   type: 'token'
   value: string
 }
 
-export type SelfReference = {
+export type SelfReferencePrintPattern = {
   type: 'self'
   value: string
-}
-
-export type Reference = IndexReference | TokenReference | SelfReference
-
-export type ReferencePrintPattern = {
-  type: 'reference'
-  value: Reference
 }
 
 export type CommandPrintPattern = {
@@ -62,10 +50,21 @@ export type CommandPrintPattern = {
   value: PrintCommand
 }
 
-export type PrintPattern =
+export type TokenPrintPattern =
   | LiteralPrintPattern
-  | SequencePrintPattern
-  | ReferencePrintPattern
+  | IndexReferencePrintPattern
+  | { type: 'sequence'; value: TokenPrintPattern[] }
+
+export type FieldPrintPattern =
+  | LiteralPrintPattern
+  | TokenReferencePrintPattern
+  | { type: 'sequence'; value: FieldPrintPattern[] }
+
+export type NodePrintPattern =
+  | LiteralPrintPattern
+  | TokenReferencePrintPattern
+  | SelfReferencePrintPattern
+  | { type: 'sequence'; value: NodePrintPattern[] }
 
 export function literalPrintPattern(value: string): LiteralPrintPattern {
   return { type: 'literal', value }
@@ -73,25 +72,25 @@ export function literalPrintPattern(value: string): LiteralPrintPattern {
 
 export function indexReferencePrintPattern(
   value: number
-): ReferencePrintPattern {
-  return { type: 'reference', value: { type: 'index', value } }
+): IndexReferencePrintPattern {
+  return { type: 'index', value }
 }
 
 export function tokenReferencePrintPattern(
   value: string
-): ReferencePrintPattern {
-  return { type: 'reference', value: { type: 'token', value } }
+): TokenReferencePrintPattern {
+  return { type: 'token', value }
 }
 
 export function selfReferencePrintPattern(
   value: string
-): ReferencePrintPattern {
-  return { type: 'reference', value: { type: 'self', value } }
+): SelfReferencePrintPattern {
+  return { type: 'self', value }
 }
 
-export function sequencePrintPattern(
-  value: PrintPattern[]
-): SequencePrintPattern {
+export function sequencePrintPattern<T>(
+  value: T[]
+): { type: 'sequence'; value: T[] } {
   return { type: 'sequence', value }
 }
 
@@ -153,26 +152,16 @@ export class Printer {
     return concat(tokens.map(this.formatToken))
   }
 
-  formatTokenReference = (token: Token, reference: Reference): Doc => {
-    switch (reference.type) {
-      case 'index':
-        return token.groups[reference.value]
-      case 'token':
-      case 'self':
-        throw new Error(
-          `${reference.type} can only be used in parser node pattern, not token pattern.`
-        )
-    }
-  }
-
-  formatTokenPrintPattern = (token: Token, printPattern: PrintPattern): Doc => {
+  formatTokenPrintPattern = (
+    token: Token,
+    printPattern: TokenPrintPattern
+  ): Doc => {
     switch (printPattern.type) {
       case 'literal': {
         return printPattern.value
       }
-      case 'reference': {
-        return this.formatTokenReference(token, printPattern.value)
-      }
+      case 'index':
+        return token.groups[printPattern.value]
       case 'sequence': {
         return concat(
           printPattern.value.map(value =>
@@ -186,38 +175,31 @@ export class Printer {
   formatNodePrintPattern = (
     value: NodeValue,
     nodeName: string,
-    printPattern: PrintPattern
+    printPattern: NodePrintPattern
   ): Doc => {
     switch (printPattern.type) {
       case 'literal': {
         return printPattern.value
       }
-      case 'reference': {
-        const reference = printPattern.value
+      case 'token': {
+        const rule = this.findRule(printPattern.value)
 
-        switch (reference.type) {
-          case 'index':
-            throw new Error('Index reference not supported on nodes')
-          case 'token': {
-            const rule = this.findRule(reference.value)
+        const token = Builders.token(printPattern.value)
 
-            const token = Builders.token(reference.value)
-
-            return this.formatTokenPrintPattern(token, rule.print)
-          }
-          case 'self':
-            const field = this.findFieldDefinition(nodeName, reference.value)
-
-            if (!field.print) return ''
-
-            return this.formatField(
-              value[reference.value],
-              nodeName,
-              reference.value,
-              field.print
-            )
-        }
+        return this.formatTokenPrintPattern(token, rule.print)
       }
+      case 'self':
+        const field = this.findFieldDefinition(nodeName, printPattern.value)
+
+        if (!field.print) return ''
+
+        return this.formatField(
+          value[printPattern.value],
+          nodeName,
+          printPattern.value,
+          field.print
+        )
+
       case 'sequence': {
         return concat(
           printPattern.value.map(pattern =>
@@ -232,30 +214,20 @@ export class Printer {
     value: unknown,
     nodeName: string,
     fieldName: string,
-    printPattern: PrintPattern
+    printPattern: FieldPrintPattern
   ): Doc => {
     switch (printPattern.type) {
       case 'literal': {
         return printPattern.value
       }
-      case 'reference': {
-        const reference = printPattern.value
+      case 'token': {
+        const rule = this.findRule(printPattern.value)
 
-        switch (reference.type) {
-          case 'index':
-            throw new Error('Index not handled yet')
-          case 'token': {
-            const rule = this.findRule(reference.value)
+        const token = Builders.token(printPattern.value, {
+          groups: [String(value)],
+        })
 
-            const token = Builders.token(reference.value, {
-              groups: [String(value)],
-            })
-
-            return this.formatTokenPrintPattern(token, rule.print)
-          }
-          case 'self':
-            throw new Error('self reference not supported on fields')
-        }
+        return this.formatTokenPrintPattern(token, rule.print)
       }
       case 'sequence': {
         return concat(

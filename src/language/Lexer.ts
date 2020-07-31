@@ -1,4 +1,4 @@
-import { PrintPattern } from './Printer'
+import { TokenPrintPattern } from './Printer'
 
 export type NextAction = { type: 'next'; value: string }
 
@@ -13,7 +13,7 @@ export type Rule = {
   pattern: string
   action?: Action
   discard: boolean
-  print: PrintPattern
+  print: TokenPrintPattern
 }
 
 export type StateDefinition = {
@@ -160,7 +160,7 @@ export namespace Builders {
       pattern?: string
       discard?: boolean
       action?: Action
-      print?: PrintPattern
+      print?: TokenPrintPattern
     } = {}
   ): Rule {
     const pattern = options.pattern ?? name

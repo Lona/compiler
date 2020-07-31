@@ -1,16 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`prints simple tokens 1`] = `
+exports[`prints nodes 1`] = `
 Object {
   "parts": Array [
-    "hello",
+    "foo",
     "=",
-    "!",
     Object {
       "parts": Array [
-        "1",
-        "2",
-        "3",
+        "\\"",
+        "bar",
+        "\\"",
       ],
       "type": "concat",
     },

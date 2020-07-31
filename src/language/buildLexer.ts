@@ -1,28 +1,16 @@
-import { EnumerationDeclaration } from '../logic/nodes/EnumerationDeclaration'
-import { Helpers } from '../helpers'
-import { Lexer, Rule, Token, StateDefinition, Action, Builders } from './Lexer'
-import { IdentifierExpression } from '../logic/nodes/IdentifierExpression'
-import { LiteralExpression } from '../logic/nodes/LiteralExpression'
-import {
-  StringLiteral,
-  BooleanLiteral,
-  ArrayLiteral,
-  NumberLiteral,
-} from '../logic/nodes/literals'
 import { LogicAST } from '@lona/serialization'
-import { FunctionCallExpression } from '../logic/nodes/FunctionCallExpression'
+import { Helpers } from '../helpers'
 import { isNode } from '../logic/ast'
-import { valueBindingName } from '../plugins/swift/convert/codable'
+import { EnumerationDeclaration } from '../logic/nodes/EnumerationDeclaration'
+import { FunctionCallExpression } from '../logic/nodes/FunctionCallExpression'
+import { IdentifierExpression } from '../logic/nodes/IdentifierExpression'
 import { IExpression } from '../logic/nodes/interfaces'
-import {
-  PrintPattern,
-  indexReferencePrintPattern,
-  sequencePrintPattern,
-  literalPrintPattern,
-  tokenReferencePrintPattern,
-} from './Printer'
-import { MemberExpression } from '../logic/nodes/MemberExpression'
-import { getPrintPattern } from './buildPrinter'
+import { LiteralExpression } from '../logic/nodes/LiteralExpression'
+import { BooleanLiteral, StringLiteral } from '../logic/nodes/literals'
+import { valueBindingName } from '../plugins/swift/convert/codable'
+import { getTokenPrintPattern } from './buildPrinter'
+import { Action, Builders, Lexer, Rule, StateDefinition, Token } from './Lexer'
+import { TokenPrintPattern } from './Printer'
 
 const getStringLiteral = (node: IExpression): string | undefined =>
   node instanceof LiteralExpression && node.literal instanceof StringLiteral
@@ -86,13 +74,13 @@ export function getTokenAttributes(
         attribute.callee.name === 'print'
     )
 
-  let printPattern: PrintPattern | undefined
+  let printPattern: TokenPrintPattern | undefined
 
   if (printAttribute) {
     const { pattern } = printAttribute.argumentExpressionNodes
 
     if (pattern) {
-      printPattern = getPrintPattern(pattern)
+      printPattern = getTokenPrintPattern(pattern)
     }
   }
 
