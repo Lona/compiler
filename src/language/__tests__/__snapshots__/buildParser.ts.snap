@@ -129,7 +129,7 @@ Object {
           "pattern": Object {
             "type": "reference",
             "value": Object {
-              "name": "open",
+              "name": "name",
               "type": "token",
             },
           },
@@ -165,6 +165,13 @@ Object {
       "pattern": Object {
         "type": "sequence",
         "value": Array [
+          Object {
+            "type": "reference",
+            "value": Object {
+              "name": "open",
+              "type": "token",
+            },
+          },
           Object {
             "type": "reference",
             "value": Object {

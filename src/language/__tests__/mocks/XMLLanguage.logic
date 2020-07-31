@@ -6,12 +6,11 @@ enum Token {
   @print(pattern: ["<!--", 0, "-->"])
   case comment(value: String)
 
-  @token(pattern: "<([a-zA-Z]+)", action: push("inside"))
-  @print(pattern: ["<", 0])
-  case open(value: String)
-
   @token(pattern: "</", action: push("inside"))
   case slashOpen()
+
+  @token(pattern: "<", action: push("inside"))
+  case open()
 
   @token(pattern: "([^<&]+)")
   @print(pattern: 0)
@@ -63,6 +62,7 @@ enum XMLElementContent {
 }
 
 @parse(pattern: [
+  Token.open,
   self.name, 
   self.attributes,
   or(
@@ -77,7 +77,7 @@ enum XMLElementContent {
 ])
 struct XMLElement {
 
-  @parse(pattern: Token.open)
+  @parse(pattern: Token.name)
   let name: String = ""
 
   let attributes: Array<XMLAttribute> = []

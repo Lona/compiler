@@ -32,6 +32,9 @@ exports[`converts XML language 1`] = `
 Array [
   Object {
     "type": "open",
+  },
+  Object {
+    "type": "name",
     "value": "hello",
   },
   Object {
@@ -61,6 +64,9 @@ Array [
   },
   Object {
     "type": "open",
+  },
+  Object {
+    "type": "name",
     "value": "OK",
   },
   Object {
@@ -86,13 +92,8 @@ Array [
 exports[`converts XML language 2`] = `
 Object {
   "parts": Array [
-    Object {
-      "parts": Array [
-        "<",
-        "hello",
-      ],
-      "type": "concat",
-    },
+    "<",
+    "hello",
     "a",
     "=",
     Object {
@@ -114,13 +115,8 @@ Object {
       "type": "concat",
     },
     "/>",
-    Object {
-      "parts": Array [
-        "<",
-        "OK",
-      ],
-      "type": "concat",
-    },
+    "<",
+    "OK",
     ">",
     "Some Text",
     "</",
