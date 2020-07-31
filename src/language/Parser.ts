@@ -1,6 +1,7 @@
 import { Token } from './Lexer'
 import { inspect } from 'util'
 import { withOptions } from 'tree-visit'
+import { PrintPattern } from './Printer'
 
 type Result<T> =
   | {
@@ -72,26 +73,29 @@ export type Pattern =
 export type Field = {
   name: string
   pattern: Pattern
+  print?: PrintPattern
 }
 
-export type EnumNode = {
+export type EnumNodeDefinition = {
   type: 'enum'
   name: string
   pattern: OrPattern
   fields: Field[]
+  print?: PrintPattern
 }
 
-export type RecordNode = {
+export type RecordNodeDefinition = {
   type: 'record'
   name: string
   pattern: Pattern
   fields: Field[]
+  print?: PrintPattern
 }
 
-export type Node = EnumNode | RecordNode
+export type NodeDefinition = EnumNodeDefinition | RecordNodeDefinition
 
 export type Definition = {
-  nodes: Node[]
+  nodes: NodeDefinition[]
 }
 
 export type TokenReferenceMatch = {
@@ -109,7 +113,7 @@ export type FieldReferenceMatch = {
 export type NodeReferenceMatch = {
   type: 'node'
   reference: NodeReference
-  match: Value
+  match: NodeValue
 }
 
 export type ReferenceMatch =
@@ -154,16 +158,16 @@ export type PatternMatch =
   | ManyPatternMatch
   | OptionPatternMatch
 
-export type RecordValue = {
+export type RecordNodeValue = {
   [key: string]: unknown
 }
 
-export type EnumValue = {
+export type EnumNodeValue = {
   type: string
   [key: string]: unknown
 }
 
-export type Value = RecordValue | EnumValue
+export type NodeValue = RecordNodeValue | EnumNodeValue
 
 const matchTree = withOptions({
   getChildren: (match: PatternMatch): PatternMatch[] => {
@@ -221,7 +225,7 @@ export class Parser {
     this.definition = definition
   }
 
-  parse(tokens: Token[], startNode: string): ParseResult<Value> {
+  parse(tokens: Token[], startNode: string): ParseResult<NodeValue> {
     const currentNode = this.definition.nodes.find(
       node => node.name === startNode
     )
@@ -233,7 +237,7 @@ export class Parser {
     return this.parseNode(currentNode, tokens)
   }
 
-  parseNode(node: Node, tokens: Token[]): ParseResult<Value> {
+  parseNode(node: NodeDefinition, tokens: Token[]): ParseResult<NodeValue> {
     switch (node.type) {
       case 'enum': {
         return this.parseEnum(node, tokens)
@@ -244,14 +248,17 @@ export class Parser {
     }
   }
 
-  parseRecord(node: RecordNode, tokens: Token[]): ParseResult<RecordValue> {
+  parseRecord(
+    node: RecordNodeDefinition,
+    tokens: Token[]
+  ): ParseResult<RecordNodeValue> {
     const { pattern } = node
 
     const result = this.parsePattern(pattern, tokens)
 
     if (result.type !== 'success') return result
 
-    const recordValue: RecordValue = {}
+    const recordValue: RecordNodeValue = {}
 
     matchTree.visit(result.value, patternMatch => {
       if (
@@ -276,7 +283,10 @@ export class Parser {
     return success(recordValue, result.tokens)
   }
 
-  parseEnum(node: EnumNode, tokens: Token[]): ParseResult<EnumValue> {
+  parseEnum(
+    node: EnumNodeDefinition,
+    tokens: Token[]
+  ): ParseResult<EnumNodeValue> {
     const { pattern } = node
 
     const result = this.parsePattern(pattern, tokens) as ParseResult<
@@ -296,7 +306,7 @@ export class Parser {
       throw new Error('Invalid enum match')
     }
 
-    const enumValue: EnumValue = {
+    const enumValue: EnumNodeValue = {
       type: field.name,
       ...(result.value.match.type === 'reference' &&
         result.value.match.match.type === 'field' && {

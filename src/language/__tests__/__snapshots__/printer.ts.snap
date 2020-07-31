@@ -18,3 +18,22 @@ Object {
   "type": "concat",
 }
 `;
+
+exports[`prints tokens 1`] = `
+Object {
+  "parts": Array [
+    "hello",
+    "=",
+    "!",
+    Object {
+      "parts": Array [
+        "1",
+        "2",
+        "3",
+      ],
+      "type": "concat",
+    },
+  ],
+  "type": "concat",
+}
+`;

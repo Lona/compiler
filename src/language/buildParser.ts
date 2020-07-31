@@ -14,8 +14,8 @@ import {
   Field,
   Parser,
   Pattern,
-  RecordNode,
-  EnumNode,
+  RecordNodeDefinition,
+  EnumNodeDefinition,
   OrPattern,
 } from './Parser'
 
@@ -204,7 +204,7 @@ function inferFieldPattern(
 function getRecordNode(
   declaration: RecordDeclaration,
   nodeNames: string[]
-): RecordNode {
+): RecordNodeDefinition {
   return {
     type: 'record',
     name: declaration.name,
@@ -235,7 +235,7 @@ function getRecordNode(
 function getEnumNode(
   declaration: EnumerationDeclaration,
   nodeNames: string[]
-): EnumNode {
+): EnumNodeDefinition {
   return {
     type: 'enum',
     name: declaration.name,

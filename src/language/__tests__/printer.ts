@@ -1,4 +1,4 @@
-import { Builders as LexerBuilders, Lexer, StateDefinition } from '../Lexer'
+import { Builders, Lexer, StateDefinition } from '../Lexer'
 import {
   Printer,
   literalPrintPattern,
@@ -6,8 +6,9 @@ import {
   sequencePrintPattern,
 } from '../Printer'
 
-const { rule } = LexerBuilders
-it('prints simple tokens', () => {
+const { rule } = Builders
+
+it('prints tokens', () => {
   const definition: StateDefinition[] = [
     {
       name: 'main',

@@ -1,6 +1,6 @@
 import { doc, Doc } from 'prettier'
-import { Definition, Value } from './Parser'
-import { StateDefinition, Token, Rule } from './Lexer'
+import { Definition, NodeValue, NodeDefinition, Field } from './Parser'
+import { StateDefinition, Token, Rule, Builders } from './Lexer'
 
 const {
   builders: { concat },
@@ -111,52 +111,168 @@ export class Printer {
     this.parserDefinition = parserDefinition
   }
 
-  formatToken = (token: Token): Doc => {
-    const rule = this.rules.find(rule => rule.name === token.type)
+  private findNodeDefinition(name: string): NodeDefinition {
+    const node = this.parserDefinition.nodes.find(node => node.name === name)
 
-    if (!rule) {
-      throw new Error(`Couldn't find rule for token: ${token.type}`)
+    if (!node) {
+      throw new Error(`Couldn't find node for name: ${name}`)
     }
 
-    return rule.print ? this.formatPrintPattern(token, rule.print) : ''
+    return node
   }
 
-  formatTokens(tokens: Token[]): Doc {
+  private findFieldDefinition(nodeName: string, fieldName: string): Field {
+    const field = this.findNodeDefinition(nodeName).fields.find(
+      field => field.name === fieldName
+    )
+
+    if (!field) {
+      throw new Error(`Couldn't find node for name: ${fieldName}`)
+    }
+
+    return field
+  }
+
+  private findRule(name: string): Rule {
+    const rule = this.rules.find(rule => rule.name === name)
+
+    if (!rule) {
+      throw new Error(`Couldn't find rule for token: ${name}`)
+    }
+
+    return rule
+  }
+
+  formatToken = (token: Token): Doc => {
+    const rule = this.findRule(token.type)
+
+    return rule.print ? this.formatTokenPrintPattern(token, rule.print) : ''
+  }
+
+  formatTokens = (tokens: Token[]): Doc => {
     return concat(tokens.map(this.formatToken))
   }
 
-  formatReference = (token: Token, reference: Reference): Doc => {
+  formatTokenReference = (token: Token, reference: Reference): Doc => {
     switch (reference.type) {
       case 'index':
         return token.groups[reference.value]
-      case 'token': {
-        const rule = this.rules.find(rule => rule.name === token.type)
-
-        if (!rule) {
-          throw new Error(`Couldn't find rule for token: ${token.type}`)
-        }
-
-        return this.formatPrintPattern(token, rule.print)
-      }
+      case 'token':
       case 'self':
-        throw new Error('self not handled yet')
+        throw new Error(
+          `${reference.type} can only be used in parser node pattern, not token pattern.`
+        )
     }
   }
 
-  formatPrintPattern = (token: Token, printPattern: PrintPattern): Doc => {
+  formatTokenPrintPattern = (token: Token, printPattern: PrintPattern): Doc => {
     switch (printPattern.type) {
       case 'literal': {
         return printPattern.value
       }
       case 'reference': {
-        return this.formatReference(token, printPattern.value)
+        return this.formatTokenReference(token, printPattern.value)
       }
       case 'sequence': {
         return concat(
-          printPattern.value.map(value => this.formatPrintPattern(token, value))
+          printPattern.value.map(value =>
+            this.formatTokenPrintPattern(token, value)
+          )
         )
       }
     }
+  }
+
+  formatNodePrintPattern = (
+    value: NodeValue,
+    nodeName: string,
+    printPattern: PrintPattern
+  ): Doc => {
+    switch (printPattern.type) {
+      case 'literal': {
+        return printPattern.value
+      }
+      case 'reference': {
+        const reference = printPattern.value
+
+        switch (reference.type) {
+          case 'index':
+            throw new Error('Index reference not supported on nodes')
+          case 'token': {
+            const rule = this.findRule(reference.value)
+
+            const token = Builders.token(reference.value)
+
+            return this.formatTokenPrintPattern(token, rule.print)
+          }
+          case 'self':
+            const field = this.findFieldDefinition(nodeName, reference.value)
+
+            if (!field.print) return ''
+
+            return this.formatField(
+              value[reference.value],
+              nodeName,
+              reference.value,
+              field.print
+            )
+        }
+      }
+      case 'sequence': {
+        return concat(
+          printPattern.value.map(pattern =>
+            this.formatNodePrintPattern(value, nodeName, pattern)
+          )
+        )
+      }
+    }
+  }
+
+  formatField = (
+    value: unknown,
+    nodeName: string,
+    fieldName: string,
+    printPattern: PrintPattern
+  ): Doc => {
+    switch (printPattern.type) {
+      case 'literal': {
+        return printPattern.value
+      }
+      case 'reference': {
+        const reference = printPattern.value
+
+        switch (reference.type) {
+          case 'index':
+            throw new Error('Index not handled yet')
+          case 'token': {
+            const rule = this.findRule(reference.value)
+
+            const token = Builders.token(reference.value, {
+              groups: [String(value)],
+            })
+
+            return this.formatTokenPrintPattern(token, rule.print)
+          }
+          case 'self':
+            throw new Error('self reference not supported on fields')
+        }
+      }
+      case 'sequence': {
+        return concat(
+          printPattern.value.map(pattern =>
+            this.formatField(value, nodeName, fieldName, pattern)
+          )
+        )
+      }
+    }
+  }
+
+  formatNode = (value: NodeValue, nodeName: string): Doc => {
+    const node = this.findNodeDefinition(nodeName)
+
+    if (!node.print) return ''
+
+    return this.formatNodePrintPattern(value, nodeName, node.print)
   }
 
   print(

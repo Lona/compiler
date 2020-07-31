@@ -6,9 +6,9 @@ import {
   OrPattern,
   ManyPattern,
   FieldReference,
-  Node,
+  NodeDefinition,
   OptionPattern,
-  EnumNode,
+  EnumNodeDefinition,
 } from '../Parser'
 import { Token } from '../Lexer'
 
@@ -62,7 +62,7 @@ it('parses field references', () => {
     value: fieldReference,
   }
 
-  const node: Node = {
+  const node: NodeDefinition = {
     type: 'record',
     name: 'Root',
     fields: [{ name: 'name', pattern: tokenPattern }],
@@ -197,7 +197,7 @@ it('parses option', () => {
 })
 
 it('parses records', () => {
-  const rootNode: Node = {
+  const rootNode: NodeDefinition = {
     type: 'record',
     name: 'Root',
     fields: [
@@ -219,7 +219,7 @@ it('parses records', () => {
     },
   }
 
-  const attributeNode: Node = {
+  const attributeNode: NodeDefinition = {
     type: 'record',
     name: 'Attribute',
     fields: [
@@ -294,7 +294,7 @@ it('parses records', () => {
 })
 
 it('parses enums', () => {
-  const rootNode: EnumNode = {
+  const rootNode: EnumNodeDefinition = {
     type: 'enum',
     name: 'Root',
     fields: [
@@ -336,7 +336,7 @@ it('parses enums', () => {
     },
   }
 
-  const attributeNode: Node = {
+  const attributeNode: NodeDefinition = {
     type: 'record',
     name: 'Attribute',
     fields: [

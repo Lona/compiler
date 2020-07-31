@@ -26,14 +26,16 @@ export type SimpleStateDefinition = {
   rules: Omit<Rule, 'action'>[]
 }
 
+export type Position = {
+  start: number
+  end: number
+}
+
 export type Token = {
   type: string
   value: string
   groups: string[]
-  position: {
-    start: number
-    end: number
-  }
+  position: Position
 }
 
 function memoize<I, O>(f: (value: I) => O): (value: I) => O {
@@ -169,6 +171,18 @@ export namespace Builders {
       discard: options.discard ?? false,
       print: options.print ?? { type: 'literal', value: pattern },
       action: options.action,
+    }
+  }
+
+  export function token(
+    type: string,
+    options: { value?: string; groups?: string[]; position?: Position } = {}
+  ) {
+    return {
+      type,
+      value: options.value ?? '',
+      groups: options.groups ?? [],
+      position: options.position ?? { start: 0, end: 0 },
     }
   }
 }
