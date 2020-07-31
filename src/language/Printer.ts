@@ -1,6 +1,6 @@
 import { doc, Doc } from 'prettier'
 import { Definition, Value } from './Parser'
-import { StateDefinition, Token } from './Lexer'
+import { StateDefinition, Token, Rule } from './Lexer'
 
 const {
   builders: { concat },
@@ -99,6 +99,10 @@ export class Printer {
   lexerDefinition: StateDefinition[]
   parserDefinition: Definition
 
+  get rules(): Rule[] {
+    return this.lexerDefinition.flatMap(state => state.rules)
+  }
+
   constructor(
     lexerDefinition: StateDefinition[],
     parserDefinition: Definition = { nodes: [] }
@@ -108,51 +112,51 @@ export class Printer {
   }
 
   formatToken = (token: Token): Doc => {
-    const rules = this.lexerDefinition.flatMap(state => state.rules)
-
-    const rule = rules.find(rule => rule.name === token.type)
+    const rule = this.rules.find(rule => rule.name === token.type)
 
     if (!rule) {
       throw new Error(`Couldn't find rule for token: ${token.type}`)
     }
 
-    function formatReference(reference: Reference): Doc {
-      switch (reference.type) {
-        case 'index':
-          return token.groups[reference.value]
-        case 'token': {
-          const rule = rules.find(rule => rule.name === token.type)
-
-          if (!rule) {
-            throw new Error(`Couldn't find rule for token: ${token.type}`)
-          }
-
-          return formatPrintPattern(rule.print)
-        }
-        case 'self':
-          throw new Error('self not handled yet')
-      }
-    }
-
-    function formatPrintPattern(printPattern: PrintPattern): Doc {
-      switch (printPattern.type) {
-        case 'literal': {
-          return printPattern.value
-        }
-        case 'reference': {
-          return formatReference(printPattern.value)
-        }
-        case 'sequence': {
-          return concat(printPattern.value.map(formatPrintPattern))
-        }
-      }
-    }
-
-    return rule.print ? formatPrintPattern(rule.print) : ''
+    return rule.print ? this.formatPrintPattern(token, rule.print) : ''
   }
 
   formatTokens(tokens: Token[]): Doc {
     return concat(tokens.map(this.formatToken))
+  }
+
+  formatReference = (token: Token, reference: Reference): Doc => {
+    switch (reference.type) {
+      case 'index':
+        return token.groups[reference.value]
+      case 'token': {
+        const rule = this.rules.find(rule => rule.name === token.type)
+
+        if (!rule) {
+          throw new Error(`Couldn't find rule for token: ${token.type}`)
+        }
+
+        return this.formatPrintPattern(token, rule.print)
+      }
+      case 'self':
+        throw new Error('self not handled yet')
+    }
+  }
+
+  formatPrintPattern = (token: Token, printPattern: PrintPattern): Doc => {
+    switch (printPattern.type) {
+      case 'literal': {
+        return printPattern.value
+      }
+      case 'reference': {
+        return this.formatReference(token, printPattern.value)
+      }
+      case 'sequence': {
+        return concat(
+          printPattern.value.map(value => this.formatPrintPattern(token, value))
+        )
+      }
+    }
   }
 
   print(
