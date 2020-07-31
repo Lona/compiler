@@ -129,7 +129,7 @@ export type FieldReferenceMatch = {
 export type NodeReferenceMatch = {
   type: 'node'
   reference: NodeReference
-  match: NodeValue
+  match: RootNodeValue
 }
 
 export type ReferenceMatch =
@@ -175,15 +175,17 @@ export type PatternMatch =
   | OptionPatternMatch
 
 export type RecordNodeValue = {
-  [key: string]: unknown
+  [key: string]: FieldValue
 }
 
 export type EnumNodeValue = {
   type: string
-  [key: string]: unknown
+  [key: string]: FieldValue
 }
 
-export type NodeValue = RecordNodeValue | EnumNodeValue
+export type FieldValue = RecordNodeValue | EnumNodeValue | string | FieldValue[]
+
+export type RootNodeValue = RecordNodeValue | EnumNodeValue
 
 const matchTree = withOptions({
   getChildren: (match: PatternMatch): PatternMatch[] => {
@@ -209,7 +211,7 @@ const matchTree = withOptions({
   },
 })
 
-function resolveReference(match: PatternMatch): unknown {
+function resolveReference(match: PatternMatch): FieldValue {
   switch (match.type) {
     case 'reference': {
       switch (match.match.type) {
@@ -241,7 +243,7 @@ export class Parser {
     this.definition = definition
   }
 
-  parse(tokens: Token[], startNode: string): ParseResult<NodeValue> {
+  parse(tokens: Token[], startNode: string): ParseResult<RootNodeValue> {
     const currentNode = this.definition.nodes.find(
       node => node.name === startNode
     )
@@ -253,7 +255,7 @@ export class Parser {
     return this.parseNode(currentNode, tokens)
   }
 
-  parseNode(node: NodeDefinition, tokens: Token[]): ParseResult<NodeValue> {
+  parseNode(node: NodeDefinition, tokens: Token[]): ParseResult<RootNodeValue> {
     switch (node.type) {
       case 'enum': {
         return this.parseEnum(node, tokens)

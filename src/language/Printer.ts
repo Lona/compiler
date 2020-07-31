@@ -1,5 +1,11 @@
 import { doc, Doc } from 'prettier'
-import { Definition, NodeValue, NodeDefinition, Field } from './Parser'
+import {
+  Definition,
+  RootNodeValue,
+  NodeDefinition,
+  Field,
+  FieldValue,
+} from './Parser'
 import { StateDefinition, Token, Rule, Builders } from './Lexer'
 import { type } from 'os'
 
@@ -193,10 +199,12 @@ export class Printer {
   }
 
   formatNodePrintPattern = (
-    value: NodeValue,
+    value: RootNodeValue,
     nodeName: string,
     printPattern: NodePrintPattern
   ): Doc => {
+    // console.log('print node', value)
+
     switch (printPattern.type) {
       case 'command': {
         const command = printPattern.value
@@ -240,11 +248,13 @@ export class Printer {
   }
 
   formatField = (
-    value: unknown,
+    value: FieldValue,
     nodeName: string,
     fieldName: string,
     printPattern: FieldPrintPattern
   ): Doc => {
+    // console.log(`print field ${nodeName}.${fieldName}`, value)
+
     switch (printPattern.type) {
       case 'command': {
         const command = printPattern.value
@@ -266,6 +276,12 @@ export class Printer {
           groups: [String(value)],
         })
 
+        // console.log(
+        //   'format token',
+        //   this.formatTokenPrintPattern(token, rule.print),
+        //   `${nodeName}.${fieldName} = ${value}`
+        // )
+
         return this.formatTokenPrintPattern(token, rule.print)
       }
       case 'node': {
@@ -274,7 +290,7 @@ export class Printer {
         if (!node.print) return ''
 
         return this.formatNodePrintPattern(
-          value as NodeValue,
+          value as RootNodeValue,
           node.name,
           node.print
         )
@@ -289,7 +305,7 @@ export class Printer {
     }
   }
 
-  formatNode = (value: NodeValue, nodeName: string): Doc => {
+  formatNode = (value: RootNodeValue, nodeName: string): Doc => {
     const node = this.findNodeDefinition(nodeName)
 
     if (!node.print) return ''
