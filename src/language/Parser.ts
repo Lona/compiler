@@ -296,6 +296,14 @@ export class Parser {
       }
     })
 
+    node.fields.forEach(field => {
+      if (field.name in recordValue) return
+
+      if (field.type === 'many') {
+        recordValue[field.name] = []
+      }
+    })
+
     // console.log('record', inspect(recordValue, undefined, null, true))
 
     return success(recordValue, result.tokens)

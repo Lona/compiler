@@ -76,7 +76,9 @@ it('converts XML language', async () => {
 
   const formatted = printer.formatNode(result2.value, 'XMLElement')
 
-  console.log(formatted)
+  expect(formatted).toMatchSnapshot()
 
-  console.log(printer.print(formatted))
+  const output = printer.print(formatted)
+
+  expect(output).toEqual(`<OK>Some Text<Nested></Nested></OK>`)
 })

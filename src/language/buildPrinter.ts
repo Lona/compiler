@@ -8,12 +8,14 @@ import {
   IndexReferencePrintPattern,
   LiteralPrintPattern,
   TokenReferencePrintPattern,
-  SelfReferencePrintPattern,
-  selfReferencePrintPattern,
+  FieldReferencePrintPattern,
+  fieldReferencePrintPattern,
   FieldPrintPattern,
   NodePrintPattern,
   PrintCommand,
   CommandPrintPattern,
+  SelfReferencePrintPattern,
+  selfReferencePrintPattern,
 } from './Printer'
 import { LiteralExpression } from '../logic/nodes/LiteralExpression'
 import {
@@ -65,14 +67,18 @@ function getTokenReference(
   }
 }
 
-function getSelfReference(
+function getFieldReference(
   node: IExpression
-): SelfReferencePrintPattern | undefined {
+): FieldReferencePrintPattern | SelfReferencePrintPattern | undefined {
   if (node instanceof MemberExpression) {
     const [owner, member] = node.names
     switch (owner) {
       case 'self':
-        return selfReferencePrintPattern(member)
+        if (member) {
+          return fieldReferencePrintPattern(member)
+        } else {
+          return selfReferencePrintPattern()
+        }
       default:
         break
     }
@@ -175,7 +181,7 @@ export function getFieldPrintPattern(node: IExpression): FieldPrintPattern {
 
 export function getNodePrintPattern(node: IExpression): NodePrintPattern {
   const pattern =
-    getSelfReference(node) ??
+    getFieldReference(node) ??
     getTokenReference(node) ??
     getLiteral(node) ??
     getSequence(getNodePrintPattern, node) ??

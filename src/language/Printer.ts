@@ -5,9 +5,10 @@ import {
   NodeDefinition,
   Field,
   FieldValue,
+  EnumNodeValue,
 } from './Parser'
 import { StateDefinition, Token, Rule, Builders } from './Lexer'
-import { type } from 'os'
+import { inspect } from 'util'
 
 const {
   builders: { concat, line, indent, join },
@@ -55,9 +56,13 @@ export interface TokenReferencePrintPattern {
   value: string
 }
 
+export interface FieldReferencePrintPattern {
+  type: 'field'
+  value: string
+}
+
 export interface SelfReferencePrintPattern {
   type: 'self'
-  value: string
 }
 
 export interface NodeReferencePrintPattern {
@@ -86,6 +91,7 @@ export type FieldPrintPattern =
 export type NodePrintPattern =
   | LiteralPrintPattern
   | TokenReferencePrintPattern
+  | FieldReferencePrintPattern
   | SelfReferencePrintPattern
   | CommandPrintPattern<NodePrintPattern>
   | SequencePrintPattern<NodePrintPattern>
@@ -198,59 +204,10 @@ export class Printer {
     }
   }
 
-  formatNodePrintPattern = (
-    value: RootNodeValue,
-    nodeName: string,
-    printPattern: NodePrintPattern
-  ): Doc => {
-    // console.log('print node', value)
-
-    switch (printPattern.type) {
-      case 'command': {
-        const command = printPattern.value
-
-        return this.formatCommand(
-          command,
-          { value, nodeName },
-          (pattern, { value, nodeName }) =>
-            this.formatNodePrintPattern(value, nodeName, pattern)
-        )
-      }
-      case 'literal': {
-        return printPattern.value
-      }
-      case 'token': {
-        const rule = this.findRule(printPattern.value)
-
-        const token = Builders.token(printPattern.value)
-
-        return this.formatTokenPrintPattern(token, rule.print)
-      }
-      case 'self':
-        const field = this.findFieldDefinition(nodeName, printPattern.value)
-
-        if (!field.print) return ''
-
-        return this.formatField(
-          value[printPattern.value],
-          nodeName,
-          printPattern.value,
-          field.print
-        )
-      case 'sequence': {
-        return concat(
-          printPattern.value.map(pattern =>
-            this.formatNodePrintPattern(value, nodeName, pattern)
-          )
-        )
-      }
-    }
-  }
-
   formatField = (
     value: FieldValue,
-    nodeName: string,
-    fieldName: string,
+    // nodeName: string,
+    // fieldName: string,
     printPattern: FieldPrintPattern
   ): Doc => {
     // console.log(`print field ${nodeName}.${fieldName}`, value)
@@ -259,11 +216,8 @@ export class Printer {
       case 'command': {
         const command = printPattern.value
 
-        return this.formatCommand(
-          command,
-          { value, nodeName, fieldName },
-          (pattern, { value, nodeName, fieldName }) =>
-            this.formatField(value, nodeName, fieldName, pattern)
+        return this.formatCommand(command, { value }, (pattern, { value }) =>
+          this.formatField(value, pattern)
         )
       }
       case 'literal': {
@@ -297,8 +251,102 @@ export class Printer {
       }
       case 'sequence': {
         return concat(
+          printPattern.value.map(pattern => this.formatField(value, pattern))
+        )
+      }
+    }
+  }
+
+  formatNodePrintPattern = (
+    value: RootNodeValue,
+    nodeName: string,
+    printPattern: NodePrintPattern
+  ): Doc => {
+    // console.log('print node', value)
+
+    switch (printPattern.type) {
+      case 'self': {
+        const node = this.findNodeDefinition(nodeName)
+
+        if (node.type !== 'enum') {
+          throw new Error(`self reference is only valid when printing enums`)
+        }
+
+        const enumCase = (value as EnumNodeValue).type
+
+        const field = this.findFieldDefinition(nodeName, enumCase)
+
+        if (!field.print) return ''
+
+        // console.log('enum case', value.value, field.print)
+
+        return this.formatField(
+          value.value,
+          // nodeName,
+          // enumCase,
+          field.print
+        )
+      }
+      case 'command': {
+        const command = printPattern.value
+
+        return this.formatCommand(
+          command,
+          { value, nodeName },
+          (pattern, { value, nodeName }) =>
+            this.formatNodePrintPattern(value, nodeName, pattern)
+        )
+      }
+      case 'literal': {
+        return printPattern.value
+      }
+      case 'token': {
+        const rule = this.findRule(printPattern.value)
+
+        const token = Builders.token(printPattern.value)
+
+        return this.formatTokenPrintPattern(token, rule.print)
+      }
+      case 'field': {
+        const field = this.findFieldDefinition(nodeName, printPattern.value)
+        const print = field.print
+
+        if (!print) return ''
+
+        const fieldValue = value[printPattern.value]
+
+        if (field.type === 'many') {
+          if (!(fieldValue instanceof Array)) {
+            throw new Error(
+              `Bad many value: ${inspect(fieldValue)} in ${inspect(
+                value
+              )} (${nodeName}.${printPattern.value})`
+            )
+          }
+
+          return concat(
+            fieldValue.map(value =>
+              this.formatField(
+                value,
+                // nodeName,
+                // printPattern.value,
+                print
+              )
+            )
+          )
+        } else {
+          return this.formatField(
+            fieldValue,
+            // nodeName,
+            // printPattern.value,
+            print
+          )
+        }
+      }
+      case 'sequence': {
+        return concat(
           printPattern.value.map(pattern =>
-            this.formatField(value, nodeName, fieldName, pattern)
+            this.formatNodePrintPattern(value, nodeName, pattern)
           )
         )
       }
@@ -347,10 +395,14 @@ export function nodeReferencePrintPattern(
   return { type: 'node', value }
 }
 
-export function selfReferencePrintPattern(
+export function fieldReferencePrintPattern(
   value: string
-): SelfReferencePrintPattern {
-  return { type: 'self', value }
+): FieldReferencePrintPattern {
+  return { type: 'field', value }
+}
+
+export function selfReferencePrintPattern(): SelfReferencePrintPattern {
+  return { type: 'self' }
 }
 
 export function sequencePrintPattern<T>(value: T[]): SequencePrintPattern<T> {

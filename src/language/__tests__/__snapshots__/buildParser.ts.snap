@@ -146,6 +146,9 @@ Object {
           },
         ],
       },
+      "print": Object {
+        "type": "self",
+      },
       "type": "enum",
     },
     Object {
@@ -304,7 +307,7 @@ Object {
             "value": "open",
           },
           Object {
-            "type": "self",
+            "type": "field",
             "value": "name",
           },
           Object {
@@ -322,7 +325,7 @@ Object {
                   },
                   "type": "join",
                   "value": Object {
-                    "type": "self",
+                    "type": "field",
                     "value": "attributes",
                   },
                 },
@@ -334,7 +337,7 @@ Object {
             "value": "close",
           },
           Object {
-            "type": "self",
+            "type": "field",
             "value": "content",
           },
           Object {
@@ -342,7 +345,7 @@ Object {
             "value": "slashOpen",
           },
           Object {
-            "type": "self",
+            "type": "field",
             "value": "name",
           },
           Object {
@@ -372,6 +375,7 @@ Object {
         "value": "foo",
       },
     ],
+    "content": Array [],
     "name": "hello",
   },
 }
@@ -392,11 +396,81 @@ Object {
         "type": "element",
         "value": Object {
           "attributes": Array [],
+          "content": Array [],
           "name": "Nested",
         },
       },
     ],
     "name": "OK",
   },
+}
+`;
+
+exports[`converts XML language 4`] = `
+Object {
+  "parts": Array [
+    "<",
+    "OK",
+    Object {
+      "contents": Object {
+        "parts": Array [
+          Object {
+            "parts": Array [],
+            "type": "concat",
+          },
+        ],
+        "type": "concat",
+      },
+      "type": "indent",
+    },
+    ">",
+    Object {
+      "parts": Array [
+        Object {
+          "parts": Array [
+            "Some Text",
+          ],
+          "type": "concat",
+        },
+        Object {
+          "parts": Array [
+            Object {
+              "parts": Array [
+                "<",
+                "Nested",
+                Object {
+                  "contents": Object {
+                    "parts": Array [
+                      Object {
+                        "parts": Array [],
+                        "type": "concat",
+                      },
+                    ],
+                    "type": "concat",
+                  },
+                  "type": "indent",
+                },
+                ">",
+                Object {
+                  "parts": Array [],
+                  "type": "concat",
+                },
+                "</",
+                "Nested",
+                ">",
+              ],
+              "type": "concat",
+            },
+          ],
+          "type": "concat",
+        },
+      ],
+      "type": "concat",
+    },
+    "</",
+    "OK",
+    ">",
+  ],
+  "type": "concat",
 }
 `;

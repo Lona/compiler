@@ -5,7 +5,7 @@ import {
   indexReferencePrintPattern,
   sequencePrintPattern,
   tokenReferencePrintPattern,
-  selfReferencePrintPattern,
+  fieldReferencePrintPattern,
 } from '../Printer'
 import {
   Definition,
@@ -97,9 +97,9 @@ it('prints nodes', () => {
           }),
         ],
         sequencePrintPattern([
-          selfReferencePrintPattern('name'),
+          fieldReferencePrintPattern('name'),
           tokenReferencePrintPattern('equals'),
-          selfReferencePrintPattern('value'),
+          fieldReferencePrintPattern('value'),
         ])
       ),
     ],

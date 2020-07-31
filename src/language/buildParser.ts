@@ -31,6 +31,7 @@ import {
   joinCommandPrintPattern,
   tokenReferencePrintPattern,
   nodeReferencePrintPattern,
+  selfReferencePrintPattern,
 } from './Printer'
 import { inspect } from 'util'
 
@@ -287,16 +288,24 @@ function getEnumNode(
     type: 'enum',
     name: declaration.name,
     pattern: getEnumParseAttribute(declaration)! as OrPattern,
+    print: selfReferencePrintPattern(),
     fields: declaration.cases.flatMap((enumCase): Field[] => {
-      const pattern = getParseAttribute(
-        enumCase.data.name.name,
-        enumCase.data.attributes.map(
-          attribute => new FunctionCallExpression(attribute)
-        )
+      const attributes = enumCase.data.attributes.map(
+        attribute => new FunctionCallExpression(attribute)
       )
+      const pattern = getParseAttribute(enumCase.data.name.name, attributes)
+      const printAttribute = getPrintAttributeExpression(attributes)
 
       if (pattern) {
-        return [field({ name: enumCase.data.name.name, pattern })]
+        return [
+          field({
+            name: enumCase.data.name.name,
+            pattern,
+            ...(printAttribute && {
+              print: getFieldPrintPattern(printAttribute),
+            }),
+          }),
+        ]
       }
 
       // Try to infer a pattern from the type annotation
@@ -314,7 +323,15 @@ function getEnumNode(
           )
 
           if (pattern) {
-            return [field({ name: enumCase.data.name.name, pattern })]
+            return [
+              field({
+                name: enumCase.data.name.name,
+                pattern,
+                ...(printAttribute && {
+                  print: getFieldPrintPattern(printAttribute),
+                }),
+              }),
+            ]
           }
         }
       }
