@@ -24,6 +24,7 @@ Object {
               "type": "token",
             },
           },
+          "print": undefined,
         },
       ],
       "name": "XMLAttribute",
@@ -55,6 +56,7 @@ Object {
           },
         ],
       },
+      "print": undefined,
       "type": "record",
     },
     Object {
@@ -133,6 +135,7 @@ Object {
               "type": "token",
             },
           },
+          "print": undefined,
         },
         Object {
           "name": "attributes",
@@ -240,6 +243,61 @@ Object {
                 ],
               },
             ],
+          },
+        ],
+      },
+      "print": Object {
+        "type": "sequence",
+        "value": Array [
+          Object {
+            "type": "token",
+            "value": "open",
+          },
+          Object {
+            "type": "self",
+            "value": "name",
+          },
+          Object {
+            "type": "command",
+            "value": Object {
+              "type": "indent",
+              "value": Object {
+                "type": "command",
+                "value": Object {
+                  "separator": Object {
+                    "type": "command",
+                    "value": Object {
+                      "type": "line",
+                    },
+                  },
+                  "type": "join",
+                  "value": Object {
+                    "type": "self",
+                    "value": "attributes",
+                  },
+                },
+              },
+            },
+          },
+          Object {
+            "type": "token",
+            "value": "close",
+          },
+          Object {
+            "type": "self",
+            "value": "content",
+          },
+          Object {
+            "type": "token",
+            "value": "slashOpen",
+          },
+          Object {
+            "type": "self",
+            "value": "name",
+          },
+          Object {
+            "type": "token",
+            "value": "close",
           },
         ],
       },

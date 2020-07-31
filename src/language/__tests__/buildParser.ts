@@ -9,6 +9,7 @@ import { RecordDeclaration } from '../../logic/nodes/RecordDeclaration'
 import { findNode, findNodes } from '../../logic/traversal'
 import { buildLexer } from '../buildLexer'
 import { buildParser, buildParserDefinition } from '../buildParser'
+import { Printer } from '../Printer'
 
 it('converts XML language', async () => {
   const source = createFs({
@@ -63,5 +64,15 @@ it('converts XML language', async () => {
 
   const tokens2 = lexer.tokenize(`<OK>Some Text<Nested /></OK>`)
 
-  expect(parser.parse(tokens2, 'XMLElement')).toMatchSnapshot()
+  const element2 = parser.parse(tokens2, 'XMLElement')
+
+  expect(element2).toMatchSnapshot()
+
+  const printer = new Printer(lexer.stateDefinitions, parser.definition)
+
+  const formatted = printer.formatNode(element2, 'XMLElement')
+
+  console.log(formatted)
+
+  console.log(printer.print(formatted))
 })

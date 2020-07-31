@@ -12,7 +12,6 @@ import {
   recordNodeDefinition,
   sequencePattern,
   field,
-  referencePattern,
   tokenReferencePattern,
   fieldReferencePattern,
   Parser,

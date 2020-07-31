@@ -18,6 +18,11 @@ import {
   EnumNodeDefinition,
   OrPattern,
 } from './Parser'
+import {
+  getPrintAttributeExpression,
+  getNodePrintPattern,
+  getFieldPrintPattern,
+} from './buildPrinter'
 
 export function isParser(
   node: RecordDeclaration | EnumerationDeclaration
@@ -205,15 +210,27 @@ function getRecordNode(
   declaration: RecordDeclaration,
   nodeNames: string[]
 ): RecordNodeDefinition {
+  const printAttribute = getPrintAttributeExpression(declaration.attributes)
+
   return {
     type: 'record',
     name: declaration.name,
     pattern: getParseAttribute(declaration.name, declaration.attributes)!,
+    print: printAttribute ? getNodePrintPattern(printAttribute) : undefined,
     fields: declaration.variables.flatMap((variable): Field[] => {
       const pattern = getParseAttribute(variable.name, variable.attributes)
+      const printAttribute = getPrintAttributeExpression(variable.attributes)
 
       if (pattern) {
-        return [{ name: variable.name, pattern }]
+        return [
+          {
+            name: variable.name,
+            pattern,
+            print: printAttribute
+              ? getFieldPrintPattern(printAttribute)
+              : undefined,
+          },
+        ]
       }
 
       const annotation = variable.syntaxNode.data.annotation
