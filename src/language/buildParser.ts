@@ -25,7 +25,14 @@ import {
   getNodePrintPattern,
   getFieldPrintPattern,
 } from './buildPrinter'
-import { FieldPrintPattern, sequencePrintPattern } from './Printer'
+import {
+  FieldPrintPattern,
+  sequencePrintPattern,
+  joinCommandPrintPattern,
+  tokenReferencePrintPattern,
+  nodeReferencePrintPattern,
+} from './Printer'
+import { inspect } from 'util'
 
 export function isParser(
   node: RecordDeclaration | EnumerationDeclaration
@@ -209,12 +216,24 @@ function inferFieldPattern(
   }
 }
 
-// function inferFieldPrintPattern(pattern: Pattern): FieldPrintPattern {
-//   switch (pattern.type) {
-//     case 'many':
-//       return sequencePrintPattern(inferFieldPrintPattern(pattern.value))
-//   }
-// }
+function inferFieldPrintPattern(pattern: Pattern): FieldPrintPattern {
+  switch (pattern.type) {
+    case 'many':
+      return joinCommandPrintPattern(inferFieldPrintPattern(pattern.value))
+    case 'reference': {
+      const reference = pattern.value
+
+      switch (reference.type) {
+        case 'token':
+          return tokenReferencePrintPattern(reference.name)
+        case 'node':
+          return nodeReferencePrintPattern(reference.name)
+      }
+    }
+  }
+
+  throw new Error(`Can't infer print pattern: ${inspect(pattern, false, null)}`)
+}
 
 function getRecordNode(
   declaration: RecordDeclaration,
@@ -230,16 +249,17 @@ function getRecordNode(
     fields: declaration.variables.flatMap((variable): Field[] => {
       const pattern = getParseAttribute(variable.name, variable.attributes)
       const printAttribute = getPrintAttributeExpression(variable.attributes)
-      const printPattern = printAttribute
-        ? getFieldPrintPattern(printAttribute)
-        : undefined
 
       if (pattern) {
+        const print = printAttribute
+          ? getFieldPrintPattern(printAttribute)
+          : inferFieldPrintPattern(pattern)
+
         return [
           field({
             name: variable.name,
             pattern,
-            print: printPattern,
+            print,
           }),
         ]
       }
@@ -251,12 +271,16 @@ function getRecordNode(
         const pattern = inferFieldPattern(variable.name, annotation, nodeNames)
 
         if (pattern) {
+          const print = printAttribute
+            ? getFieldPrintPattern(printAttribute)
+            : inferFieldPrintPattern(pattern)
+
           if (pattern.type === 'many') {
             return [
               manyField({
                 name: variable.name,
                 pattern,
-                print: printPattern,
+                print,
               }),
             ]
           }
@@ -265,7 +289,7 @@ function getRecordNode(
             field({
               name: variable.name,
               pattern,
-              print: printPattern,
+              print,
             }),
           ]
         }

@@ -14,7 +14,10 @@ Object {
               "type": "token",
             },
           },
-          "print": undefined,
+          "print": Object {
+            "type": "token",
+            "value": "name",
+          },
           "type": "standard",
         },
         Object {
@@ -26,7 +29,10 @@ Object {
               "type": "token",
             },
           },
-          "print": undefined,
+          "print": Object {
+            "type": "token",
+            "value": "string",
+          },
           "type": "standard",
         },
       ],
@@ -144,7 +150,10 @@ Object {
               "type": "token",
             },
           },
-          "print": undefined,
+          "print": Object {
+            "type": "token",
+            "value": "name",
+          },
           "type": "standard",
         },
         Object {
@@ -159,7 +168,16 @@ Object {
               },
             },
           },
-          "print": undefined,
+          "print": Object {
+            "type": "command",
+            "value": Object {
+              "type": "join",
+              "value": Object {
+                "type": "node",
+                "value": "XMLAttribute",
+              },
+            },
+          },
           "type": "many",
         },
         Object {
@@ -174,7 +192,16 @@ Object {
               },
             },
           },
-          "print": undefined,
+          "print": Object {
+            "type": "command",
+            "value": Object {
+              "type": "join",
+              "value": Object {
+                "type": "node",
+                "value": "XMLElementContent",
+              },
+            },
+          },
           "type": "many",
         },
       ],

@@ -1,6 +1,7 @@
 import { doc, Doc } from 'prettier'
 import { Definition, NodeValue, NodeDefinition, Field } from './Parser'
 import { StateDefinition, Token, Rule, Builders } from './Lexer'
+import { type } from 'os'
 
 const {
   builders: { concat, line, indent, join },
@@ -53,6 +54,11 @@ export interface SelfReferencePrintPattern {
   value: string
 }
 
+export interface NodeReferencePrintPattern {
+  type: 'node'
+  value: string
+}
+
 export interface SequencePrintPattern<T> {
   type: 'sequence'
   value: T[]
@@ -67,6 +73,7 @@ export type TokenPrintPattern =
 export type FieldPrintPattern =
   | LiteralPrintPattern
   | TokenReferencePrintPattern
+  | NodeReferencePrintPattern
   | CommandPrintPattern<FieldPrintPattern>
   | SequencePrintPattern<FieldPrintPattern>
 
@@ -76,34 +83,6 @@ export type NodePrintPattern =
   | SelfReferencePrintPattern
   | CommandPrintPattern<NodePrintPattern>
   | SequencePrintPattern<NodePrintPattern>
-
-export function literalPrintPattern(value: string): LiteralPrintPattern {
-  return { type: 'literal', value }
-}
-
-export function indexReferencePrintPattern(
-  value: number
-): IndexReferencePrintPattern {
-  return { type: 'index', value }
-}
-
-export function tokenReferencePrintPattern(
-  value: string
-): TokenReferencePrintPattern {
-  return { type: 'token', value }
-}
-
-export function selfReferencePrintPattern(
-  value: string
-): SelfReferencePrintPattern {
-  return { type: 'self', value }
-}
-
-export function sequencePrintPattern<T>(
-  value: T[]
-): { type: 'sequence'; value: T[] } {
-  return { type: 'sequence', value }
-}
 
 export class Printer {
   lexerDefinition: StateDefinition[]
@@ -186,6 +165,33 @@ export class Printer {
     }
   }
 
+  formatCommand = <V, P>(
+    command: PrintCommand<P>,
+    value: V,
+    f: (pattern: P, value: V) => Doc
+  ): Doc => {
+    switch (command.type) {
+      case 'line': {
+        return line
+      }
+      case 'indent': {
+        return indent(f(command.value, value))
+      }
+      case 'join': {
+        const normalize = <T>(value: T | T[]): T[] =>
+          value instanceof Array ? value : [value]
+
+        const separator = command.separator
+          ? f(command.separator, value)
+          : undefined
+
+        const elements = normalize(f(command.value, value))
+
+        return separator ? join(separator, elements) : concat(elements)
+      }
+    }
+  }
+
   formatNodePrintPattern = (
     value: NodeValue,
     nodeName: string,
@@ -195,30 +201,12 @@ export class Printer {
       case 'command': {
         const command = printPattern.value
 
-        switch (command.type) {
-          case 'line': {
-            return line
-          }
-          case 'indent': {
-            return indent(
-              this.formatNodePrintPattern(value, nodeName, command.value)
-            )
-          }
-          case 'join': {
-            const normalize = <T>(value: T | T[]): T[] =>
-              value instanceof Array ? value : [value]
-
-            const separator = command.separator
-              ? this.formatNodePrintPattern(value, nodeName, command.separator)
-              : undefined
-
-            const elements = normalize(
-              this.formatNodePrintPattern(value, nodeName, command.value)
-            )
-
-            return separator ? join(separator, elements) : concat(elements)
-          }
-        }
+        return this.formatCommand(
+          command,
+          { value, nodeName },
+          (pattern, { value, nodeName }) =>
+            this.formatNodePrintPattern(value, nodeName, pattern)
+        )
       }
       case 'literal': {
         return printPattern.value
@@ -258,8 +246,16 @@ export class Printer {
     printPattern: FieldPrintPattern
   ): Doc => {
     switch (printPattern.type) {
-      case 'command':
-        throw new Error('no command')
+      case 'command': {
+        const command = printPattern.value
+
+        return this.formatCommand(
+          command,
+          { value, nodeName, fieldName },
+          (pattern, { value, nodeName, fieldName }) =>
+            this.formatField(value, nodeName, fieldName, pattern)
+        )
+      }
       case 'literal': {
         return printPattern.value
       }
@@ -271,6 +267,17 @@ export class Printer {
         })
 
         return this.formatTokenPrintPattern(token, rule.print)
+      }
+      case 'node': {
+        const node = this.findNodeDefinition(printPattern.value)
+
+        if (!node.print) return ''
+
+        return this.formatNodePrintPattern(
+          value as NodeValue,
+          node.name,
+          node.print
+        )
       }
       case 'sequence': {
         return concat(
@@ -300,4 +307,46 @@ export class Printer {
   ) {
     return doc.printer.printDocToString(document, options).formatted
   }
+}
+
+export function literalPrintPattern(value: string): LiteralPrintPattern {
+  return { type: 'literal', value }
+}
+
+export function indexReferencePrintPattern(
+  value: number
+): IndexReferencePrintPattern {
+  return { type: 'index', value }
+}
+
+export function tokenReferencePrintPattern(
+  value: string
+): TokenReferencePrintPattern {
+  return { type: 'token', value }
+}
+
+export function nodeReferencePrintPattern(
+  value: string
+): NodeReferencePrintPattern {
+  return { type: 'node', value }
+}
+
+export function selfReferencePrintPattern(
+  value: string
+): SelfReferencePrintPattern {
+  return { type: 'self', value }
+}
+
+export function sequencePrintPattern<T>(value: T[]): SequencePrintPattern<T> {
+  return { type: 'sequence', value }
+}
+
+export function commandPrintPattern<T>(
+  value: PrintCommand<T>
+): CommandPrintPattern<T> {
+  return { type: 'command', value }
+}
+
+export function joinCommandPrintPattern<T>(value: T): CommandPrintPattern<T> {
+  return { type: 'command', value: { type: 'join', value } }
 }
