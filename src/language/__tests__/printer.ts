@@ -1,12 +1,13 @@
-import { Builders, Lexer, StateDefinition } from '../Lexer'
-import { formatTokens } from '../Printer'
+import { Builders as LexerBuilders, Lexer, StateDefinition } from '../Lexer'
+import { Builders as PrinterBuilders, formatTokens } from '../Printer'
+
+const { rule } = LexerBuilders
 
 const {
-  rule,
   literalPrintPattern,
   referencePrintPattern,
   sequencePrintPattern,
-} = Builders
+} = PrinterBuilders
 
 it('prints simple tokens', () => {
   const definition: StateDefinition[] = [

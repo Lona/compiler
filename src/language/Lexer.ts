@@ -1,3 +1,5 @@
+import { PrintPattern } from './Printer'
+
 export type NextAction = { type: 'next'; value: string }
 
 export type PushAction = { type: 'push'; value: string }
@@ -5,26 +7,6 @@ export type PushAction = { type: 'push'; value: string }
 export type PopAction = { type: 'pop' }
 
 export type Action = NextAction | PushAction | PopAction
-
-export type LiteralPrintPattern = {
-  type: 'literal'
-  value: string
-}
-
-export type SequencePrintPattern = {
-  type: 'sequence'
-  value: PrintPattern[]
-}
-
-export type IndexReferencePrintPattern = {
-  type: 'indexReference'
-  value: number
-}
-
-export type PrintPattern =
-  | LiteralPrintPattern
-  | SequencePrintPattern
-  | IndexReferencePrintPattern
 
 export type Rule = {
   name: string
@@ -188,21 +170,5 @@ export namespace Builders {
       print: options.print ?? { type: 'literal', value: pattern },
       action: options.action,
     }
-  }
-
-  export function literalPrintPattern(value: string): LiteralPrintPattern {
-    return { type: 'literal', value }
-  }
-
-  export function referencePrintPattern(
-    value: number
-  ): IndexReferencePrintPattern {
-    return { type: 'indexReference', value }
-  }
-
-  export function sequencePrintPattern(
-    value: PrintPattern[]
-  ): SequencePrintPattern {
-    return { type: 'sequence', value }
   }
 }

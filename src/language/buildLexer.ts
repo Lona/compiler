@@ -1,14 +1,6 @@
 import { EnumerationDeclaration } from '../logic/nodes/EnumerationDeclaration'
 import { Helpers } from '../helpers'
-import {
-  Lexer,
-  Rule,
-  Token,
-  StateDefinition,
-  Action,
-  PrintPattern,
-  Builders,
-} from './Lexer'
+import { Lexer, Rule, Token, StateDefinition, Action, Builders } from './Lexer'
 import { IdentifierExpression } from '../logic/nodes/IdentifierExpression'
 import { LiteralExpression } from '../logic/nodes/LiteralExpression'
 import {
@@ -22,6 +14,7 @@ import { FunctionCallExpression } from '../logic/nodes/FunctionCallExpression'
 import { isNode } from '../logic/ast'
 import { valueBindingName } from '../plugins/swift/convert/codable'
 import { IExpression } from '../logic/nodes/interfaces'
+import { PrintPattern } from './Printer'
 
 const getStringLiteral = (node: IExpression): string | undefined =>
   node instanceof LiteralExpression && node.literal instanceof StringLiteral
