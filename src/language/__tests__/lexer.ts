@@ -1,4 +1,6 @@
-import { Lexer, Rule, Action, rule } from '../Lexer'
+import { Builders, Lexer } from '../Lexer'
+
+const { rule } = Builders
 
 it('tokenizes simple tokens', () => {
   const lexer = new Lexer({

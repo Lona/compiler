@@ -16,15 +16,15 @@ export type SequencePrintPattern = {
   value: PrintPattern[]
 }
 
-export type ReferencePrintPattern = {
-  type: 'reference'
+export type IndexReferencePrintPattern = {
+  type: 'indexReference'
   value: number
 }
 
 export type PrintPattern =
   | LiteralPrintPattern
   | SequencePrintPattern
-  | ReferencePrintPattern
+  | IndexReferencePrintPattern
 
 export type Rule = {
   name: string
@@ -169,22 +169,40 @@ export class Lexer {
   }
 }
 
-export function rule(
-  name: string,
-  options: {
-    pattern?: string
-    discard?: boolean
-    action?: Action
-    print?: PrintPattern
-  } = {}
-): Rule {
-  const pattern = options.pattern ?? name
+export namespace Builders {
+  export function rule(
+    name: string,
+    options: {
+      pattern?: string
+      discard?: boolean
+      action?: Action
+      print?: PrintPattern
+    } = {}
+  ): Rule {
+    const pattern = options.pattern ?? name
 
-  return {
-    name,
-    pattern,
-    discard: options.discard ?? false,
-    print: options.print ?? { type: 'literal', value: pattern },
-    action: options.action,
+    return {
+      name,
+      pattern,
+      discard: options.discard ?? false,
+      print: options.print ?? { type: 'literal', value: pattern },
+      action: options.action,
+    }
+  }
+
+  export function literalPrintPattern(value: string): LiteralPrintPattern {
+    return { type: 'literal', value }
+  }
+
+  export function referencePrintPattern(
+    value: number
+  ): IndexReferencePrintPattern {
+    return { type: 'indexReference', value }
+  }
+
+  export function sequencePrintPattern(
+    value: PrintPattern[]
+  ): SequencePrintPattern {
+    return { type: 'sequence', value }
   }
 }

@@ -6,8 +6,8 @@ import {
   Token,
   StateDefinition,
   Action,
-  rule as createRule,
   PrintPattern,
+  Builders,
 } from './Lexer'
 import { IdentifierExpression } from '../logic/nodes/IdentifierExpression'
 import { LiteralExpression } from '../logic/nodes/LiteralExpression'
@@ -83,7 +83,7 @@ function getPrintPattern(node: IExpression): PrintPattern {
       }
     } else if (node.literal instanceof NumberLiteral) {
       return {
-        type: 'reference',
+        type: 'indexReference',
         value: node.literal.value,
       }
     } else if (node.literal instanceof StringLiteral) {
@@ -136,7 +136,7 @@ export function getTokenAttributes(
           name: { name },
         } = node.data
 
-        const rule: Rule = createRule(name, {
+        const rule: Rule = Builders.rule(name, {
           pattern: getStringLiteral(pattern),
           discard: getBooleanLiteral(discard),
           ...(printPattern && { print: printPattern }),

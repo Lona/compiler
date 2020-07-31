@@ -23,7 +23,7 @@ export function formatToken(
       case 'literal': {
         return printPattern.value
       }
-      case 'reference': {
+      case 'indexReference': {
         return token.groups[printPattern.value]
       }
       case 'sequence': {

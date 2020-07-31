@@ -75,6 +75,16 @@ enum XMLElementContent {
       Token.close
     ])
 ])
+@print(pattern: [
+  Token.open,
+  self.name, 
+  indent(join(self.attributes, line(), leading: line())),
+  Token.close,
+  self.content,
+  Token.slashOpen, 
+  self.name,
+  Token.close
+])
 struct XMLElement {
 
   @parse(pattern: Token.name)
