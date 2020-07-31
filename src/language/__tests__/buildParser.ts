@@ -72,7 +72,7 @@ it('converts XML language', async () => {
 
   const formatted = printer.formatNode(element2, 'XMLElement')
 
-  console.log(formatted)
+  // console.log(formatted)
 
-  console.log(printer.print(formatted))
+  // console.log(printer.print(formatted))
 })

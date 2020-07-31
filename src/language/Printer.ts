@@ -18,7 +18,7 @@ export interface IndentPrintCommand<T> {
 export interface JoinPrintCommand<T> {
   type: 'join'
   value: T
-  separator: T
+  separator?: T
   leading?: T
   tailing?: T
 }
@@ -208,12 +208,15 @@ export class Printer {
             const normalize = <T>(value: T | T[]): T[] =>
               value instanceof Array ? value : [value]
 
-            return join(
-              this.formatNodePrintPattern(value, nodeName, command.separator),
-              normalize(
-                this.formatNodePrintPattern(value, nodeName, command.value)
-              )
+            const separator = command.separator
+              ? this.formatNodePrintPattern(value, nodeName, command.separator)
+              : undefined
+
+            const elements = normalize(
+              this.formatNodePrintPattern(value, nodeName, command.value)
             )
+
+            return separator ? join(separator, elements) : concat(elements)
           }
         }
       }

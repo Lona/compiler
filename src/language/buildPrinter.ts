@@ -122,15 +122,20 @@ function getPrintCommand<T>(
   ) {
     switch (node.callee.name) {
       case 'indent':
+        const [value] = Object.values(node.argumentExpressionNodes)
+
         return {
           type: node.callee.name,
-          value: f(Object.values(node.argumentExpressionNodes)[0]),
+          value: f(value),
         }
       case 'join': {
+        // const { leading, trailing, ...rest } = node.argumentExpressionNodes
+        const [value, separator] = Object.values(node.argumentExpressionNodes)
+
         return {
           type: node.callee.name,
-          value: f(Object.values(node.argumentExpressionNodes)[0]),
-          separator: f(Object.values(node.argumentExpressionNodes)[1]),
+          value: f(value),
+          ...(separator && { separator: f(separator) }),
         }
       }
       case 'line': {

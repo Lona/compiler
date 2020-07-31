@@ -23,6 +23,7 @@ import {
   getNodePrintPattern,
   getFieldPrintPattern,
 } from './buildPrinter'
+import { FieldPrintPattern, sequencePrintPattern } from './Printer'
 
 export function isParser(
   node: RecordDeclaration | EnumerationDeclaration
@@ -206,6 +207,13 @@ function inferFieldPattern(
   }
 }
 
+// function inferFieldPrintPattern(pattern: Pattern): FieldPrintPattern {
+//   switch (pattern.type) {
+//     case 'many':
+//       return sequencePrintPattern(inferFieldPrintPattern(pattern.value))
+//   }
+// }
+
 function getRecordNode(
   declaration: RecordDeclaration,
   nodeNames: string[]
@@ -220,15 +228,16 @@ function getRecordNode(
     fields: declaration.variables.flatMap((variable): Field[] => {
       const pattern = getParseAttribute(variable.name, variable.attributes)
       const printAttribute = getPrintAttributeExpression(variable.attributes)
+      const printPattern = printAttribute
+        ? getFieldPrintPattern(printAttribute)
+        : undefined
 
       if (pattern) {
         return [
           {
             name: variable.name,
             pattern,
-            print: printAttribute
-              ? getFieldPrintPattern(printAttribute)
-              : undefined,
+            print: printPattern,
           },
         ]
       }
@@ -240,7 +249,13 @@ function getRecordNode(
         const pattern = inferFieldPattern(variable.name, annotation, nodeNames)
 
         if (pattern) {
-          return [{ name: variable.name, pattern }]
+          return [
+            {
+              name: variable.name,
+              pattern,
+              print: printPattern,
+            },
+          ]
         }
       }
 
