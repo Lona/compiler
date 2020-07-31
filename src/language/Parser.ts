@@ -70,11 +70,21 @@ export type Pattern =
   | ManyPattern
   | OptionPattern
 
-export type Field = {
+export type ManyField = {
+  type: 'many'
+  name: string
+  pattern: ManyPattern
+  print?: FieldPrintPattern
+}
+
+export type StandardField = {
+  type: 'standard'
   name: string
   pattern: Pattern
   print?: FieldPrintPattern
 }
+
+export type Field = StandardField | ManyField
 
 export type EnumNodeDefinition = {
   type: 'enum'
@@ -563,10 +573,26 @@ export function optionPattern(value: Pattern): OptionPattern {
   return { type: 'option', value }
 }
 
-export function field(
-  name: string,
-  pattern: Pattern,
+export function field({
+  name,
+  pattern,
+  print,
+}: {
+  name: string
+  pattern: Pattern
   print?: FieldPrintPattern
-): Field {
-  return { name, pattern, print }
+}): StandardField {
+  return { type: 'standard', name, pattern, print }
+}
+
+export function manyField({
+  name,
+  pattern,
+  print,
+}: {
+  name: string
+  pattern: ManyPattern
+  print?: FieldPrintPattern
+}): ManyField {
+  return { type: 'many', name, pattern, print }
 }

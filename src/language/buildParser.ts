@@ -17,6 +17,8 @@ import {
   RecordNodeDefinition,
   EnumNodeDefinition,
   OrPattern,
+  field,
+  manyField,
 } from './Parser'
 import {
   getPrintAttributeExpression,
@@ -234,11 +236,11 @@ function getRecordNode(
 
       if (pattern) {
         return [
-          {
+          field({
             name: variable.name,
             pattern,
             print: printPattern,
-          },
+          }),
         ]
       }
 
@@ -249,12 +251,22 @@ function getRecordNode(
         const pattern = inferFieldPattern(variable.name, annotation, nodeNames)
 
         if (pattern) {
+          if (pattern.type === 'many') {
+            return [
+              manyField({
+                name: variable.name,
+                pattern,
+                print: printPattern,
+              }),
+            ]
+          }
+
           return [
-            {
+            field({
               name: variable.name,
               pattern,
               print: printPattern,
-            },
+            }),
           ]
         }
       }
@@ -281,7 +293,7 @@ function getEnumNode(
       )
 
       if (pattern) {
-        return [{ name: enumCase.data.name.name, pattern }]
+        return [field({ name: enumCase.data.name.name, pattern })]
       }
 
       // Try to infer a pattern from the type annotation
@@ -299,7 +311,7 @@ function getEnumNode(
           )
 
           if (pattern) {
-            return [{ name: enumCase.data.name.name, pattern }]
+            return [field({ name: enumCase.data.name.name, pattern })]
           }
         }
       }

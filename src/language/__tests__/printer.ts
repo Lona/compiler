@@ -85,16 +85,16 @@ it('prints nodes', () => {
           fieldReferencePattern('attribute', 'value'),
         ]),
         [
-          field(
-            'name',
-            tokenReferencePattern('name'),
-            tokenReferencePrintPattern('name')
-          ),
-          field(
-            'value',
-            tokenReferencePattern('string'),
-            tokenReferencePrintPattern('string')
-          ),
+          field({
+            name: 'name',
+            pattern: tokenReferencePattern('name'),
+            print: tokenReferencePrintPattern('name'),
+          }),
+          field({
+            name: 'value',
+            pattern: tokenReferencePattern('string'),
+            print: tokenReferencePrintPattern('string'),
+          }),
         ],
         sequencePrintPattern([
           selfReferencePrintPattern('name'),
