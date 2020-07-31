@@ -64,15 +64,19 @@ it('converts XML language', async () => {
 
   const tokens2 = lexer.tokenize(`<OK>Some Text<Nested /></OK>`)
 
-  const element2 = parser.parse(tokens2, 'XMLElement')
+  const result2 = parser.parse(tokens2, 'XMLElement')
 
-  expect(element2).toMatchSnapshot()
+  expect(result2).toMatchSnapshot()
+
+  if (result2.type !== 'success') {
+    throw new Error('Failed to parse XMLElement')
+  }
 
   const printer = new Printer(lexer.stateDefinitions, parser.definition)
 
-  const formatted = printer.formatNode(element2, 'XMLElement')
+  const formatted = printer.formatNode(result2.value, 'XMLElement')
 
-  // console.log(formatted)
+  console.log(formatted)
 
-  // console.log(printer.print(formatted))
+  console.log(printer.print(formatted))
 })

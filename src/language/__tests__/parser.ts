@@ -9,6 +9,7 @@ import {
   NodeDefinition,
   OptionPattern,
   EnumNodeDefinition,
+  field,
 } from '../Parser'
 import { Token } from '../Lexer'
 
@@ -65,7 +66,7 @@ it('parses field references', () => {
   const node: NodeDefinition = {
     type: 'record',
     name: 'Root',
-    fields: [{ name: 'name', pattern: tokenPattern }],
+    fields: [field({ name: 'name', pattern: tokenPattern })],
     pattern: fieldPattern,
   }
 
@@ -180,13 +181,13 @@ it('parses option', () => {
         name: 'Root',
         pattern,
         fields: [
-          {
+          field({
             name: 'name',
             pattern: {
               type: 'reference',
               value: reference,
             },
-          },
+          }),
         ],
       },
     ],
@@ -201,13 +202,13 @@ it('parses records', () => {
     type: 'record',
     name: 'Root',
     fields: [
-      {
+      field({
         name: 'attribute',
         pattern: {
           type: 'reference',
           value: { type: 'node', name: 'Attribute' },
         },
-      },
+      }),
     ],
     pattern: {
       type: 'reference',
@@ -223,20 +224,20 @@ it('parses records', () => {
     type: 'record',
     name: 'Attribute',
     fields: [
-      {
+      field({
         name: 'name',
         pattern: {
           type: 'reference',
           value: { type: 'token', name: 'hello' },
         },
-      },
-      {
+      }),
+      field({
         name: 'value',
         pattern: {
           type: 'reference',
           value: { type: 'token', name: 'world' },
         },
-      },
+      }),
     ],
     pattern: {
       type: 'sequence',
@@ -298,20 +299,20 @@ it('parses enums', () => {
     type: 'enum',
     name: 'Root',
     fields: [
-      {
+      field({
         name: 'attribute',
         pattern: {
           type: 'reference',
           value: { type: 'node', name: 'Attribute' },
         },
-      },
-      {
+      }),
+      field({
         name: 'name',
         pattern: {
           type: 'reference',
           value: { type: 'token', name: 'hello' },
         },
-      },
+      }),
     ],
     pattern: {
       type: 'or',
@@ -340,20 +341,20 @@ it('parses enums', () => {
     type: 'record',
     name: 'Attribute',
     fields: [
-      {
+      field({
         name: 'name',
         pattern: {
           type: 'reference',
           value: { type: 'token', name: 'hello' },
         },
-      },
-      {
+      }),
+      field({
         name: 'value',
         pattern: {
           type: 'reference',
           value: { type: 'token', name: 'world' },
         },
-      },
+      }),
     ],
     pattern: {
       type: 'sequence',
