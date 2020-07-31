@@ -133,10 +133,7 @@ export function getTokenAttributes(
     })
 }
 
-export function buildLexer(
-  node: EnumerationDeclaration,
-  context: Helpers
-): Lexer {
+export function buildLexer(node: EnumerationDeclaration): Lexer {
   const generators = node.cases.flatMap(getTokenAttributes)
 
   const states: StateDefinition[] = []
@@ -155,8 +152,7 @@ export function buildLexer(
 }
 
 export function buildTokenTransformer(
-  node: EnumerationDeclaration,
-  context: Helpers
+  node: EnumerationDeclaration
 ): (tokens: Token[]) => unknown[] {
   const generators = node.cases.flatMap(getTokenAttributes)
 

@@ -342,8 +342,7 @@ function getEnumNode(
 }
 
 export function buildParserDefinition(
-  nodes: (EnumerationDeclaration | RecordDeclaration)[],
-  context: Helpers
+  nodes: (EnumerationDeclaration | RecordDeclaration)[]
 ): Definition {
   const parserNodes = nodes.filter(isParser)
   const nodeNames = parserNodes.map(node => node.name)
@@ -360,8 +359,7 @@ export function buildParserDefinition(
 }
 
 export function buildParser(
-  nodes: (EnumerationDeclaration | RecordDeclaration)[],
-  context: Helpers
+  nodes: (EnumerationDeclaration | RecordDeclaration)[]
 ): Parser {
-  return new Parser(buildParserDefinition(nodes, context))
+  return new Parser(buildParserDefinition(nodes))
 }

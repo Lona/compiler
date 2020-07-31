@@ -1,84 +1,48 @@
-import { LogicAST } from '@lona/serialization'
-import { createFs } from 'buffs'
 import fs from 'fs'
 import path from 'path'
-import { createHelpers } from '../../helpers'
-import { createDeclarationNode } from '../../logic/nodes/createNode'
-import { EnumerationDeclaration } from '../../logic/nodes/EnumerationDeclaration'
-import { RecordDeclaration } from '../../logic/nodes/RecordDeclaration'
-import { findNode, findNodes } from '../../logic/traversal'
-import { buildLexer } from '../buildLexer'
-import { buildParser, buildParserDefinition } from '../buildParser'
+import { buildLexerFromSource, buildParserFromSource } from '../build'
 import { Printer } from '../Printer'
 
-it('converts XML language', async () => {
-  const source = createFs({
-    'lona.json': JSON.stringify({}),
-    'XMLLanguage.logic': fs.readFileSync(
-      path.join(__dirname, './mocks/XMLLanguage.logic'),
-      'utf8'
-    ),
+const grammarSource = fs.readFileSync(
+  path.join(__dirname, './mocks/XMLLanguage.logic'),
+  'utf8'
+)
+
+describe('XML Language', () => {
+  const lexer = buildLexerFromSource(grammarSource)
+  const parser = buildParserFromSource(grammarSource)
+
+  it('generates a valid parser', () => {
+    expect(parser.definition).toMatchSnapshot()
   })
 
-  const helpers = createHelpers(source, '/')
+  it('parses attributes', () => {
+    const tokens = lexer.tokenize(`<hello a="test" b='foo' />`)
 
-  const logicFile = helpers.module.logicFiles.find(file =>
-    file.sourcePath.endsWith('XMLLanguage.logic')
-  )
+    const result = parser.parse(tokens, 'XMLElement')
 
-  if (!logicFile) {
-    throw new Error('Failed to find input file')
-  }
+    expect(result).toMatchSnapshot()
+  })
 
-  const mainEnum = findNode(
-    logicFile.rootNode,
-    (node): node is LogicAST.EnumerationDeclaration =>
-      node.type === 'enumeration'
-  )
+  it('parses and prints elements', () => {
+    const tokens = lexer.tokenize(`<OK>Some Text<Nested /></OK>`)
 
-  if (!mainEnum) {
-    throw new Error('Failed to find tokens enum')
-  }
+    const result = parser.parse(tokens, 'XMLElement')
 
-  const lexer = buildLexer(new EnumerationDeclaration(mainEnum), helpers)
+    expect(result).toMatchSnapshot()
 
-  const declarations = findNodes(
-    logicFile.rootNode,
-    node => node.type === 'enumeration' || node.type === 'record'
-  ) as (LogicAST.EnumerationDeclaration | LogicAST.RecordDeclaration)[]
+    if (result.type !== 'success') {
+      throw new Error('Failed to parse XMLElement')
+    }
 
-  const nodes = declarations.map(createDeclarationNode) as (
-    | RecordDeclaration
-    | EnumerationDeclaration
-  )[]
+    const printer = new Printer(lexer.stateDefinitions, parser.definition)
 
-  const definition = buildParserDefinition(nodes, helpers)
+    const formatted = printer.formatNode(result.value, 'XMLElement')
 
-  expect(definition).toMatchSnapshot()
+    expect(formatted).toMatchSnapshot()
 
-  const parser = buildParser(nodes, helpers)
+    const output = printer.print(formatted)
 
-  const tokens1 = lexer.tokenize(`<hello a="test" b='foo' />`)
-
-  expect(parser.parse(tokens1, 'XMLElement')).toMatchSnapshot()
-
-  const tokens2 = lexer.tokenize(`<OK>Some Text<Nested /></OK>`)
-
-  const result2 = parser.parse(tokens2, 'XMLElement')
-
-  expect(result2).toMatchSnapshot()
-
-  if (result2.type !== 'success') {
-    throw new Error('Failed to parse XMLElement')
-  }
-
-  const printer = new Printer(lexer.stateDefinitions, parser.definition)
-
-  const formatted = printer.formatNode(result2.value, 'XMLElement')
-
-  expect(formatted).toMatchSnapshot()
-
-  const output = printer.print(formatted)
-
-  expect(output).toEqual(`<OK>Some Text<Nested></Nested></OK>`)
+    expect(output).toEqual(`<OK>Some Text<Nested></Nested></OK>`)
+  })
 })

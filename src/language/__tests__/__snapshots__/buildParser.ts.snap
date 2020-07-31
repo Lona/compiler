@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`converts XML language 1`] = `
+exports[`XML Language generates a valid parser 1`] = `
 Object {
   "nodes": Array [
     Object {
@@ -360,28 +360,7 @@ Object {
 }
 `;
 
-exports[`converts XML language 2`] = `
-Object {
-  "tokens": Array [],
-  "type": "success",
-  "value": Object {
-    "attributes": Array [
-      Object {
-        "name": "a",
-        "value": "test",
-      },
-      Object {
-        "name": "b",
-        "value": "foo",
-      },
-    ],
-    "content": Array [],
-    "name": "hello",
-  },
-}
-`;
-
-exports[`converts XML language 3`] = `
+exports[`XML Language parses and prints elements 1`] = `
 Object {
   "tokens": Array [],
   "type": "success",
@@ -406,7 +385,7 @@ Object {
 }
 `;
 
-exports[`converts XML language 4`] = `
+exports[`XML Language parses and prints elements 2`] = `
 Object {
   "parts": Array [
     "<",
@@ -472,5 +451,26 @@ Object {
     ">",
   ],
   "type": "concat",
+}
+`;
+
+exports[`XML Language parses attributes 1`] = `
+Object {
+  "tokens": Array [],
+  "type": "success",
+  "value": Object {
+    "attributes": Array [
+      Object {
+        "name": "a",
+        "value": "test",
+      },
+      Object {
+        "name": "b",
+        "value": "foo",
+      },
+    ],
+    "content": Array [],
+    "name": "hello",
+  },
 }
 `;
