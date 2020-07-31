@@ -14,7 +14,15 @@ import { FunctionCallExpression } from '../logic/nodes/FunctionCallExpression'
 import { isNode } from '../logic/ast'
 import { valueBindingName } from '../plugins/swift/convert/codable'
 import { IExpression } from '../logic/nodes/interfaces'
-import { PrintPattern } from './Printer'
+import {
+  PrintPattern,
+  indexReferencePrintPattern,
+  sequencePrintPattern,
+  literalPrintPattern,
+  tokenReferencePrintPattern,
+} from './Printer'
+import { MemberExpression } from '../logic/nodes/MemberExpression'
+import { getPrintPattern } from './buildPrinter'
 
 const getStringLiteral = (node: IExpression): string | undefined =>
   node instanceof LiteralExpression && node.literal instanceof StringLiteral
@@ -65,29 +73,6 @@ function getAction(node: IExpression): Action {
   }
 
   throw new Error('Invalid action')
-}
-
-function getPrintPattern(node: IExpression): PrintPattern {
-  if (node instanceof LiteralExpression) {
-    if (node.literal instanceof ArrayLiteral) {
-      return {
-        type: 'sequence',
-        value: node.literal.elements.map(getPrintPattern),
-      }
-    } else if (node.literal instanceof NumberLiteral) {
-      return {
-        type: 'indexReference',
-        value: node.literal.value,
-      }
-    } else if (node.literal instanceof StringLiteral) {
-      return {
-        type: 'literal',
-        value: node.literal.value,
-      }
-    }
-  }
-
-  throw new Error('Invalid print pattern')
 }
 
 export function getTokenAttributes(

@@ -6,7 +6,7 @@ import { createHelpers } from '../../helpers'
 import { EnumerationDeclaration } from '../../logic/nodes/EnumerationDeclaration'
 import { findNode } from '../../logic/traversal'
 import { buildLexer, buildTokenTransformer } from '../buildLexer'
-import { formatTokens, print } from '../Printer'
+import { Printer } from '../Printer'
 
 it('converts SQL language', async () => {
   const source = createFs({
@@ -83,9 +83,11 @@ it('converts XML language', async () => {
 
   expect(transformer(tokens)).toMatchSnapshot()
 
-  const formatted = formatTokens(lexer.stateDefinitions, tokens)
+  const printer = new Printer(lexer.stateDefinitions)
+
+  const formatted = printer.formatTokens(tokens)
 
   expect(formatted).toMatchSnapshot()
 
-  expect(print(formatted)).toMatchSnapshot()
+  expect(printer.print(formatted)).toMatchSnapshot()
 })
