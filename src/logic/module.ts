@@ -160,7 +160,7 @@ function documentFilePaths(fs: IFS, workspacePath: string): string[] {
   )
 }
 
-function libraryFilePaths(): string[] {
+export function libraryFilePaths(): string[] {
   return match(fs, STANDARD_LIBRARY_PATH, {
     includePatterns: ['**/*.logic'],
   }).map(file => path.join(STANDARD_LIBRARY_PATH, file))

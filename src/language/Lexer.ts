@@ -1,4 +1,5 @@
 import { TokenPrintPattern } from './Printer'
+import { inspect } from 'util'
 
 export type NextAction = { type: 'next'; value: string }
 
@@ -104,7 +105,9 @@ export class Lexer {
 
           if (value.length === 0 && !rule.action) {
             throw new Error(
-              'Lexer stalled: no input consumed and no action taken.'
+              `Lexer stalled: the pattern matched, but no input was consumed and no action taken for rule: ${inspect(
+                rule
+              )}.`
             )
           }
 

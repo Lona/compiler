@@ -1,0 +1,483 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Logic Language parses identifiers 1`] = `
+Object {
+  "string": "foo",
+}
+`;
+
+exports[`Logic Language parses identifiers 2`] = `"foo"`;
+
+exports[`Logic Language tokenizes comments 1`] = `
+Array [
+  Object {
+    "groups": Array [
+      " test1 ",
+    ],
+    "position": Object {
+      "end": 11,
+      "start": 0,
+    },
+    "type": "comment",
+    "value": "/* test1 */",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 15,
+      "start": 12,
+    },
+    "type": "let",
+    "value": "let",
+  },
+  Object {
+    "groups": Array [
+      "a",
+    ],
+    "position": Object {
+      "end": 17,
+      "start": 16,
+    },
+    "type": "identifier",
+    "value": "a",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 19,
+      "start": 18,
+    },
+    "type": "eq",
+    "value": "=",
+  },
+  Object {
+    "groups": Array [
+      "123",
+    ],
+    "position": Object {
+      "end": 23,
+      "start": 20,
+    },
+    "type": "integer",
+    "value": "123",
+  },
+  Object {
+    "groups": Array [
+      "test2",
+    ],
+    "position": Object {
+      "end": 33,
+      "start": 24,
+    },
+    "type": "comment",
+    "value": "/*test2*/",
+  },
+]
+`;
+
+exports[`Logic Language tokenizes enums 1`] = `
+Array [
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 4,
+      "start": 0,
+    },
+    "type": "enum",
+    "value": "enum",
+  },
+  Object {
+    "groups": Array [
+      "Foo",
+    ],
+    "position": Object {
+      "end": 8,
+      "start": 5,
+    },
+    "type": "identifier",
+    "value": "Foo",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 10,
+      "start": 9,
+    },
+    "type": "openBrace",
+    "value": "{",
+  },
+  Object {
+    "groups": Array [
+      "case",
+    ],
+    "position": Object {
+      "end": 17,
+      "start": 13,
+    },
+    "type": "identifier",
+    "value": "case",
+  },
+  Object {
+    "groups": Array [
+      "foo",
+    ],
+    "position": Object {
+      "end": 21,
+      "start": 18,
+    },
+    "type": "identifier",
+    "value": "foo",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 22,
+      "start": 21,
+    },
+    "type": "openParens",
+    "value": "(",
+  },
+  Object {
+    "groups": Array [
+      "a",
+    ],
+    "position": Object {
+      "end": 23,
+      "start": 22,
+    },
+    "type": "identifier",
+    "value": "a",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 24,
+      "start": 23,
+    },
+    "type": "colon",
+    "value": ":",
+  },
+  Object {
+    "groups": Array [
+      "Number",
+    ],
+    "position": Object {
+      "end": 31,
+      "start": 25,
+    },
+    "type": "identifier",
+    "value": "Number",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 32,
+      "start": 31,
+    },
+    "type": "comma",
+    "value": ",",
+  },
+  Object {
+    "groups": Array [
+      "b",
+    ],
+    "position": Object {
+      "end": 34,
+      "start": 33,
+    },
+    "type": "identifier",
+    "value": "b",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 35,
+      "start": 34,
+    },
+    "type": "colon",
+    "value": ":",
+  },
+  Object {
+    "groups": Array [
+      "String",
+    ],
+    "position": Object {
+      "end": 42,
+      "start": 36,
+    },
+    "type": "identifier",
+    "value": "String",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 43,
+      "start": 42,
+    },
+    "type": "closeParens",
+    "value": ")",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 45,
+      "start": 44,
+    },
+    "type": "closeBrace",
+    "value": "}",
+  },
+]
+`;
+
+exports[`Logic Language tokenizes functions 1`] = `
+Array [
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 4,
+      "start": 0,
+    },
+    "type": "func",
+    "value": "func",
+  },
+  Object {
+    "groups": Array [
+      "test",
+    ],
+    "position": Object {
+      "end": 9,
+      "start": 5,
+    },
+    "type": "identifier",
+    "value": "test",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 10,
+      "start": 9,
+    },
+    "type": "openParens",
+    "value": "(",
+  },
+  Object {
+    "groups": Array [
+      "a",
+    ],
+    "position": Object {
+      "end": 11,
+      "start": 10,
+    },
+    "type": "identifier",
+    "value": "a",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 12,
+      "start": 11,
+    },
+    "type": "colon",
+    "value": ":",
+  },
+  Object {
+    "groups": Array [
+      "Number",
+    ],
+    "position": Object {
+      "end": 19,
+      "start": 13,
+    },
+    "type": "identifier",
+    "value": "Number",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 21,
+      "start": 20,
+    },
+    "type": "eq",
+    "value": "=",
+  },
+  Object {
+    "groups": Array [
+      "123",
+    ],
+    "position": Object {
+      "end": 25,
+      "start": 22,
+    },
+    "type": "integer",
+    "value": "123",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 26,
+      "start": 25,
+    },
+    "type": "closeParens",
+    "value": ")",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 29,
+      "start": 27,
+    },
+    "type": "arrow",
+    "value": "->",
+  },
+  Object {
+    "groups": Array [
+      "Boolean",
+    ],
+    "position": Object {
+      "end": 37,
+      "start": 30,
+    },
+    "type": "identifier",
+    "value": "Boolean",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 39,
+      "start": 38,
+    },
+    "type": "openBrace",
+    "value": "{",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 48,
+      "start": 42,
+    },
+    "type": "return",
+    "value": "return",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 53,
+      "start": 49,
+    },
+    "type": "true",
+    "value": "true",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 55,
+      "start": 54,
+    },
+    "type": "closeBrace",
+    "value": "}",
+  },
+]
+`;
+
+exports[`Logic Language tokenizes records 1`] = `
+Array [
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 6,
+      "start": 0,
+    },
+    "type": "struct",
+    "value": "struct",
+  },
+  Object {
+    "groups": Array [
+      "Foo",
+    ],
+    "position": Object {
+      "end": 10,
+      "start": 7,
+    },
+    "type": "identifier",
+    "value": "Foo",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 12,
+      "start": 11,
+    },
+    "type": "openBrace",
+    "value": "{",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 18,
+      "start": 15,
+    },
+    "type": "let",
+    "value": "let",
+  },
+  Object {
+    "groups": Array [
+      "foo",
+    ],
+    "position": Object {
+      "end": 22,
+      "start": 19,
+    },
+    "type": "identifier",
+    "value": "foo",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 23,
+      "start": 22,
+    },
+    "type": "colon",
+    "value": ":",
+  },
+  Object {
+    "groups": Array [
+      "Number",
+    ],
+    "position": Object {
+      "end": 30,
+      "start": 24,
+    },
+    "type": "identifier",
+    "value": "Number",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 32,
+      "start": 31,
+    },
+    "type": "eq",
+    "value": "=",
+  },
+  Object {
+    "groups": Array [
+      "42",
+    ],
+    "position": Object {
+      "end": 35,
+      "start": 33,
+    },
+    "type": "integer",
+    "value": "42",
+  },
+  Object {
+    "groups": Array [],
+    "position": Object {
+      "end": 37,
+      "start": 36,
+    },
+    "type": "closeBrace",
+    "value": "}",
+  },
+]
+`;

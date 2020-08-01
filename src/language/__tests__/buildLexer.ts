@@ -38,8 +38,8 @@ it('converts SQL language', async () => {
   }
 
   const node = new EnumerationDeclaration(mainEnum)
-  const lexer = buildLexer(node, helpers)
-  const transformer = buildTokenTransformer(node, helpers)
+  const lexer = buildLexer(node)
+  const transformer = buildTokenTransformer(node)
 
   const tokens = lexer.tokenize('SELECT foo FROM 123')
 
@@ -76,8 +76,8 @@ it('converts XML language', async () => {
   }
 
   const node = new EnumerationDeclaration(mainEnum)
-  const lexer = buildLexer(node, helpers)
-  const transformer = buildTokenTransformer(node, helpers)
+  const lexer = buildLexer(node)
+  const transformer = buildTokenTransformer(node)
 
   const tokens = lexer.tokenize(`<hello a="test" b='foo' /><OK>Some Text</OK>`)
 

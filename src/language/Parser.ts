@@ -7,6 +7,9 @@ import {
   joinCommandPrintPattern,
   tokenReferencePrintPattern,
   nodeReferencePrintPattern,
+  selfReferencePrintPattern,
+  fieldReferencePrintPattern,
+  sequencePrintPattern,
 } from './Printer'
 
 type Result<T> =
@@ -528,33 +531,43 @@ export class Parser {
   }
 }
 
-export function recordNodeDefinition(
-  name: string,
-  pattern: Pattern,
-  fields: Field[],
+export function recordNodeDefinition({
+  name,
+  pattern,
+  fields,
+  print,
+}: {
+  name: string
+  pattern: Pattern
+  fields: Field[]
   print?: NodePrintPattern
-): RecordNodeDefinition {
+}): RecordNodeDefinition {
   return {
     type: 'record',
     name,
     pattern,
     fields,
-    print,
+    print: print ?? inferRecordNodePrintPattern(pattern),
   }
 }
 
-export function enumNodeDefinition(
-  name: string,
-  pattern: OrPattern,
-  fields: Field[],
+export function enumNodeDefinition({
+  name,
+  pattern,
+  fields,
+  print,
+}: {
+  name: string
+  pattern: OrPattern
+  fields: Field[]
   print?: NodePrintPattern
-): EnumNodeDefinition {
+}): EnumNodeDefinition {
   return {
     type: 'enum',
     name,
     pattern,
     fields,
-    print,
+    print: print ?? selfReferencePrintPattern(),
   }
 }
 
@@ -589,25 +602,6 @@ export function optionPattern(value: Pattern): OptionPattern {
   return { type: 'option', value }
 }
 
-function inferFieldPrintPattern(pattern: Pattern): FieldPrintPattern {
-  switch (pattern.type) {
-    case 'many':
-      return joinCommandPrintPattern(inferFieldPrintPattern(pattern.value))
-    case 'reference': {
-      const reference = pattern.value
-
-      switch (reference.type) {
-        case 'token':
-          return tokenReferencePrintPattern(reference.name)
-        case 'node':
-          return nodeReferencePrintPattern(reference.name)
-      }
-    }
-  }
-
-  throw new Error(`Can't infer print pattern: ${inspect(pattern, false, null)}`)
-}
-
 export function field({
   name,
   pattern,
@@ -640,4 +634,45 @@ export function manyField({
     pattern,
     print: print ?? inferFieldPrintPattern(pattern),
   }
+}
+
+function inferFieldPrintPattern(pattern: Pattern): FieldPrintPattern {
+  switch (pattern.type) {
+    case 'many':
+      return joinCommandPrintPattern(inferFieldPrintPattern(pattern.value))
+    case 'reference': {
+      const reference = pattern.value
+
+      switch (reference.type) {
+        case 'token':
+          return tokenReferencePrintPattern(reference.name)
+        case 'node':
+          return nodeReferencePrintPattern(reference.name)
+      }
+    }
+  }
+
+  throw new Error(`Can't infer print pattern: ${inspect(pattern, false, null)}`)
+}
+
+function inferRecordNodePrintPattern(pattern: Pattern): NodePrintPattern {
+  switch (pattern.type) {
+    case 'sequence': {
+      return sequencePrintPattern(
+        pattern.value.map(inferRecordNodePrintPattern)
+      )
+    }
+    case 'reference': {
+      const reference = pattern.value
+
+      switch (reference.type) {
+        case 'token':
+          return tokenReferencePrintPattern(reference.name)
+        case 'field':
+          return fieldReferencePrintPattern(reference.fieldName)
+      }
+    }
+  }
+
+  throw new Error(`Can't infer print pattern: ${inspect(pattern, false, null)}`)
 }

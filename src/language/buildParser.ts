@@ -19,6 +19,8 @@ import {
   OrPattern,
   field,
   manyField,
+  enumNodeDefinition,
+  recordNodeDefinition,
 } from './Parser'
 import {
   getPrintAttributeExpression,
@@ -223,8 +225,7 @@ function getRecordNode(
 ): RecordNodeDefinition {
   const printAttribute = getPrintAttributeExpression(declaration.attributes)
 
-  return {
-    type: 'record',
+  return recordNodeDefinition({
     name: declaration.name,
     pattern: getParseAttribute(declaration.name, declaration.attributes)!,
     print: printAttribute ? getNodePrintPattern(printAttribute) : undefined,
@@ -277,18 +278,16 @@ function getRecordNode(
 
       return []
     }),
-  }
+  })
 }
 
 function getEnumNode(
   declaration: EnumerationDeclaration,
   nodeNames: string[]
 ): EnumNodeDefinition {
-  return {
-    type: 'enum',
+  return enumNodeDefinition({
     name: declaration.name,
     pattern: getEnumParseAttribute(declaration)! as OrPattern,
-    print: selfReferencePrintPattern(),
     fields: declaration.cases.flatMap((enumCase): Field[] => {
       const attributes = enumCase.data.attributes.map(
         attribute => new FunctionCallExpression(attribute)
@@ -338,7 +337,7 @@ function getEnumNode(
 
       return []
     }),
-  }
+  })
 }
 
 export function buildParserDefinition(

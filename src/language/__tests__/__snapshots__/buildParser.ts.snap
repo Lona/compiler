@@ -65,7 +65,23 @@ Object {
           },
         ],
       },
-      "print": undefined,
+      "print": Object {
+        "type": "sequence",
+        "value": Array [
+          Object {
+            "type": "field",
+            "value": "name",
+          },
+          Object {
+            "type": "token",
+            "value": "equals",
+          },
+          Object {
+            "type": "field",
+            "value": "value",
+          },
+        ],
+      },
       "type": "record",
     },
     Object {

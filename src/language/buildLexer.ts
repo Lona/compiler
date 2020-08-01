@@ -66,71 +66,76 @@ function getAction(node: IExpression): Action {
 export function getTokenAttributes(
   node: Extract<LogicAST.EnumerationCase, { type: 'enumerationCase' }>
 ): TokenGenerator[] {
-  const printAttribute = node.data.attributes
-    .map(attribute => new FunctionCallExpression(attribute))
-    .find(
-      attribute =>
-        attribute.callee instanceof IdentifierExpression &&
-        attribute.callee.name === 'print'
-    )
+  const attributes = node.data.attributes.map(
+    attribute => new FunctionCallExpression(attribute)
+  )
 
-  let printPattern: TokenPrintPattern | undefined
+  const printAttribute = attributes.find(
+    attribute =>
+      attribute.callee instanceof IdentifierExpression &&
+      attribute.callee.name === 'print'
+  )
 
-  if (printAttribute) {
-    const { pattern } = printAttribute.argumentExpressionNodes
+  const printPattern =
+    printAttribute && printAttribute.argumentExpressionNodes.pattern
+      ? getTokenPrintPattern(printAttribute.argumentExpressionNodes.pattern)
+      : undefined
 
-    if (pattern) {
-      printPattern = getTokenPrintPattern(pattern)
-    }
+  const tokenAttributes = attributes.filter(
+    attribute =>
+      attribute.callee instanceof IdentifierExpression &&
+      attribute.callee.name === 'token'
+  )
+
+  if (tokenAttributes.length === 0) {
+    return [
+      {
+        parentState: 'main',
+        rule: Builders.rule(node.data.name.name),
+        transform: (token: Token) => ({ type: token.type }),
+      },
+    ]
   }
 
-  return node.data.attributes
-    .map(attribute => new FunctionCallExpression(attribute))
-    .flatMap(attribute => {
-      if (
-        attribute.callee instanceof IdentifierExpression &&
-        attribute.callee.name === 'token'
-      ) {
-        const {
-          pattern,
-          state,
-          action,
-          discard,
-        } = attribute.argumentExpressionNodes
+  return tokenAttributes.flatMap(attribute => {
+    const {
+      pattern,
+      state,
+      action,
+      discard,
+    } = attribute.argumentExpressionNodes
 
-        const {
-          name: { name },
-        } = node.data
+    const {
+      name: { name },
+    } = node.data
 
-        const rule: Rule = Builders.rule(name, {
-          pattern: getStringLiteral(pattern),
-          discard: getBooleanLiteral(discard),
-          ...(printPattern && { print: printPattern }),
-          ...(action && { action: getAction(action) }),
-        })
-
-        const parentState = getStringLiteral(state) ?? 'main'
-
-        const associatedValues = node.data.associatedValues.filter(isNode)
-
-        return {
-          parentState,
-          rule,
-          transform: token => {
-            return {
-              type: token.type,
-              ...Object.fromEntries(
-                associatedValues.map((associatedValue, index, array) => [
-                  valueBindingName(associatedValue, index, array.length),
-                  token.groups[index],
-                ])
-              ),
-            }
-          },
-        }
-      }
-      return []
+    const rule: Rule = Builders.rule(name, {
+      pattern: getStringLiteral(pattern),
+      discard: getBooleanLiteral(discard),
+      ...(printPattern && { print: printPattern }),
+      ...(action && { action: getAction(action) }),
     })
+
+    const parentState = getStringLiteral(state) ?? 'main'
+
+    const associatedValues = node.data.associatedValues.filter(isNode)
+
+    return {
+      parentState,
+      rule,
+      transform: token => {
+        return {
+          type: token.type,
+          ...Object.fromEntries(
+            associatedValues.map((associatedValue, index, array) => [
+              valueBindingName(associatedValue, index, array.length),
+              token.groups[index],
+            ])
+          ),
+        }
+      },
+    }
+  })
 }
 
 export function buildLexer(node: EnumerationDeclaration): Lexer {
@@ -151,6 +156,10 @@ export function buildLexer(node: EnumerationDeclaration): Lexer {
   return new Lexer(states, 'main')
 }
 
+/**
+ * Transform tokens into a format that matches how our generated data types
+ * serialize to and from JSON.
+ */
 export function buildTokenTransformer(
   node: EnumerationDeclaration
 ): (tokens: Token[]) => unknown[] {

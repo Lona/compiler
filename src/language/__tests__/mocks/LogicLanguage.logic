@@ -1,0 +1,87 @@
+@codable()
+@tokenize()
+enum Token {
+
+  /* Keywords */
+  case true()
+  case false()
+  case enum()
+  case struct()
+  case extension()
+  case let()
+  case func()
+  case return()
+
+  /* Special characters */
+  @token(pattern: "#")
+  case hash()
+
+  @token(pattern: "\[")
+  case openBracket()
+
+  @token(pattern: "\]")
+  case closeBracket()
+
+  @token(pattern: "\{")
+  case openBrace()
+
+  @token(pattern: "\}")
+  case closeBrace()
+
+  @token(pattern: "\(")
+  case openParens()
+
+  @token(pattern: "\)")
+  case closeParens()
+
+  @token(pattern: ",")
+  case comma()
+
+  @token(pattern: ":")
+  case colon()
+
+  @token(pattern: "->")
+  case arrow()
+  
+  @token(pattern: "=")
+  case eq()
+  
+  @token(pattern: ">")
+  case gt()
+  
+  @token(pattern: "<")
+  case lt()
+  
+  @token(pattern: "\.")
+  case dot()
+
+  /* Sequences */
+  @token(pattern: "([_a-zA-Z][_a-zA-Z0-9]*)")
+  @print(pattern: 0)
+  case identifier(value: String)
+
+  @token(pattern: "\"([^\"]*)\"")
+  @print(pattern: ["\"", 0, "\""])
+  case string(value: String)
+
+  @token(pattern: "((?:\+|-)?[0-9]+\.[0-9]+)")
+  @print(pattern: 0)
+  case float(value: String)
+
+  @token(pattern: "((?:\+|-)?[0-9]+)")
+  @print(pattern: 0)
+  case integer(value: String)
+
+  @token(pattern: "[ \t\n\r]+", discard: true)
+  case whitespace()
+
+  @token(pattern: "\/\*([\S\s]*?)\*\/")
+  case comment()
+}
+
+@parse(pattern: self.string)
+struct LGCIdentifier {
+
+  @parse(pattern: Token.identifier)
+  let string: String = ""
+}

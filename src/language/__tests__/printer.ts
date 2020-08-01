@@ -77,14 +77,14 @@ it('prints nodes', () => {
 
   const parserDefinition: Definition = {
     nodes: [
-      recordNodeDefinition(
-        'attribute',
-        sequencePattern([
+      recordNodeDefinition({
+        name: 'attribute',
+        pattern: sequencePattern([
           fieldReferencePattern('attribute', 'name'),
           tokenReferencePattern('equals'),
           fieldReferencePattern('attribute', 'value'),
         ]),
-        [
+        fields: [
           field({
             name: 'name',
             pattern: tokenReferencePattern('name'),
@@ -96,12 +96,12 @@ it('prints nodes', () => {
             print: tokenReferencePrintPattern('string'),
           }),
         ],
-        sequencePrintPattern([
+        print: sequencePrintPattern([
           fieldReferencePrintPattern('name'),
           tokenReferencePrintPattern('equals'),
           fieldReferencePrintPattern('value'),
-        ])
-      ),
+        ]),
+      }),
     ],
   }
 
