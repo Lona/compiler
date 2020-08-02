@@ -638,6 +638,8 @@ export function manyField({
 
 function inferFieldPrintPattern(pattern: Pattern): FieldPrintPattern {
   switch (pattern.type) {
+    case 'sequence':
+      return sequencePrintPattern(pattern.value.map(inferFieldPrintPattern))
     case 'many':
       return joinCommandPrintPattern(inferFieldPrintPattern(pattern.value))
     case 'reference': {

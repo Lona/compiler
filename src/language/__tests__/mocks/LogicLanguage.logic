@@ -85,3 +85,38 @@ struct LGCIdentifier {
   @parse(pattern: Token.identifier)
   let string: String = ""
 }
+
+@parse(pattern: [
+  Token.let,
+  self.name,
+  Token.colon
+])
+struct LGCVariableDeclaration {
+
+  @parse(pattern: LGCIdentifier)
+  let name: LGCIdentifier = LGCIdentifier()
+
+  @parse(pattern: LGCTypeAnnotation)
+  let annotation: LGCTypeAnnotation = LGCTypeAnnotation()
+}
+
+@parse(pattern: [
+  self.identifier,
+  option([
+    Token.lt, 
+    self.genericArguments, 
+    Token.gt])
+])
+@print(pattern: [
+  self.identifier,
+  self.genericArguments
+])
+struct LGCTypeAnnotation {
+
+  @parse(pattern: LGCIdentifier)
+  let identifier: LGCIdentifier = LGCIdentifier()
+
+  @parse(pattern: many([LGCTypeAnnotation, option(Token.comma)]))
+  @print(pattern: join(self, Token.comma))
+  let genericArguments: Array<LGCTypeAnnotation> = []
+}

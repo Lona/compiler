@@ -85,6 +85,7 @@ export type FieldPrintPattern =
   | LiteralPrintPattern
   | TokenReferencePrintPattern
   | NodeReferencePrintPattern
+  | SelfReferencePrintPattern
   | CommandPrintPattern<FieldPrintPattern>
   | SequencePrintPattern<FieldPrintPattern>
 
@@ -190,14 +191,32 @@ export class Printer {
         return indent(f(command.value, value))
       }
       case 'join': {
-        const normalize = <T>(value: T | T[]): T[] =>
-          value instanceof Array ? value : [value]
+        const toArray = (value: Doc | Doc[]): Doc[] => {
+          if (value instanceof Array) {
+            return value
+          }
+
+          // TODO: We may need to unwrap multiple levels, if we continue with this approach
+          if (
+            typeof value === 'object' &&
+            value !== null &&
+            value.type === 'concat'
+          ) {
+            return value.parts
+          }
+
+          return [value]
+        }
 
         const separator = command.separator
           ? f(command.separator, value)
           : undefined
 
-        const elements = normalize(f(command.value, value))
+        let elements = toArray(f(command.value, value))
+
+        // if ('type' in elements && elements.type)
+
+        // console.log('sep', separator, elements)
 
         return separator ? join(separator, elements) : concat(elements)
       }
@@ -206,18 +225,22 @@ export class Printer {
 
   formatField = (
     value: FieldValue,
-    // nodeName: string,
-    // fieldName: string,
+    nodeName: string,
+    fieldName: string,
     printPattern: FieldPrintPattern
   ): Doc => {
     // console.log(`print field ${nodeName}.${fieldName}`, value)
 
     switch (printPattern.type) {
+      case 'self': {
+        return ''
+        // return value.toString()
+      }
       case 'command': {
         const command = printPattern.value
 
         return this.formatCommand(command, { value }, (pattern, { value }) =>
-          this.formatField(value, pattern)
+          this.formatField(value, nodeName, fieldName, pattern)
         )
       }
       case 'literal': {
@@ -251,7 +274,9 @@ export class Printer {
       }
       case 'sequence': {
         return concat(
-          printPattern.value.map(pattern => this.formatField(value, pattern))
+          printPattern.value.map(pattern =>
+            this.formatField(value, nodeName, fieldName, pattern)
+          )
         )
       }
     }
@@ -280,12 +305,7 @@ export class Printer {
 
         // console.log('enum case', value.value, field.print)
 
-        return this.formatField(
-          value.value,
-          // nodeName,
-          // enumCase,
-          field.print
-        )
+        return this.formatField(value.value, nodeName, enumCase, field.print)
       }
       case 'command': {
         const command = printPattern.value
@@ -326,19 +346,14 @@ export class Printer {
 
           return concat(
             fieldValue.map(value =>
-              this.formatField(
-                value,
-                // nodeName,
-                // printPattern.value,
-                print
-              )
+              this.formatField(value, nodeName, printPattern.value, print)
             )
           )
         } else {
           return this.formatField(
             fieldValue,
-            // nodeName,
-            // printPattern.value,
+            nodeName,
+            printPattern.value,
             print
           )
         }

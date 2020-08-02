@@ -85,6 +85,14 @@ function getFieldReference(
   }
 }
 
+function getSelfReference(
+  node: IExpression
+): SelfReferencePrintPattern | undefined {
+  if (node instanceof IdentifierExpression && node.name === 'self') {
+    return selfReferencePrintPattern()
+  }
+}
+
 function getLiteral(node: IExpression): LiteralPrintPattern | undefined {
   if (
     node instanceof LiteralExpression &&
@@ -162,7 +170,11 @@ export function getTokenPrintPattern(node: IExpression): TokenPrintPattern {
     getSequence(getTokenPrintPattern, node) ??
     getCommand(getTokenPrintPattern, node)
 
-  if (!pattern) throw new Error('Invalid token print pattern')
+  if (!pattern) {
+    throw new Error(
+      `Invalid token print pattern: ${inspect(node, false, null)}`
+    )
+  }
 
   return pattern
 }
@@ -172,9 +184,14 @@ export function getFieldPrintPattern(node: IExpression): FieldPrintPattern {
     getTokenReference(node) ??
     getLiteral(node) ??
     getSequence(getFieldPrintPattern, node) ??
-    getCommand(getFieldPrintPattern, node)
+    getCommand(getFieldPrintPattern, node) ??
+    getSelfReference(node)
 
-  if (!pattern) throw new Error('Invalid field print pattern')
+  if (!pattern) {
+    throw new Error(
+      `Invalid field print pattern: ${inspect(node, false, null)}`
+    )
+  }
 
   return pattern
 }

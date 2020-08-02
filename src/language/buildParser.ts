@@ -234,6 +234,18 @@ function getRecordNode(
       const printAttribute = getPrintAttributeExpression(variable.attributes)
 
       if (pattern) {
+        if (pattern.type === 'many') {
+          return [
+            manyField({
+              name: variable.name,
+              pattern,
+              ...(printAttribute && {
+                print: getFieldPrintPattern(printAttribute),
+              }),
+            }),
+          ]
+        }
+
         return [
           field({
             name: variable.name,

@@ -62,6 +62,36 @@ describe('Logic Language', () => {
 
     if (result.type === 'success') {
       expect(result.value).toMatchSnapshot()
+      expect(printer.print(printer.formatNode(result.value, root))).toEqual(
+        'foo'
+      )
+    }
+  })
+
+  it('parses type annotation', () => {
+    const root = 'LGCTypeAnnotation'
+    const tokens = lexer.tokenize(`Foo<A>`)
+    const result = parser.parse(tokens, root)
+
+    expect(result.type).toEqual('success')
+
+    if (result.type === 'success') {
+      expect(result.value).toMatchSnapshot()
+      expect(
+        printer.print(printer.formatNode(result.value, root))
+      ).toMatchSnapshot()
+    }
+  })
+
+  it('parses variable declarations', () => {
+    const root = 'LGCVariableDeclaration'
+    const tokens = lexer.tokenize(`let foo: Number =`)
+    const result = parser.parse(tokens, root)
+
+    expect(result.type).toEqual('success')
+
+    if (result.type === 'success') {
+      expect(result.value).toMatchSnapshot()
       expect(
         printer.print(printer.formatNode(result.value, root))
       ).toMatchSnapshot()

@@ -408,12 +408,7 @@ Object {
     "OK",
     Object {
       "contents": Object {
-        "parts": Array [
-          Object {
-            "parts": Array [],
-            "type": "concat",
-          },
-        ],
+        "parts": Array [],
         "type": "concat",
       },
       "type": "indent",
@@ -429,33 +424,23 @@ Object {
         },
         Object {
           "parts": Array [
+            "<",
+            "Nested",
             Object {
-              "parts": Array [
-                "<",
-                "Nested",
-                Object {
-                  "contents": Object {
-                    "parts": Array [
-                      Object {
-                        "parts": Array [],
-                        "type": "concat",
-                      },
-                    ],
-                    "type": "concat",
-                  },
-                  "type": "indent",
-                },
-                ">",
-                Object {
-                  "parts": Array [],
-                  "type": "concat",
-                },
-                "</",
-                "Nested",
-                ">",
-              ],
+              "contents": Object {
+                "parts": Array [],
+                "type": "concat",
+              },
+              "type": "indent",
+            },
+            ">",
+            Object {
+              "parts": Array [],
               "type": "concat",
             },
+            "</",
+            "Nested",
+            ">",
           ],
           "type": "concat",
         },

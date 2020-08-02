@@ -6,7 +6,33 @@ Object {
 }
 `;
 
-exports[`Logic Language parses identifiers 2`] = `"foo"`;
+exports[`Logic Language parses type annotation 1`] = `
+Object {
+  "genericArguments": Array [
+    Object {
+      "genericArguments": Array [],
+      "identifier": Object {
+        "string": "A",
+      },
+    },
+  ],
+  "identifier": Object {
+    "string": "Foo",
+  },
+}
+`;
+
+exports[`Logic Language parses type annotation 2`] = `"Foo"`;
+
+exports[`Logic Language parses variable declarations 1`] = `
+Object {
+  "name": Object {
+    "string": "foo",
+  },
+}
+`;
+
+exports[`Logic Language parses variable declarations 2`] = `"letfoo:"`;
 
 exports[`Logic Language tokenizes comments 1`] = `
 Array [
