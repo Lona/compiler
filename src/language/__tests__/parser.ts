@@ -10,6 +10,8 @@ import {
   OptionPattern,
   EnumNodeDefinition,
   field,
+  nodeFieldAnnotation,
+  stringFieldAnnotation,
 } from '../Parser'
 import { Token } from '../Lexer'
 
@@ -66,7 +68,13 @@ it('parses field references', () => {
   const node: NodeDefinition = {
     type: 'record',
     name: 'Root',
-    fields: [field({ name: 'name', pattern: tokenPattern })],
+    fields: [
+      field({
+        name: 'name',
+        annotation: nodeFieldAnnotation('name'),
+        pattern: tokenPattern,
+      }),
+    ],
     pattern: fieldPattern,
   }
 
@@ -183,6 +191,7 @@ it('parses option', () => {
         fields: [
           field({
             name: 'name',
+            annotation: stringFieldAnnotation(),
             pattern: {
               type: 'reference',
               value: reference,
@@ -204,6 +213,7 @@ it('parses records', () => {
     fields: [
       field({
         name: 'attribute',
+        annotation: nodeFieldAnnotation('Attribute'),
         pattern: {
           type: 'reference',
           value: { type: 'node', name: 'Attribute' },
@@ -226,6 +236,7 @@ it('parses records', () => {
     fields: [
       field({
         name: 'name',
+        annotation: stringFieldAnnotation(),
         pattern: {
           type: 'reference',
           value: { type: 'token', name: 'hello' },
@@ -233,6 +244,7 @@ it('parses records', () => {
       }),
       field({
         name: 'value',
+        annotation: stringFieldAnnotation(),
         pattern: {
           type: 'reference',
           value: { type: 'token', name: 'world' },
@@ -301,6 +313,7 @@ it('parses enums', () => {
     fields: [
       field({
         name: 'attribute',
+        annotation: nodeFieldAnnotation('Attribute'),
         pattern: {
           type: 'reference',
           value: { type: 'node', name: 'Attribute' },
@@ -308,6 +321,7 @@ it('parses enums', () => {
       }),
       field({
         name: 'name',
+        annotation: stringFieldAnnotation(),
         pattern: {
           type: 'reference',
           value: { type: 'token', name: 'hello' },
@@ -343,6 +357,7 @@ it('parses enums', () => {
     fields: [
       field({
         name: 'name',
+        annotation: stringFieldAnnotation(),
         pattern: {
           type: 'reference',
           value: { type: 'token', name: 'hello' },
@@ -350,6 +365,7 @@ it('parses enums', () => {
       }),
       field({
         name: 'value',
+        annotation: stringFieldAnnotation(),
         pattern: {
           type: 'reference',
           value: { type: 'token', name: 'world' },

@@ -83,11 +83,20 @@ export type StringFieldAnnotation = { type: 'string' }
 
 export type NodeFieldAnnotation = { type: 'node'; value: string }
 
-export type ManyFieldAnnotation = { type: 'many'; value: FieldAnnotation }
+export type ManyFieldAnnotation = {
+  type: 'many'
+  value: StringFieldAnnotation | NodeFieldAnnotation
+}
+
+export type OptionFieldAnnotation = {
+  type: 'option'
+  value: StringFieldAnnotation | NodeFieldAnnotation
+}
 
 export type FieldAnnotation =
   | StringFieldAnnotation
   | NodeFieldAnnotation
+  | OptionFieldAnnotation
   | ManyFieldAnnotation
 
 export type ManyField = {
@@ -98,15 +107,23 @@ export type ManyField = {
   print?: FieldPrintPattern
 }
 
+export type OptionField = {
+  type: 'option'
+  name: string
+  annotation: OptionFieldAnnotation
+  pattern: OptionPattern
+  print?: FieldPrintPattern
+}
+
 export type StandardField = {
   type: 'standard'
   name: string
-  annotation: FieldAnnotation
+  annotation: StringFieldAnnotation | NodeFieldAnnotation
   pattern: Pattern
   print?: FieldPrintPattern
 }
 
-export type Field = StandardField | ManyField
+export type Field = StandardField | ManyField | OptionField
 
 export type EnumNodeDefinition = {
   type: 'enum'
@@ -615,14 +632,34 @@ export function optionPattern(value: Pattern): OptionPattern {
   return { type: 'option', value }
 }
 
-export function field({
+export function stringFieldAnnotation(): StringFieldAnnotation {
+  return { type: 'string' }
+}
+
+export function nodeFieldAnnotation(value: string): NodeFieldAnnotation {
+  return { type: 'node', value }
+}
+
+export function optionFieldAnnotation(
+  value: StringFieldAnnotation | NodeFieldAnnotation
+): OptionFieldAnnotation {
+  return { type: 'option', value }
+}
+
+export function manyFieldAnnotation(
+  value: StringFieldAnnotation | NodeFieldAnnotation
+): ManyFieldAnnotation {
+  return { type: 'many', value }
+}
+
+export function standardField({
   name,
   annotation,
   pattern,
   print,
 }: {
   name: string
-  annotation: FieldAnnotation
+  annotation: StringFieldAnnotation | NodeFieldAnnotation
   pattern: Pattern
   print?: FieldPrintPattern
 }): StandardField {
@@ -653,6 +690,56 @@ export function manyField({
     pattern,
     print: print ?? inferFieldPrintPattern(pattern),
   }
+}
+
+export function optionField({
+  name,
+  annotation,
+  pattern,
+  print,
+}: {
+  name: string
+  annotation: OptionFieldAnnotation
+  pattern: OptionPattern
+  print?: FieldPrintPattern
+}): OptionField {
+  return {
+    type: 'option',
+    name,
+    annotation,
+    pattern,
+    print: print ?? inferFieldPrintPattern(pattern),
+  }
+}
+
+export function field({
+  name,
+  annotation,
+  pattern,
+  print,
+}: {
+  name: string
+  annotation: FieldAnnotation
+  pattern: Pattern
+  print?: FieldPrintPattern
+}): Field {
+  if (annotation.type === 'option' || pattern.type === 'option') {
+    if (!(annotation.type === 'option' && pattern.type === 'option')) {
+      throw new Error(`Option field type mismatch for field: ${name}`)
+    }
+
+    return optionField({ name, annotation, pattern, print })
+  }
+
+  if (annotation.type === 'many' || pattern.type === 'many') {
+    if (!(annotation.type === 'many' && pattern.type === 'many')) {
+      throw new Error(`Many field type mismatch for field: ${name}`)
+    }
+
+    return manyField({ name, annotation, pattern, print })
+  }
+
+  return standardField({ name, annotation, pattern, print })
 }
 
 function inferFieldPrintPattern(pattern: Pattern): FieldPrintPattern {

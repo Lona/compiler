@@ -22,6 +22,9 @@ import {
   enumNodeDefinition,
   recordNodeDefinition,
   FieldAnnotation,
+  StringFieldAnnotation,
+  NodeFieldAnnotation,
+  optionField,
 } from './Parser'
 import {
   getPrintAttributeExpression,
@@ -188,7 +191,9 @@ function simpleTypeName(annotation?: AST.TypeAnnotation): string[] {
 function fieldAnnotation(annotation?: AST.TypeAnnotation): FieldAnnotation {
   const names = simpleTypeName(annotation)
 
-  function determineType(name: string): FieldAnnotation {
+  function determineType(
+    name: string
+  ): StringFieldAnnotation | NodeFieldAnnotation {
     if (name === 'String') {
       return { type: 'string' }
     } else {
@@ -215,6 +220,7 @@ function inferFieldPattern(
   options: Options
 ): Pattern {
   switch (fieldAnnotation.type) {
+    case 'option':
     case 'many': {
       const pattern = inferFieldPattern(
         variableName,
@@ -223,7 +229,7 @@ function inferFieldPattern(
       )
 
       return {
-        type: 'many',
+        type: fieldAnnotation.type,
         value: pattern,
       }
     }
@@ -289,10 +295,27 @@ function getRecordNode(
           throw new Error('Many type mismatch')
         }
 
+        if (pattern.type === 'option' && annotation.type === 'option') {
+          return [
+            optionField({
+              name: name,
+              annotation,
+              pattern,
+              ...(printAttribute && {
+                print: getFieldPrintPattern(printAttribute),
+              }),
+            }),
+          ]
+        }
+
+        if (pattern.type === 'option' || annotation.type === 'option') {
+          throw new Error('option type mismatch')
+        }
+
         return [
           field({
             name: name,
-            annotation: fieldAnnotation(variable.syntaxNode.data.annotation),
+            annotation,
             pattern,
             ...(printAttribute && {
               print: getFieldPrintPattern(printAttribute),
