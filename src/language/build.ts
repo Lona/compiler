@@ -1,7 +1,7 @@
 import { Parser } from './Parser'
 import { LogicAST, decodeLogic } from '@lona/serialization'
 import { findNode, findNodes } from '../logic/traversal'
-import { buildLexer } from './buildLexer'
+import { buildLexer, buildLexerDefinition } from './buildLexer'
 import { EnumerationDeclaration } from '../logic/nodes/EnumerationDeclaration'
 import { RecordDeclaration } from '../logic/nodes/RecordDeclaration'
 import { createDeclarationNode } from '../logic/nodes/createNode'
@@ -10,8 +10,16 @@ import { Lexer } from './Lexer'
 
 export function buildParserFromSource(source: string): Parser {
   const rootNode = decodeLogic(source)
+  const tokensEnum = getTokensEnum(rootNode)
 
-  return buildParser(getParserTypes(rootNode))
+  const tokenNames = buildLexerDefinition(tokensEnum)
+    .flatMap(state => state.rules)
+    .map(rule => rule.name)
+
+  return buildParser(getParserTypes(rootNode), {
+    tokenizerName: tokensEnum.name,
+    tokenNames,
+  })
 }
 
 export function buildLexerFromSource(source: string): Lexer {

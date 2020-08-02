@@ -79,9 +79,21 @@ export type Pattern =
   | ManyPattern
   | OptionPattern
 
+export type StringFieldAnnotation = { type: 'string' }
+
+export type NodeFieldAnnotation = { type: 'node'; value: string }
+
+export type ManyFieldAnnotation = { type: 'many'; value: FieldAnnotation }
+
+export type FieldAnnotation =
+  | StringFieldAnnotation
+  | NodeFieldAnnotation
+  | ManyFieldAnnotation
+
 export type ManyField = {
   type: 'many'
   name: string
+  annotation: ManyFieldAnnotation
   pattern: ManyPattern
   print?: FieldPrintPattern
 }
@@ -89,6 +101,7 @@ export type ManyField = {
 export type StandardField = {
   type: 'standard'
   name: string
+  annotation: FieldAnnotation
   pattern: Pattern
   print?: FieldPrintPattern
 }
@@ -604,16 +617,19 @@ export function optionPattern(value: Pattern): OptionPattern {
 
 export function field({
   name,
+  annotation,
   pattern,
   print,
 }: {
   name: string
+  annotation: FieldAnnotation
   pattern: Pattern
   print?: FieldPrintPattern
 }): StandardField {
   return {
     type: 'standard',
     name,
+    annotation,
     pattern,
     print: print ?? inferFieldPrintPattern(pattern),
   }
@@ -621,16 +637,19 @@ export function field({
 
 export function manyField({
   name,
+  annotation,
   pattern,
   print,
 }: {
   name: string
+  annotation: ManyFieldAnnotation
   pattern: ManyPattern
   print?: FieldPrintPattern
 }): ManyField {
   return {
     type: 'many',
     name,
+    annotation,
     pattern,
     print: print ?? inferFieldPrintPattern(pattern),
   }

@@ -21,6 +21,7 @@ import {
   manyField,
   enumNodeDefinition,
   recordNodeDefinition,
+  FieldAnnotation,
 } from './Parser'
 import {
   getPrintAttributeExpression,
@@ -36,6 +37,7 @@ import {
   selfReferencePrintPattern,
 } from './Printer'
 import { inspect } from 'util'
+import { isNode } from '../logic/ast'
 
 export function isParser(
   node: RecordDeclaration | EnumerationDeclaration
@@ -164,64 +166,95 @@ export function getEnumParseAttribute(
   }
 }
 
-function inferFieldPattern(
-  fieldName: string,
-  annotation: Extract<AST.TypeAnnotation, { type: 'typeIdentifier' }>,
-  nodeNames: string[]
-): Pattern | undefined {
+function simpleTypeName(annotation?: AST.TypeAnnotation): string[] {
+  if (!annotation) {
+    throw new Error('Type annotations are required for parser variables')
+  }
+
+  if (annotation.type !== 'typeIdentifier') {
+    throw new Error('Only type identifiers are supported for parser patterns')
+  }
+
   const typeName = annotation.data.identifier.string
 
-  if (nodeNames.includes(typeName)) {
-    return {
-      type: 'reference',
-      value: { type: 'node', name: typeName },
+  return [
+    typeName,
+    ...(annotation.data.genericArguments.length > 0
+      ? simpleTypeName(annotation.data.genericArguments[0])
+      : []),
+  ]
+}
+
+function fieldAnnotation(annotation?: AST.TypeAnnotation): FieldAnnotation {
+  const names = simpleTypeName(annotation)
+
+  function determineType(name: string): FieldAnnotation {
+    if (name === 'String') {
+      return { type: 'string' }
+    } else {
+      return { type: 'node', value: name }
     }
-  } else if (
-    typeName === 'Array' &&
-    annotation.data.genericArguments[0].type === 'typeIdentifier'
-  ) {
-    const pattern = inferFieldPattern(
-      fieldName,
-      annotation.data.genericArguments[0],
-      nodeNames
-    )
+  }
 
-    if (!pattern) return
+  if (names.length === 1) {
+    return determineType(names[0])
+  } else if (names.length === 2) {
+    const [container, inner] = names
 
-    return {
-      type: 'many',
-      value: pattern,
+    if (container === 'Array') {
+      return { type: 'many', value: determineType(inner) }
     }
-  } else if (
-    typeName === 'Optional' &&
-    annotation.data.genericArguments[0].type === 'typeIdentifier'
-  ) {
-    const pattern = inferFieldPattern(
-      fieldName,
-      annotation.data.genericArguments[0],
-      nodeNames
-    )
+  }
 
-    if (!pattern) return
+  throw new Error(`Complex types not supported yet: ${annotation}`)
+}
 
-    return {
-      type: 'option',
-      value: pattern,
+function inferFieldPattern(
+  variableName: string,
+  fieldAnnotation: FieldAnnotation,
+  options: Options
+): Pattern {
+  switch (fieldAnnotation.type) {
+    case 'many': {
+      const pattern = inferFieldPattern(
+        variableName,
+        fieldAnnotation.value,
+        options
+      )
+
+      return {
+        type: 'many',
+        value: pattern,
+      }
     }
-  } else if (typeName === 'String') {
-    return {
-      type: 'reference',
-      value: {
-        type: 'token',
-        name: fieldName,
-      },
+    case 'node': {
+      if (!options.nodeNames.includes(fieldAnnotation.value)) {
+        throw new Error(`Invalid node reference: ${fieldAnnotation.value}`)
+      }
+
+      return {
+        type: 'reference',
+        value: { type: 'node', name: fieldAnnotation.value },
+      }
+    }
+    case 'string': {
+      if (!options.tokenNames.includes(variableName)) {
+        throw new Error(
+          `Couldn't infer token type for: ${variableName} (${variableName} isn't a defined token)`
+        )
+      }
+
+      return {
+        type: 'reference',
+        value: { type: 'token', name: variableName },
+      }
     }
   }
 }
 
 function getRecordNode(
   declaration: RecordDeclaration,
-  nodeNames: string[]
+  options: Options
 ): RecordNodeDefinition {
   const printAttribute = getPrintAttributeExpression(declaration.attributes)
 
@@ -230,14 +263,20 @@ function getRecordNode(
     pattern: getParseAttribute(declaration.name, declaration.attributes)!,
     print: printAttribute ? getNodePrintPattern(printAttribute) : undefined,
     fields: declaration.variables.flatMap((variable): Field[] => {
-      const pattern = getParseAttribute(variable.name, variable.attributes)
-      const printAttribute = getPrintAttributeExpression(variable.attributes)
+      const name = variable.name
 
-      if (pattern) {
-        if (pattern.type === 'many') {
+      try {
+        const annotation = fieldAnnotation(variable.syntaxNode.data.annotation)
+        const pattern =
+          getParseAttribute(name, variable.attributes) ??
+          inferFieldPattern(name, annotation, options)
+        const printAttribute = getPrintAttributeExpression(variable.attributes)
+
+        if (pattern.type === 'many' && annotation.type === 'many') {
           return [
             manyField({
-              name: variable.name,
+              name: name,
+              annotation,
               pattern,
               ...(printAttribute && {
                 print: getFieldPrintPattern(printAttribute),
@@ -246,131 +285,108 @@ function getRecordNode(
           ]
         }
 
+        if (pattern.type === 'many' || annotation.type === 'many') {
+          throw new Error('Many type mismatch')
+        }
+
         return [
           field({
-            name: variable.name,
+            name: name,
+            annotation: fieldAnnotation(variable.syntaxNode.data.annotation),
             pattern,
             ...(printAttribute && {
               print: getFieldPrintPattern(printAttribute),
             }),
           }),
         ]
+      } catch (error) {
+        console.error(
+          `Error converting record field: ${declaration.name}.${name}`
+        )
+        throw new Error(error)
       }
-
-      const annotation = variable.syntaxNode.data.annotation
-
-      // Try to infer a pattern from the type annotation
-      if (annotation && annotation.type === 'typeIdentifier') {
-        const pattern = inferFieldPattern(variable.name, annotation, nodeNames)
-
-        if (pattern) {
-          if (pattern.type === 'many') {
-            return [
-              manyField({
-                name: variable.name,
-                pattern,
-                ...(printAttribute && {
-                  print: getFieldPrintPattern(printAttribute),
-                }),
-              }),
-            ]
-          }
-
-          return [
-            field({
-              name: variable.name,
-              pattern,
-              ...(printAttribute && {
-                print: getFieldPrintPattern(printAttribute),
-              }),
-            }),
-          ]
-        }
-      }
-
-      return []
     }),
   })
 }
 
 function getEnumNode(
   declaration: EnumerationDeclaration,
-  nodeNames: string[]
+  options: Options
 ): EnumNodeDefinition {
   return enumNodeDefinition({
     name: declaration.name,
     pattern: getEnumParseAttribute(declaration)! as OrPattern,
     fields: declaration.cases.flatMap((enumCase): Field[] => {
-      const attributes = enumCase.data.attributes.map(
-        attribute => new FunctionCallExpression(attribute)
-      )
-      const pattern = getParseAttribute(enumCase.data.name.name, attributes)
-      const printAttribute = getPrintAttributeExpression(attributes)
+      const name = enumCase.data.name.name
 
-      if (pattern) {
+      try {
+        const attributes = enumCase.data.attributes.map(
+          attribute => new FunctionCallExpression(attribute)
+        )
+
+        const associatedValues = enumCase.data.associatedValues.filter(isNode)
+
+        if (associatedValues.length === 0) {
+          throw new Error('Parser enums must have at least 1 associated value')
+        }
+
+        const annotation = fieldAnnotation(associatedValues[0].data.annotation)
+        const pattern =
+          getParseAttribute(name, attributes) ??
+          inferFieldPattern(name, annotation, options)
+        const printAttribute = getPrintAttributeExpression(attributes)
+
         return [
           field({
-            name: enumCase.data.name.name,
+            name: name,
+            annotation: fieldAnnotation(associatedValues[0].data.annotation),
             pattern,
             ...(printAttribute && {
               print: getFieldPrintPattern(printAttribute),
             }),
           }),
         ]
+      } catch (error) {
+        console.error(
+          `Error converting enum field: ${declaration.name}.${name}`
+        )
+        throw new Error(error)
       }
-
-      // Try to infer a pattern from the type annotation
-      if (
-        enumCase.data.associatedValues[0] &&
-        enumCase.data.associatedValues[0].type === 'associatedValue'
-      ) {
-        const annotation = enumCase.data.associatedValues[0].data.annotation
-
-        if (annotation && annotation.type === 'typeIdentifier') {
-          const pattern = inferFieldPattern(
-            enumCase.data.name.name,
-            annotation,
-            nodeNames
-          )
-
-          if (pattern) {
-            return [
-              field({
-                name: enumCase.data.name.name,
-                pattern,
-                ...(printAttribute && {
-                  print: getFieldPrintPattern(printAttribute),
-                }),
-              }),
-            ]
-          }
-        }
-      }
-
-      return []
     }),
   })
 }
 
+export type ParserDefinitionOptions = {
+  tokenizerName: string
+  tokenNames: string[]
+}
+
+type Options = ParserDefinitionOptions & {
+  nodeNames: string[]
+}
+
 export function buildParserDefinition(
-  nodes: (EnumerationDeclaration | RecordDeclaration)[]
+  nodes: (EnumerationDeclaration | RecordDeclaration)[],
+  parserOptions: ParserDefinitionOptions
 ): Definition {
   const parserNodes = nodes.filter(isParser)
   const nodeNames = parserNodes.map(node => node.name)
+  const options: Options = { ...parserOptions, nodeNames }
 
   return {
     nodes: parserNodes.map(node => {
       if (node instanceof RecordDeclaration) {
-        return getRecordNode(node, nodeNames)
+        return getRecordNode(node, options)
       } else {
-        return getEnumNode(node, nodeNames)
+        return getEnumNode(node, options)
       }
     }),
   }
 }
 
 export function buildParser(
-  nodes: (EnumerationDeclaration | RecordDeclaration)[]
+  nodes: (EnumerationDeclaration | RecordDeclaration)[],
+  parserOptions: ParserDefinitionOptions
 ): Parser {
-  return new Parser(buildParserDefinition(nodes))
+  return new Parser(buildParserDefinition(nodes, parserOptions))
 }

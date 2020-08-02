@@ -6,6 +6,9 @@ Object {
     Object {
       "fields": Array [
         Object {
+          "annotation": Object {
+            "type": "string",
+          },
           "name": "name",
           "pattern": Object {
             "type": "reference",
@@ -21,6 +24,9 @@ Object {
           "type": "standard",
         },
         Object {
+          "annotation": Object {
+            "type": "string",
+          },
           "name": "value",
           "pattern": Object {
             "type": "reference",
@@ -87,6 +93,9 @@ Object {
     Object {
       "fields": Array [
         Object {
+          "annotation": Object {
+            "type": "string",
+          },
           "name": "charData",
           "pattern": Object {
             "type": "reference",
@@ -102,6 +111,9 @@ Object {
           "type": "standard",
         },
         Object {
+          "annotation": Object {
+            "type": "string",
+          },
           "name": "comment",
           "pattern": Object {
             "type": "reference",
@@ -117,6 +129,10 @@ Object {
           "type": "standard",
         },
         Object {
+          "annotation": Object {
+            "type": "node",
+            "value": "XMLElement",
+          },
           "name": "element",
           "pattern": Object {
             "type": "reference",
@@ -170,6 +186,9 @@ Object {
     Object {
       "fields": Array [
         Object {
+          "annotation": Object {
+            "type": "string",
+          },
           "name": "name",
           "pattern": Object {
             "type": "reference",
@@ -185,6 +204,13 @@ Object {
           "type": "standard",
         },
         Object {
+          "annotation": Object {
+            "type": "many",
+            "value": Object {
+              "type": "node",
+              "value": "XMLAttribute",
+            },
+          },
           "name": "attributes",
           "pattern": Object {
             "type": "many",
@@ -209,6 +235,13 @@ Object {
           "type": "many",
         },
         Object {
+          "annotation": Object {
+            "type": "many",
+            "value": Object {
+              "type": "node",
+              "value": "XMLElementContent",
+            },
+          },
           "name": "content",
           "pattern": Object {
             "type": "many",

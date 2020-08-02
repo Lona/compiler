@@ -87,11 +87,13 @@ it('prints nodes', () => {
         fields: [
           field({
             name: 'name',
+            annotation: { type: 'string' },
             pattern: tokenReferencePattern('name'),
             print: tokenReferencePrintPattern('name'),
           }),
           field({
             name: 'value',
+            annotation: { type: 'string' },
             pattern: tokenReferencePattern('string'),
             print: tokenReferencePrintPattern('string'),
           }),
