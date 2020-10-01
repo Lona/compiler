@@ -27,16 +27,22 @@ let y: Number = x`
 
     let namespace = createNamespace(rootNode)
 
-    const variable = findNode(rootNode, node => {
-      return node.type === 'variable' && node.data.name.name === 'x'
-    }) as AST.VariableDeclaration
+    const variable = findNode(
+      rootNode,
+      (node): node is AST.VariableDeclaration => {
+        return node.type === 'variable' && node.data.name.name === 'x'
+      }
+    )
 
-    const identifierExpression = findNode(rootNode, node => {
-      return (
-        node.type === 'identifierExpression' &&
-        node.data.identifier.string === 'x'
-      )
-    }) as AST.IdentifierExpression
+    const identifierExpression = findNode(
+      rootNode,
+      (node): node is AST.IdentifierExpression => {
+        return (
+          node.type === 'identifierExpression' &&
+          node.data.identifier.string === 'x'
+        )
+      }
+    )
 
     expect(variable).not.toBeUndefined()
 
@@ -45,8 +51,8 @@ let y: Number = x`
     let scope = createScopeContext(rootNode, namespace)
 
     expect(
-      scope.identifierExpressionToPattern[identifierExpression.data.id]
-    ).toEqual(variable.data.name.id)
+      scope.identifierExpressionToPattern[identifierExpression!.data.id]
+    ).toEqual(variable!.data.name.id)
 
     expect(Object.keys(scope.valueNames.flattened())).toEqual(['x', 'y'])
   })
@@ -64,15 +70,22 @@ let y: Number = Foo.x`
 
     let namespace = createNamespace(rootNode)
 
-    const variable = findNode(rootNode, node => {
-      return node.type === 'variable' && node.data.name.name === 'x'
-    }) as AST.VariableDeclaration
+    const variable = findNode(
+      rootNode,
+      (node): node is AST.VariableDeclaration => {
+        return node.type === 'variable' && node.data.name.name === 'x'
+      }
+    )
 
-    const memberExpression = findNode(rootNode, node => {
-      return (
-        node.type === 'memberExpression' && node.data.memberName.string === 'x'
-      )
-    }) as AST.MemberExpression
+    const memberExpression = findNode(
+      rootNode,
+      (node): node is AST.MemberExpression => {
+        return (
+          node.type === 'memberExpression' &&
+          node.data.memberName.string === 'x'
+        )
+      }
+    )
 
     expect(variable).not.toBeUndefined()
 
@@ -80,8 +93,8 @@ let y: Number = Foo.x`
 
     let scope = createScopeContext(rootNode, namespace)
 
-    expect(scope.memberExpressionToPattern[memberExpression.data.id]).toEqual(
-      variable.data.name.id
+    expect(scope.memberExpressionToPattern[memberExpression!.data.id]).toEqual(
+      variable!.data.name.id
     )
 
     expect(Object.keys(scope.valueNames.flattened())).toEqual(['y'])
@@ -98,26 +111,39 @@ let y: Number = Foo.x`
 
     let namespace = createNamespace(rootNode)
 
-    const enumeration = findNode(rootNode, node => {
-      return node.type === 'enumeration' && node.data.name.name === 'Foo'
-    }) as AST.EnumerationDeclaration
+    const enumeration = findNode(
+      rootNode,
+      (node): node is AST.EnumerationDeclaration => {
+        return node.type === 'enumeration' && node.data.name.name === 'Foo'
+      }
+    )
 
-    const enumerationCase = findNode(rootNode, node => {
+    const enumerationCase = findNode(rootNode, (node): node is Extract<
+      AST.EnumerationCase,
+      { type: 'enumerationCase' }
+    > => {
       return node.type === 'enumerationCase' && node.data.name.name === 'bar'
-    }) as AST.EnumerationCase
+    })
 
-    const memberExpression = findNode(rootNode, node => {
-      return (
-        node.type === 'memberExpression' &&
-        node.data.memberName.string === 'bar'
-      )
-    }) as AST.MemberExpression
+    const memberExpression = findNode(
+      rootNode,
+      (node): node is AST.MemberExpression => {
+        return (
+          node.type === 'memberExpression' &&
+          node.data.memberName.string === 'bar'
+        )
+      }
+    )
 
-    const typeIdentifier = findNode(rootNode, node => {
-      return (
-        node.type === 'typeIdentifier' && node.data.identifier.string === 'Foo'
-      )
-    }) as AST.TypeIdentifierTypeAnnotation
+    const typeIdentifier = findNode(
+      rootNode,
+      (node): node is AST.TypeIdentifierTypeAnnotation => {
+        return (
+          node.type === 'typeIdentifier' &&
+          node.data.identifier.string === 'Foo'
+        )
+      }
+    )
 
     expect(enumeration).not.toBeUndefined()
 
@@ -129,17 +155,17 @@ let y: Number = Foo.x`
 
     let scope = createScopeContext(rootNode, namespace)
 
-    expect(scope.typeIdentifierToPattern[typeIdentifier.data.id]).toEqual(
-      enumeration.data.name.id
+    expect(scope.typeIdentifierToPattern[typeIdentifier!.data.id]).toEqual(
+      enumeration!.data.name.id
     )
 
     // TODO: Fix EnumerationCase being a union with placeholder
-    if (enumerationCase.type !== 'enumerationCase') {
+    if (enumerationCase!.type !== 'enumerationCase') {
       throw new Error('Bad enumeration case')
     }
 
-    expect(scope.memberExpressionToPattern[memberExpression.data.id]).toEqual(
-      enumerationCase.data.name.id
+    expect(scope.memberExpressionToPattern[memberExpression!.data.id]).toEqual(
+      enumerationCase!.data.name.id
     )
 
     expect(Object.keys(scope.valueNames.flattened())).toEqual(['y'])
@@ -156,20 +182,26 @@ func bar(hello: Number) -> Number {
 
     let namespace = createNamespace(rootNode)
 
-    const parameter = findNode(rootNode, node => {
-      return (
-        node.type === 'parameter' &&
-        // TODO: Fix type issue
-        (node.data as any).localName.name === 'hello'
-      )
-    }) as AST.FunctionParameter
+    const parameter = findNode(
+      rootNode,
+      (node): node is AST.FunctionParameter => {
+        return (
+          node.type === 'parameter' &&
+          // TODO: Fix type issue
+          (node.data as any).localName.name === 'hello'
+        )
+      }
+    )
 
-    const identifierExpression = findNode(rootNode, node => {
-      return (
-        node.type === 'identifierExpression' &&
-        node.data.identifier.string === 'hello'
-      )
-    }) as AST.IdentifierExpression
+    const identifierExpression = findNode(
+      rootNode,
+      (node): node is AST.IdentifierExpression => {
+        return (
+          node.type === 'identifierExpression' &&
+          node.data.identifier.string === 'hello'
+        )
+      }
+    )
 
     expect(parameter).not.toBeUndefined()
 
@@ -178,8 +210,8 @@ func bar(hello: Number) -> Number {
     let scope = createScopeContext(rootNode, namespace)
 
     expect(
-      scope.identifierExpressionToPattern[identifierExpression.data.id]
-    ).toEqual((parameter.data as any).localName.id)
+      scope.identifierExpressionToPattern[identifierExpression!.data.id]
+    ).toEqual((parameter!.data as any).localName.id)
 
     expect(Object.keys(scope.valueNames.flattened())).toEqual(['bar'])
   })
@@ -208,14 +240,14 @@ func bar(hello: Number) -> Number {
     expect(scope.undefinedTypeIdentifiers.size).toEqual(7)
 
     let typeIdentifiers = [...scope.undefinedTypeIdentifiers.values()]
-      .map(
-        id =>
-          findNode(
-            rootNode,
-            node => node.data.id === id
-          ) as AST.TypeIdentifierTypeAnnotation
+      .map(id =>
+        findNode(
+          rootNode,
+          (node): node is AST.TypeIdentifierTypeAnnotation =>
+            node.data.id === id
+        )
       )
-      .map(node => node.data.identifier.string)
+      .map(node => node!.data.identifier.string)
 
     expect(typeIdentifiers).toEqual([
       'Number',
@@ -240,14 +272,13 @@ func bar(hello: Number) -> Number {
     expect(scope.undefinedTypeIdentifiers.size).toEqual(0)
 
     let memberExpressions = [...scope.undefinedMemberExpressions.values()]
-      .map(
-        id =>
-          findNode(
-            rootNode,
-            node => node.data.id === id
-          ) as AST.MemberExpression
+      .map(id =>
+        findNode(
+          rootNode,
+          (node): node is AST.MemberExpression => node.data.id === id
+        )
       )
-      .map(node => node.data.memberName.string)
+      .map(node => node!.data.memberName.string)
 
     expect(memberExpressions).toEqual([
       'none',

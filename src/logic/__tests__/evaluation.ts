@@ -13,9 +13,12 @@ function getInitializerId(module: ModuleContext, variableName: string): UUID {
     throw new Error(`Failed to find Example.logic`)
   }
 
-  const variable = findNode(logicFile.rootNode, node => {
-    return node.type === 'variable' && node.data.name.name === variableName
-  }) as AST.VariableDeclaration | undefined
+  const variable = findNode(
+    logicFile.rootNode,
+    (node): node is AST.VariableDeclaration => {
+      return node.type === 'variable' && node.data.name.name === variableName
+    }
+  )
 
   if (!variable) {
     throw new Error(`Variable ${variableName} not found`)

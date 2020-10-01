@@ -23,7 +23,15 @@ type Options = {
 
 const printerOptions = { printWidth: 120, tabWidth: 2, useTabs: false }
 
-const reservedWords = ['true', 'false', 'default', 'case', 'break']
+const reservedWords = [
+  'true',
+  'false',
+  'default',
+  'case',
+  'break',
+  'nil',
+  'where',
+]
 
 const stringWithSafeIdentifier = (id: string) => {
   if (/^\d/.test(id)) {
@@ -328,21 +336,31 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
       ])
     }
     case 'EnumDeclaration': {
+      const { isIndirect, modifier, genericParameters, inherits } = ast.data
+
       /* Copied from ClassDeclaration */
-      const maybeIndirect = ast.data.isIndirect
+      const maybeIndirect = isIndirect
         ? builders.concat(['indirect', builders.line])
         : ''
-      const maybeModifier = ast.data.modifier
-        ? builders.concat([
-            renderDeclarationModifier(ast.data.modifier),
-            builders.line,
-          ])
+      const maybeModifier = modifier
+        ? builders.concat([renderDeclarationModifier(modifier), builders.line])
         : ''
-      const maybeInherits = ast.data.inherits.length
+      const maybeGenericParameters =
+        genericParameters.length > 0
+          ? builders.concat([
+              '<',
+              join(
+                genericParameters.map(x => renderTypeAnnotation(x, options)),
+                ','
+              ),
+              '>',
+            ])
+          : ''
+      const maybeInherits = inherits.length
         ? builders.concat([
             ': ',
             join(
-              ast.data.inherits.map(x => renderTypeAnnotation(x, options)),
+              inherits.map(x => renderTypeAnnotation(x, options)),
               ', '
             ),
           ])
@@ -350,9 +368,10 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
       const opening = group([
         maybeModifier,
         maybeIndirect,
-        'struct',
+        'enum',
         builders.line,
         ast.data.name,
+        maybeGenericParameters,
         maybeInherits,
         builders.line,
         '{',
@@ -403,7 +422,7 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
         ast.data.pattern.data.identifier.type === 'SwiftIdentifier' &&
         ast.data.pattern.data.annotation &&
         ast.data.pattern.data.annotation.type === 'TypeName' &&
-        ast.data.pattern.data.annotation.data === 'Color' &&
+        ast.data.pattern.data.annotation.data.name === 'Color' &&
         ast.data.init &&
         ast.data.init.type === 'LiteralExpression' &&
         ast.data.init.data.type === 'Color' &&
@@ -643,7 +662,7 @@ function render(ast: SwiftAST.SwiftNode, options: Options): Doc {
       ])
     case 'SwitchStatement':
       return group([
-        'while',
+        'switch',
         builders.line,
         render(ast.data.expression, options),
         builders.line,
@@ -877,8 +896,22 @@ function renderTypeAnnotation(
   options: Options
 ): Doc {
   switch (node.type) {
-    case 'TypeName':
-      return node.data
+    case 'TypeName': {
+      const { name, genericArguments } = node.data
+      const maybeGenericParameters = builders.concat([
+        '<',
+        join(
+          genericArguments.map(x => renderTypeAnnotation(x, options)),
+          ','
+        ),
+        '>',
+      ])
+
+      return builders.concat([
+        name,
+        ...(genericArguments.length > 0 ? [maybeGenericParameters] : []),
+      ])
+    }
     case 'TypeIdentifier':
       return group([
         renderTypeAnnotation(node.data.name, options),

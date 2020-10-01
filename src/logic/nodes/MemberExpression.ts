@@ -1,13 +1,29 @@
 import { LogicAST as AST } from '@lona/serialization'
-import { ScopeVisitor } from '../scopeVisitor'
-import { IExpression, Node } from './interfaces'
-import { TypeCheckerVisitor } from '../typeChecker'
-import { EvaluationVisitor } from '../evaluationVisitor'
-import { flattenedMemberExpression } from '../ast'
 import { EnterReturnValue } from 'tree-visit'
+import { flattenedMemberExpression } from '../ast'
+import { EvaluationVisitor } from '../evaluationVisitor'
+import { ScopeVisitor } from '../scopeVisitor'
+import { TypeCheckerVisitor } from '../typeChecker'
+import { IExpression, Node } from './interfaces'
 
 export class MemberExpression extends Node<AST.MemberExpression>
   implements IExpression {
+  get names(): string[] {
+    const { expression, memberName } = this.syntaxNode.data
+
+    let names: string[] = []
+
+    if (expression.type === 'identifierExpression') {
+      names.push(expression.data.identifier.string)
+    } else if (expression.type === 'memberExpression') {
+      names.push(...new MemberExpression(expression).names)
+    }
+
+    names.push(memberName.string)
+
+    return names
+  }
+
   scopeEnter(visitor: ScopeVisitor): EnterReturnValue {
     const { id } = this.syntaxNode.data
 

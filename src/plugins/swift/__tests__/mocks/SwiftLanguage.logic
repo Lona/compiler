@@ -1,0 +1,33 @@
+@codable()
+enum AccessLevelModifier {
+  case privateModifier()
+  case publicModifier()
+}
+
+@codable()
+enum Literal {
+  case nil()
+  case floatingPoint(Number)
+  case array(Array<Literal>)
+}
+
+@codable()
+struct Identifier {
+  let id: String = ""
+  let name: String = ""
+}
+
+@codable()
+enum Declaration {
+  case functionDeclaration(name: String, parameters: Array<String>)
+}
+
+@codable()
+struct ExistingType {
+  let id: UUID = UUID()
+}
+
+@existingImplementation()
+struct UUID {
+  let value: String = ""
+}

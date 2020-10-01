@@ -4,11 +4,21 @@ import { makeProgram } from '../../logic/ast'
 import * as SwiftAST from './swiftAst'
 import { typeNever, nonNullable } from '../../utils/typeHelpers'
 import { Decode } from '../../logic/runtime/value'
+import { isCodable, createCodableImplementation } from './convert/codable'
+import { LogicGenerationContext } from './convert/LogicGenerationContext'
+import { convertNativeType } from './convert/nativeType'
 
-type LogicGenerationContext = {
-  isStatic: boolean
-  isTopLevel: boolean
-  helpers: Helpers
+export function hasExistingImplementation(
+  node: LogicAST.EnumerationDeclaration | LogicAST.RecordDeclaration
+): boolean {
+  const { attributes } = node.data
+
+  return attributes.some(
+    attribute =>
+      attribute.data.expression.type === 'identifierExpression' &&
+      attribute.data.expression.data.identifier.string ===
+        'existingImplementation'
+  )
 }
 
 function fontWeight(weight: string): SwiftAST.SwiftNode {
@@ -147,6 +157,7 @@ const declaration = (
           name: node.data.name.name,
           isIndirect: true,
           inherits: [],
+          genericParameters: [],
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
           body: node.data.declarations
             .filter(x => x.type !== 'placeholder')
@@ -183,6 +194,8 @@ const declaration = (
       }
     }
     case 'record': {
+      if (hasExistingImplementation(node)) return { type: 'Empty' }
+
       const newContext = { ...context, isStatic: false }
 
       const memberVariables = node.data.declarations.filter(
@@ -204,29 +217,16 @@ const declaration = (
             },
           })),
           throws: false,
-          body: memberVariables.map(x => ({
-            type: 'BinaryExpression',
-            data: {
-              left: {
-                type: 'MemberExpression',
-                data: [
-                  {
-                    type: 'SwiftIdentifier',
-                    data: 'self',
-                  },
-                  {
-                    type: 'SwiftIdentifier',
-                    data: x.data.name.name,
-                  },
-                ],
-              },
-              operator: '=',
-              right: {
-                type: 'SwiftIdentifier',
-                data: x.data.name.name,
-              },
-            },
-          })),
+          body: memberVariables.map(x =>
+            SwiftAST.binaryExpression(
+              SwiftAST.memberExpression([
+                SwiftAST.identifier('self'),
+                SwiftAST.identifier(x.data.name.name),
+              ]),
+              '=',
+              SwiftAST.identifier(x.data.name.name)
+            )
+          ),
         },
       }
 
@@ -234,13 +234,16 @@ const declaration = (
         type: 'StructDeclaration',
         data: {
           name: node.data.name.name,
-          inherits: [{ type: 'TypeName', data: 'Equatable' }],
+          inherits: [
+            ...(isCodable(node) ? [SwiftAST.typeName('Codable')] : []),
+            SwiftAST.typeName('Equatable'),
+          ],
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
           body: ((memberVariables.length
             ? [initFunction]
             : []) as SwiftAST.SwiftNode[]).concat(
-            memberVariables.map(x =>
-              declaration({ type: 'variable', data: { ...x.data } }, newContext)
+            memberVariables.map(({ data: { initializer, ...rest } }) =>
+              declaration({ type: 'variable', data: rest }, newContext)
             )
           ),
           /* TODO: Other declarations */
@@ -248,55 +251,66 @@ const declaration = (
       }
     }
     case 'enumeration': {
+      if (hasExistingImplementation(node)) return { type: 'Empty' }
+
+      const { name, genericParameters, cases, attributes } = node.data
+
       return {
         type: 'EnumDeclaration',
         data: {
-          name: node.data.name.name,
+          name: name.name,
           isIndirect: true,
-          inherits: node.data.genericParameters
+          genericParameters: genericParameters
             .filter(x => x.type !== 'placeholder')
             .map(x => genericParameter(x, context)),
+          inherits: [
+            ...(isCodable(node) ? [SwiftAST.typeName('Codable')] : []),
+          ],
           modifier: SwiftAST.DeclarationModifier.PublicModifier,
-          body: node.data.cases
-            .map(x => {
-              if (x.type !== 'enumerationCase') {
-                return undefined
-              }
-              const associatedValues = x.data.associatedValues.filter(
-                y => y.type !== 'placeholder'
-              )
+          body: [
+            ...cases
+              .map(x => {
+                if (x.type !== 'enumerationCase') return
 
-              const associatedTypes: SwiftAST.TupleTypeElement[] = associatedValues.flatMap(
-                associatedValue => {
-                  if (associatedValue.type === 'placeholder') return []
+                const associatedValues = x.data.associatedValues.filter(
+                  y => y.type !== 'placeholder'
+                )
 
-                  const { annotation, label } = associatedValue.data
+                const associatedTypes: SwiftAST.TupleTypeElement[] = associatedValues.flatMap(
+                  associatedValue => {
+                    if (associatedValue.type === 'placeholder') return []
 
-                  return {
-                    elementName: label?.name,
-                    annotation: typeAnnotation(annotation, context),
+                    const { annotation, label } = associatedValue.data
+
+                    return {
+                      elementName: label?.name,
+                      annotation: typeAnnotation(annotation, context),
+                    }
                   }
-                }
-              )
+                )
 
-              const associatedType: SwiftAST.TypeAnnotation | undefined =
-                associatedTypes.length === 0
-                  ? undefined
-                  : { type: 'TupleType', data: associatedTypes }
+                const associatedType: SwiftAST.TypeAnnotation | undefined =
+                  associatedTypes.length === 0
+                    ? undefined
+                    : { type: 'TupleType', data: associatedTypes }
 
-              const enumCase: SwiftAST.SwiftNode = {
-                type: 'EnumCase',
-                data: {
-                  name: {
-                    type: 'SwiftIdentifier',
-                    data: x.data.name.name,
+                const enumCase: SwiftAST.SwiftNode = {
+                  type: 'EnumCase',
+                  data: {
+                    name: {
+                      type: 'SwiftIdentifier',
+                      data: x.data.name.name,
+                    },
+                    parameters: associatedType,
                   },
-                  parameters: associatedType,
-                },
-              }
-              return enumCase
-            })
-            .filter(nonNullable),
+                }
+                return enumCase
+              })
+              .filter(nonNullable),
+            ...(isCodable(node)
+              ? createCodableImplementation(node, context)
+              : []),
+          ],
         },
       }
     }
@@ -615,30 +629,6 @@ const literal = (
   }
 }
 
-const convertNativeType = (
-  typeName: string,
-  _context: LogicGenerationContext
-): string => {
-  switch (typeName) {
-    case 'Boolean':
-      return 'Bool'
-    case 'Number':
-      return 'CGFloat'
-    case 'WholeNumber':
-      return 'Int'
-    case 'String':
-      return 'String'
-    case 'Optional':
-      return 'Optional'
-    case 'URL':
-      return 'Image'
-    case 'Color':
-      return 'Color'
-    default:
-      return typeName
-  }
-}
-
 const typeAnnotation = (
   node: LogicAST.TypeAnnotation | undefined,
   context: LogicGenerationContext
@@ -647,18 +637,25 @@ const typeAnnotation = (
     context.helpers.reporter.warn(
       'no type annotation when needed remaining in file'
     )
-    return { type: 'TypeName', data: '_' }
+    return { type: 'TypeName', data: { name: '_', genericArguments: [] } }
   }
   switch (node.type) {
     case 'typeIdentifier': {
+      const { identifier, genericArguments } = node.data
+
       return {
         type: 'TypeName',
-        data: convertNativeType(node.data.identifier.string, context),
+        data: {
+          name: convertNativeType(identifier.string, context),
+          genericArguments: genericArguments.map(arg =>
+            typeAnnotation(arg, context)
+          ),
+        },
       }
     }
     case 'placeholder': {
       context.helpers.reporter.warn('Type placeholder remaining in file')
-      return { type: 'TypeName', data: '_' }
+      return { type: 'TypeName', data: { name: '_', genericArguments: [] } }
     }
     case 'functionType': {
       return {
@@ -676,7 +673,7 @@ const typeAnnotation = (
     }
     default: {
       typeNever(node, context.helpers.reporter.warn)
-      return { type: 'TypeName', data: '_' }
+      return { type: 'TypeName', data: { name: '_', genericArguments: [] } }
     }
   }
 }
@@ -689,18 +686,21 @@ const genericParameter = (
     case 'parameter': {
       return {
         type: 'TypeName',
-        data: convertNativeType(node.data.name.name, context),
+        data: {
+          name: convertNativeType(node.data.name.name, context),
+          genericArguments: [],
+        },
       }
     }
     case 'placeholder': {
       context.helpers.reporter.warn(
         'Generic type placeholder remaining in file'
       )
-      return { type: 'TypeName', data: '_' }
+      return { type: 'TypeName', data: { name: '_', genericArguments: [] } }
     }
     default: {
       typeNever(node, context.helpers.reporter.warn)
-      return { type: 'TypeName', data: '_' }
+      return { type: 'TypeName', data: { name: '_', genericArguments: [] } }
     }
   }
 }

@@ -22,6 +22,10 @@ export class NoneLiteral extends Node<AST.NoneLiteral> implements ILiteral {
 
 export class BooleanLiteral extends Node<AST.BooleanLiteral>
   implements ILiteral {
+  get value(): boolean {
+    return this.syntaxNode.data.value
+  }
+
   typeCheckerEnter(visitor: TypeCheckerVisitor): void {}
 
   typeCheckerLeave(visitor: TypeCheckerVisitor): void {
@@ -35,6 +39,10 @@ export class BooleanLiteral extends Node<AST.BooleanLiteral>
 }
 
 export class NumberLiteral extends Node<AST.NumberLiteral> implements ILiteral {
+  get value(): number {
+    return this.syntaxNode.data.value
+  }
+
   typeCheckerEnter(visitor: TypeCheckerVisitor): void {}
 
   typeCheckerLeave(visitor: TypeCheckerVisitor): void {
@@ -48,6 +56,10 @@ export class NumberLiteral extends Node<AST.NumberLiteral> implements ILiteral {
 }
 
 export class StringLiteral extends Node<AST.StringLiteral> implements ILiteral {
+  get value(): string {
+    return this.syntaxNode.data.value
+  }
+
   typeCheckerEnter(visitor: TypeCheckerVisitor): void {}
 
   typeCheckerLeave(visitor: TypeCheckerVisitor): void {

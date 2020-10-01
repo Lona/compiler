@@ -9,7 +9,7 @@ exports[`Swift Fixtures converts: declaration/enumeration.md 1`] = `
   import AppKit
 #endif
 
-public indirect struct Foo: Wrapped {
+public indirect enum Foo<Wrapped> {
   case value(Wrapped)
   case none
 }
@@ -25,7 +25,7 @@ exports[`Swift Fixtures converts: declaration/enumerationWithLabels.md 1`] = `
   import AppKit
 #endif
 
-public indirect struct Foo {
+public indirect enum Foo {
   case bar(label1: CGFloat, label2: String)
 }
 "
@@ -66,7 +66,7 @@ exports[`Swift Fixtures converts: declaration/namespace.md 1`] = `
   import AppKit
 #endif
 
-public indirect struct Boolean {
+public indirect enum Boolean {
   func foo(a: Bool, b: Bool) -> Bool {}
   func bar(a: Bool, b: Bool) -> Bool {}
 }
@@ -90,8 +90,8 @@ public struct ThemedColor: Equatable {
     self.light = light
     self.dark = dark
   }
-  public let light: Color = Color(named: \\"light\\")!
-  public let dark: Color = Color(named: \\"dark\\")!
+  public let light: Color
+  public let dark: Color
 }
 "
 `;
@@ -105,7 +105,7 @@ exports[`Swift Fixtures converts: declaration/variable.md 1`] = `
   import AppKit
 #endif
 
-public let x: Array = [42]
+public let x: Array<CGFloat> = [42]
 "
 `;
 
@@ -165,7 +165,7 @@ exports[`Swift Fixtures converts: expression/member.md 1`] = `
   import AppKit
 #endif
 
-public indirect struct Foo {
+public indirect enum Foo {
   static public let primary: Color = Color(named: \\"primary\\")!
 }
 public let b: Color = Foo.primary
@@ -181,7 +181,7 @@ exports[`Swift Fixtures converts: literal/array.md 1`] = `
   import AppKit
 #endif
 
-public let x: Array = [42, 35]
+public let x: Array<CGFloat> = [42, 35]
 "
 `;
 

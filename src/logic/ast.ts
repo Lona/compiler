@@ -1,6 +1,13 @@
 import { LogicAST } from '@lona/serialization'
 import { uuid } from '../utils/uuid'
 
+// TODO: Move to serialization?
+export function isNode<T extends LogicAST.SyntaxNode>(
+  node: T
+): node is Exclude<T, { type: 'placeholder' }> {
+  return node.type !== 'placeholder'
+}
+
 /**
  * Takes an array of programs and returns a program containing
  * the statements of all programs

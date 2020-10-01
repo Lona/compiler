@@ -5,9 +5,20 @@ import { ScopeVisitor } from '../scopeVisitor'
 import { TypeCheckerVisitor } from '../typeChecker'
 import { EvaluationVisitor } from '../evaluationVisitor'
 import { LeaveReturnValue } from 'tree-visit'
+import { FunctionCallExpression } from './FunctionCallExpression'
 
 export class VariableDeclaration extends Node<AST.VariableDeclaration>
   implements IDeclaration {
+  get name(): string {
+    return this.syntaxNode.data.name.name
+  }
+
+  get attributes(): FunctionCallExpression[] {
+    return this.syntaxNode.data.attributes.map(
+      attribute => new FunctionCallExpression(attribute)
+    )
+  }
+
   namespaceEnter(visitor: NamespaceVisitor): void {}
 
   namespaceLeave(visitor: NamespaceVisitor): void {

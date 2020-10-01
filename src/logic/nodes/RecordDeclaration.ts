@@ -10,9 +10,27 @@ import { TypeCheckerVisitor } from '../typeChecker'
 import { IDeclaration, Node } from './interfaces'
 import { substitute } from '../typeUnifier'
 import { EnterReturnValue } from 'buffs'
+import { FunctionCallExpression } from './FunctionCallExpression'
+import { VariableDeclaration } from './VariableDeclaration'
 
 export class RecordDeclaration extends Node<AST.RecordDeclaration>
   implements IDeclaration {
+  get name(): string {
+    return this.syntaxNode.data.name.name
+  }
+
+  get attributes(): FunctionCallExpression[] {
+    return this.syntaxNode.data.attributes.map(
+      attribute => new FunctionCallExpression(attribute)
+    )
+  }
+
+  get variables(): VariableDeclaration[] {
+    return this.syntaxNode.data.declarations.flatMap(node =>
+      node.type === 'variable' ? [new VariableDeclaration(node)] : []
+    )
+  }
+
   namespaceEnter(visitor: NamespaceVisitor): void {
     const {
       name: { name, id },
