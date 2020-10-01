@@ -2634,14 +2634,6 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-language-tools@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/language-tools/-/language-tools-0.0.3.tgz#1723b2a8a10037c40cd2746004c919547e09cb2a"
-  integrity sha512-DXYsvKwVdGi3LkwXE+iFYo6EL7zUyuxWgTa9W6YzuD5JhWJLQs/nbmJLQAfGD3EI9HJGuewGzVruarr4OCL5/g==
-  dependencies:
-    prettier "^2.0.5"
-    tree-visit "^0.0.5"
-
 leven@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/leven/-/leven-3.1.0.tgz#77891de834064cccba82ae7842bb6b14a13ed7f2"
@@ -3191,11 +3183,6 @@ prettier@^1.19.1:
   version "1.19.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
   integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==
-
-prettier@^2.0.5:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.1.2.tgz#3050700dae2e4c8b67c4c3f666cdb8af405e1ce5"
-  integrity sha512-16c7K+x4qVlJg9rEbXl7HEGmQyZlG4R9AgP+oHKRMsMsuk8s+ATStlf1NpDqyBI1HpVyfjLOeMhH2LvuNvV5Vg==
 
 pretty-format@^25.1.0:
   version "25.1.0"
