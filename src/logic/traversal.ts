@@ -10,12 +10,12 @@ export function findNode<
   A extends AST.SyntaxNode['type'],
   T extends AST.SyntaxNode & { type: A }
 >(
-  rootNode: Parameters<typeof find>[0],
+  rootNode: AST.SyntaxNode,
   predicate: (node: AST.SyntaxNode, indexPath: IndexPath) => node is T
 ): T | undefined
 
 export function findNode(
-  node: Parameters<typeof find>[0],
+  node: AST.SyntaxNode,
   predicate: (node: AST.SyntaxNode, indexPath: IndexPath) => boolean
 ): ReturnType<typeof find> {
   return find(node, predicate)
