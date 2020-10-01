@@ -10,37 +10,115 @@ import { MemberExpression } from '../logic/nodes/MemberExpression'
 import { RecordDeclaration } from '../logic/nodes/RecordDeclaration'
 import { VariableDeclaration } from '../logic/nodes/VariableDeclaration'
 import {
-  Definition,
-  Field,
+  Lexer,
   Parser,
   Pattern,
-  RecordNodeDefinition,
-  EnumNodeDefinition,
+  Token,
+  or,
+  many,
+  option,
+  sequence,
+  consume,
+  thunk,
+  ManyPattern,
   OrPattern,
-  field,
-  manyField,
-  enumNodeDefinition,
-  recordNodeDefinition,
-  FieldAnnotation,
-  StringFieldAnnotation,
-  NodeFieldAnnotation,
-  optionField,
-} from './Parser'
-import {
-  getPrintAttributeExpression,
-  getNodePrintPattern,
-  getFieldPrintPattern,
-} from './buildPrinter'
-import {
-  FieldPrintPattern,
-  sequencePrintPattern,
-  joinCommandPrintPattern,
-  tokenReferencePrintPattern,
-  nodeReferencePrintPattern,
-  selfReferencePrintPattern,
-} from './Printer'
+  OptionPattern,
+  ConsumePattern,
+  ParserPattern,
+} from 'language-tools'
+// import {
+//   Definition,
+//   Field,
+//   Parser,
+//   Pattern,
+//   RecordNodeDefinition,
+//   EnumNodeDefinition,
+//   OrPattern,
+//   field,
+//   manyField,
+//   enumNodeDefinition,
+//   recordNodeDefinition,
+//   FieldAnnotation,
+//   StringFieldAnnotation,
+//   NodeFieldAnnotation,
+//   optionField,
+// } from './Parser'
+// import {
+//   getPrintAttributeExpression,
+//   getNodePrintPattern,
+//   getFieldPrintPattern,
+// } from './buildPrinter'
+// import {
+//   FieldPrintPattern,
+//   sequencePrintPattern,
+//   joinCommandPrintPattern,
+//   tokenReferencePrintPattern,
+//   nodeReferencePrintPattern,
+//   selfReferencePrintPattern,
+// } from './Printer'
 import { inspect } from 'util'
 import { isNode } from '../logic/ast'
+
+export type ParserPatternMap = Record<string, ParserPattern>
+
+export type StringFieldAnnotation = { type: 'string' }
+
+export type NodeFieldAnnotation = { type: 'node'; value: string }
+
+export type ManyFieldAnnotation = {
+  type: 'many'
+  value: StringFieldAnnotation | NodeFieldAnnotation
+}
+
+export type OptionFieldAnnotation = {
+  type: 'option'
+  value: StringFieldAnnotation | NodeFieldAnnotation
+}
+
+export type FieldAnnotation =
+  | StringFieldAnnotation
+  | NodeFieldAnnotation
+  | OptionFieldAnnotation
+  | ManyFieldAnnotation
+
+export type ManyField = {
+  type: 'many'
+  name: string
+  annotation: ManyFieldAnnotation
+  pattern: ManyPattern<string>
+}
+
+export type OptionField = {
+  type: 'option'
+  name: string
+  annotation: OptionFieldAnnotation
+  pattern: OptionPattern<string>
+}
+
+export type StandardField = {
+  type: 'standard'
+  name: string
+  annotation: StringFieldAnnotation | NodeFieldAnnotation
+  pattern: Pattern<string>
+}
+
+export type Field = StandardField | ManyField | OptionField
+
+export type EnumNodeDefinition = {
+  type: 'enum'
+  name: string
+  pattern: OrPattern<string>
+  fields: Field[]
+}
+
+export type RecordNodeDefinition = {
+  type: 'record'
+  name: string
+  pattern: Pattern<string>
+  fields: Field[]
+}
+
+export type NodeDefinition = EnumNodeDefinition | RecordNodeDefinition
 
 export function isParser(
   node: RecordDeclaration | EnumerationDeclaration
@@ -52,67 +130,63 @@ export function isParser(
   )
 }
 
-function getPattern(resolvedSelf: string, node: IExpression): Pattern {
+type Context = {
+  lexer: Lexer
+  getPattern: (name: string) => Pattern<string>
+}
+
+function getPattern(
+  context: Context,
+  resolvedSelf: string,
+  node: IExpression
+): Pattern<string> {
   if (
     node instanceof FunctionCallExpression &&
     node.callee instanceof IdentifierExpression
   ) {
     switch (node.callee.name) {
       case 'or':
-        return {
-          type: node.callee.name,
-          value: Object.values(node.argumentExpressionNodes).map(
-            getPattern.bind(null, resolvedSelf)
-          ),
-        }
+        return or(
+          Object.values(node.argumentExpressionNodes).map(child =>
+            getPattern(context, resolvedSelf, child)
+          )
+        )
       case 'many':
+        return many(
+          Object.values(node.argumentExpressionNodes).map(child =>
+            getPattern(context, resolvedSelf, child)
+          )[0]
+        )
       case 'option': {
-        return {
-          type: node.callee.name,
-          value: Object.values(node.argumentExpressionNodes).map(
-            getPattern.bind(null, resolvedSelf)
-          )[0],
-        }
+        return option(
+          Object.values(node.argumentExpressionNodes).map(child =>
+            getPattern(context, resolvedSelf, child)
+          )[0]
+        )
       }
     }
   } else if (
     node instanceof LiteralExpression &&
     node.literal instanceof ArrayLiteral
   ) {
-    return {
-      type: 'sequence',
-      value: node.literal.elements.map(getPattern.bind(null, resolvedSelf)),
-    }
+    return sequence(
+      node.literal.elements.map(child =>
+        getPattern(context, resolvedSelf, child)
+      )
+    )
   } else if (node instanceof MemberExpression) {
     const names = node.names.map(name =>
       name === 'self' ? resolvedSelf : name
     )
 
+    context.lexer.stateDefinitions.flatMap(definition =>
+      definition.rules.map(rule => rule.pattern)
+    )
+
     if (names[0] === 'Token') {
-      return {
-        type: 'reference',
-        value: {
-          type: 'token',
-          name: names[1],
-        },
-      }
+      return consume(names[1])
     } else {
-      return {
-        type: 'reference',
-        value: {
-          type: 'field',
-          nodeName: names[0],
-          fieldName: names[1],
-        },
-      }
-    }
-  } else if (node instanceof IdentifierExpression) {
-    return {
-      type: 'reference',
-      value: {
-        type: 'node',
-        name: node.name,
-      },
+      return thunk(() => context.getPattern(names[0]))
     }
   }
 
@@ -120,9 +194,10 @@ function getPattern(resolvedSelf: string, node: IExpression): Pattern {
 }
 
 export function getParseAttribute(
+  context: Context,
   name: string,
   attributes: FunctionCallExpression[]
-): Pattern | undefined {
+): Pattern<string> | undefined {
   const attribute = attributes.find(
     attribute =>
       attribute.callee instanceof IdentifierExpression &&
@@ -133,12 +208,13 @@ export function getParseAttribute(
 
   const { pattern } = attribute.argumentExpressionNodes
 
-  return getPattern(name, pattern)
+  return getPattern(context, name, pattern)
 }
 
 export function getEnumParseAttribute(
+  context: Context,
   node: EnumerationDeclaration
-): Pattern | undefined {
+): Pattern<string> | undefined {
   const attribute = node.attributes.find(
     attribute =>
       attribute.callee instanceof IdentifierExpression &&
@@ -149,23 +225,26 @@ export function getEnumParseAttribute(
 
   const { pattern } = attribute.argumentExpressionNodes
 
+  console.log(pattern)
+
   // Use default enum pattern
   if (!pattern) {
-    return {
-      type: 'or',
-      value: node.cases.map(enumCase => {
-        return {
-          type: 'reference',
-          value: {
-            type: 'field',
-            nodeName: node.name,
-            fieldName: enumCase.data.name.name,
-          },
-        }
-      }),
-    }
+    // throw new Error('Enum not handled yet')
+    return or([])
+    // return or(
+    //   node.cases.map(enumCase => {
+    //     return {
+    //       type: 'reference',
+    //       value: {
+    //         type: 'field',
+    //         nodeName: node.name,
+    //         fieldName: enumCase.data.name.name,
+    //       },
+    //     }
+    //   }),
+    // )
   } else {
-    return getParseAttribute(node.name, node.attributes)
+    return getParseAttribute(context, node.name, node.attributes)
   }
 }
 
@@ -218,9 +297,16 @@ function inferFieldPattern(
   variableName: string,
   fieldAnnotation: FieldAnnotation,
   options: Options
-): Pattern {
+): Pattern<string> {
   switch (fieldAnnotation.type) {
     case 'option':
+      const pattern = inferFieldPattern(
+        variableName,
+        fieldAnnotation.value,
+        options
+      )
+
+      return option(pattern)
     case 'many': {
       const pattern = inferFieldPattern(
         variableName,
@@ -228,20 +314,18 @@ function inferFieldPattern(
         options
       )
 
-      return {
-        type: fieldAnnotation.type,
-        value: pattern,
-      }
+      return many(pattern)
     }
     case 'node': {
-      if (!options.nodeNames.includes(fieldAnnotation.value)) {
-        throw new Error(`Invalid node reference: ${fieldAnnotation.value}`)
-      }
+      throw new Error('node pattern not handled yet')
+      // if (!options.nodeNames.includes(fieldAnnotation.value)) {
+      //   throw new Error(`Invalid node reference: ${fieldAnnotation.value}`)
+      // }
 
-      return {
-        type: 'reference',
-        value: { type: 'node', name: fieldAnnotation.value },
-      }
+      // return {
+      //   type: 'reference',
+      //   value: { type: 'node', name: fieldAnnotation.value },
+      // }
     }
     case 'string': {
       if (!options.tokenNames.includes(variableName)) {
@@ -250,33 +334,35 @@ function inferFieldPattern(
         )
       }
 
-      return {
-        type: 'reference',
-        value: { type: 'token', name: variableName },
-      }
+      return consume(variableName)
     }
   }
 }
 
 function getRecordNode(
+  context: Context,
   declaration: RecordDeclaration,
   options: Options
 ): RecordNodeDefinition {
-  const printAttribute = getPrintAttributeExpression(declaration.attributes)
+  // const printAttribute = getPrintAttributeExpression(declaration.attributes)
 
   return recordNodeDefinition({
     name: declaration.name,
-    pattern: getParseAttribute(declaration.name, declaration.attributes)!,
-    print: printAttribute ? getNodePrintPattern(printAttribute) : undefined,
+    pattern: getParseAttribute(
+      context,
+      declaration.name,
+      declaration.attributes
+    )!,
+    // print: printAttribute ? getNodePrintPattern(printAttribute) : undefined,
     fields: declaration.variables.flatMap((variable): Field[] => {
       const name = variable.name
 
       try {
         const annotation = fieldAnnotation(variable.syntaxNode.data.annotation)
         const pattern =
-          getParseAttribute(name, variable.attributes) ??
+          getParseAttribute(context, name, variable.attributes) ??
           inferFieldPattern(name, annotation, options)
-        const printAttribute = getPrintAttributeExpression(variable.attributes)
+        // const printAttribute = getPrintAttributeExpression(variable.attributes)
 
         if (pattern.type === 'many' && annotation.type === 'many') {
           return [
@@ -284,9 +370,9 @@ function getRecordNode(
               name: name,
               annotation,
               pattern,
-              ...(printAttribute && {
-                print: getFieldPrintPattern(printAttribute),
-              }),
+              // ...(printAttribute && {
+              //   print: getFieldPrintPattern(printAttribute),
+              // }),
             }),
           ]
         }
@@ -301,9 +387,9 @@ function getRecordNode(
               name: name,
               annotation,
               pattern,
-              ...(printAttribute && {
-                print: getFieldPrintPattern(printAttribute),
-              }),
+              // ...(printAttribute && {
+              //   print: getFieldPrintPattern(printAttribute),
+              // }),
             }),
           ]
         }
@@ -317,9 +403,9 @@ function getRecordNode(
             name: name,
             annotation,
             pattern,
-            ...(printAttribute && {
-              print: getFieldPrintPattern(printAttribute),
-            }),
+            // ...(printAttribute && {
+            //   print: getFieldPrintPattern(printAttribute),
+            // }),
           }),
         ]
       } catch (error) {
@@ -333,12 +419,13 @@ function getRecordNode(
 }
 
 function getEnumNode(
+  context: Context,
   declaration: EnumerationDeclaration,
   options: Options
 ): EnumNodeDefinition {
   return enumNodeDefinition({
     name: declaration.name,
-    pattern: getEnumParseAttribute(declaration)! as OrPattern,
+    pattern: getEnumParseAttribute(context, declaration)! as OrPattern<string>,
     fields: declaration.cases.flatMap((enumCase): Field[] => {
       const name = enumCase.data.name.name
 
@@ -355,18 +442,18 @@ function getEnumNode(
 
         const annotation = fieldAnnotation(associatedValues[0].data.annotation)
         const pattern =
-          getParseAttribute(name, attributes) ??
+          getParseAttribute(context, name, attributes) ??
           inferFieldPattern(name, annotation, options)
-        const printAttribute = getPrintAttributeExpression(attributes)
+        // const printAttribute = getPrintAttributeExpression(attributes)
 
         return [
           field({
             name: name,
             annotation: fieldAnnotation(associatedValues[0].data.annotation),
             pattern,
-            ...(printAttribute && {
-              print: getFieldPrintPattern(printAttribute),
-            }),
+            // ...(printAttribute && {
+            //   print: getFieldPrintPattern(printAttribute),
+            // }),
           }),
         ]
       } catch (error) {
@@ -388,28 +475,162 @@ type Options = ParserDefinitionOptions & {
   nodeNames: string[]
 }
 
-export function buildParserDefinition(
+export function buildParserPatterns(
+  context: Context,
   nodes: (EnumerationDeclaration | RecordDeclaration)[],
   parserOptions: ParserDefinitionOptions
-): Definition {
+): Record<string, NodeDefinition> {
   const parserNodes = nodes.filter(isParser)
   const nodeNames = parserNodes.map(node => node.name)
   const options: Options = { ...parserOptions, nodeNames }
 
+  return Object.fromEntries(
+    parserNodes
+      .map(node => {
+        if (node instanceof RecordDeclaration) {
+          return getRecordNode(context, node, options)
+        } else {
+          return getEnumNode(context, node, options)
+        }
+      })
+      .map(node => [node.name, node])
+  )
+}
+
+// export function buildParser(
+//   context: Context,
+//   nodes: (EnumerationDeclaration | RecordDeclaration)[],
+//   parserOptions: ParserDefinitionOptions
+// ): Parser<Token, Token> {
+//   return new Parser({
+//     matchToken: (token: Token, type: string) => token.type === type,
+//     tokenToValue: (token: Token) => token,
+//   })
+
+//   // return new Parser(buildParserDefinition(context, nodes, parserOptions))
+// }
+
+export function recordNodeDefinition({
+  name,
+  pattern,
+  fields,
+}: {
+  name: string
+  pattern: Pattern<string>
+  fields: Field[]
+}): RecordNodeDefinition {
   return {
-    nodes: parserNodes.map(node => {
-      if (node instanceof RecordDeclaration) {
-        return getRecordNode(node, options)
-      } else {
-        return getEnumNode(node, options)
-      }
-    }),
+    type: 'record',
+    name,
+    pattern,
+    fields,
   }
 }
 
-export function buildParser(
-  nodes: (EnumerationDeclaration | RecordDeclaration)[],
-  parserOptions: ParserDefinitionOptions
-): Parser {
-  return new Parser(buildParserDefinition(nodes, parserOptions))
+export function enumNodeDefinition({
+  name,
+  pattern,
+  fields,
+}: {
+  name: string
+  pattern: OrPattern<string>
+  fields: Field[]
+}): EnumNodeDefinition {
+  return {
+    type: 'enum',
+    name,
+    pattern,
+    fields,
+  }
+}
+
+export function optionFieldAnnotation(
+  value: StringFieldAnnotation | NodeFieldAnnotation
+): OptionFieldAnnotation {
+  return { type: 'option', value }
+}
+
+export function manyFieldAnnotation(
+  value: StringFieldAnnotation | NodeFieldAnnotation
+): ManyFieldAnnotation {
+  return { type: 'many', value }
+}
+
+export function standardField({
+  name,
+  annotation,
+  pattern,
+}: {
+  name: string
+  annotation: StringFieldAnnotation | NodeFieldAnnotation
+  pattern: Pattern<string>
+}): StandardField {
+  return {
+    type: 'standard',
+    name,
+    annotation,
+    pattern,
+  }
+}
+
+export function manyField({
+  name,
+  annotation,
+  pattern,
+}: {
+  name: string
+  annotation: ManyFieldAnnotation
+  pattern: ManyPattern<string>
+}): ManyField {
+  return {
+    type: 'many',
+    name,
+    annotation,
+    pattern,
+  }
+}
+
+export function optionField({
+  name,
+  annotation,
+  pattern,
+}: {
+  name: string
+  annotation: OptionFieldAnnotation
+  pattern: OptionPattern<string>
+}): OptionField {
+  return {
+    type: 'option',
+    name,
+    annotation,
+    pattern,
+  }
+}
+
+export function field({
+  name,
+  annotation,
+  pattern,
+}: {
+  name: string
+  annotation: FieldAnnotation
+  pattern: Pattern<string>
+}): Field {
+  if (annotation.type === 'option' || pattern.type === 'option') {
+    if (!(annotation.type === 'option' && pattern.type === 'option')) {
+      throw new Error(`Option field type mismatch for field: ${name}`)
+    }
+
+    return optionField({ name, annotation, pattern })
+  }
+
+  if (annotation.type === 'many' || pattern.type === 'many') {
+    if (!(annotation.type === 'many' && pattern.type === 'many')) {
+      throw new Error(`Many field type mismatch for field: ${name}`)
+    }
+
+    return manyField({ name, annotation, pattern })
+  }
+
+  return standardField({ name, annotation, pattern })
 }

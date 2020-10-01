@@ -1,31 +1,34 @@
-import { Parser } from './Parser'
-import { LogicAST, decodeLogic } from '@lona/serialization'
-import { findNode, findNodes } from '../logic/traversal'
-import { buildLexer, buildLexerDefinition } from './buildLexer'
+import { decodeLogic, LogicAST } from '@lona/serialization'
+import { Lexer, ParserPattern } from 'language-tools'
+import { createDeclarationNode } from '../logic/nodes/createNode'
 import { EnumerationDeclaration } from '../logic/nodes/EnumerationDeclaration'
 import { RecordDeclaration } from '../logic/nodes/RecordDeclaration'
-import { createDeclarationNode } from '../logic/nodes/createNode'
-import { buildParser } from './buildParser'
-import { Lexer } from './Lexer'
+import { findNode, findNodes } from '../logic/traversal'
+import { buildLexer, buildLexerDefinition } from './buildLexer'
+import { buildParserPatterns, ParserPatternMap } from './buildParser'
 
-export function buildParserFromSource(source: string): Parser {
+export function buildParserFromSource(source: string) {
   const rootNode = decodeLogic(source)
   const tokensEnum = getTokensEnum(rootNode)
+  const lexer = buildLexer(tokensEnum)
 
   const tokenNames = buildLexerDefinition(tokensEnum)
     .flatMap(state => state.rules)
     .map(rule => rule.name)
 
-  return buildParser(getParserTypes(rootNode), {
-    tokenizerName: tokensEnum.name,
-    tokenNames,
-  })
-}
+  const typeDeclarations = getParserTypes(rootNode)
 
-export function buildLexerFromSource(source: string): Lexer {
-  const rootNode = decodeLogic(source)
-
-  return buildLexer(getTokensEnum(rootNode))
+  return buildParserPatterns(
+    {
+      lexer,
+      getPattern: (name: string) => (undefined as any) as ParserPattern,
+    },
+    typeDeclarations,
+    {
+      tokenizerName: tokensEnum.name,
+      tokenNames,
+    }
+  )
 }
 
 function getParserTypes(
@@ -40,6 +43,12 @@ function getParserTypes(
     | RecordDeclaration
     | EnumerationDeclaration
   )[]
+}
+
+export function buildLexerFromSource(source: string): Lexer {
+  const rootNode = decodeLogic(source)
+
+  return buildLexer(getTokensEnum(rootNode))
 }
 
 function getTokensEnum(rootNode: LogicAST.SyntaxNode): EnumerationDeclaration {

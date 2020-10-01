@@ -8,9 +8,16 @@ import { IExpression } from '../logic/nodes/interfaces'
 import { LiteralExpression } from '../logic/nodes/LiteralExpression'
 import { BooleanLiteral, StringLiteral } from '../logic/nodes/literals'
 import { valueBindingName } from '../plugins/swift/convert/codable'
-import { getTokenPrintPattern } from './buildPrinter'
-import { Action, Builders, Lexer, Rule, StateDefinition, Token } from './Lexer'
-import { TokenPrintPattern } from './Printer'
+// import { getTokenPrintPattern } from './buildPrinter'
+import {
+  Action,
+  Lexer,
+  Rule,
+  StateDefinition,
+  Token,
+  rule,
+} from 'language-tools'
+// import { TokenPrintPattern } from './Printer'
 
 const getStringLiteral = (node: IExpression): string | undefined =>
   node instanceof LiteralExpression && node.literal instanceof StringLiteral
@@ -21,11 +28,6 @@ const getBooleanLiteral = (node: IExpression): boolean | undefined =>
   node instanceof LiteralExpression && node.literal instanceof BooleanLiteral
     ? node.literal.value
     : undefined
-
-// const getNumberLiteral = (node: IExpression): number | undefined =>
-//   node instanceof LiteralExpression && node.literal instanceof NumberLiteral
-//     ? node.literal.value
-//     : undefined
 
 export function isTokenizer(node: EnumerationDeclaration): boolean {
   return node.attributes.some(
@@ -76,10 +78,10 @@ export function getTokenAttributes(
       attribute.callee.name === 'print'
   )
 
-  const printPattern =
-    printAttribute && printAttribute.argumentExpressionNodes.pattern
-      ? getTokenPrintPattern(printAttribute.argumentExpressionNodes.pattern)
-      : undefined
+  // const printPattern =
+  //   printAttribute && printAttribute.argumentExpressionNodes.pattern
+  //     ? getTokenPrintPattern(printAttribute.argumentExpressionNodes.pattern)
+  //     : undefined
 
   const tokenAttributes = attributes.filter(
     attribute =>
@@ -91,7 +93,7 @@ export function getTokenAttributes(
     return [
       {
         parentState: 'main',
-        rule: Builders.rule(node.data.name.name),
+        rule: rule(node.data.name.name),
         transform: (token: Token) => ({ type: token.type }),
       },
     ]
@@ -109,10 +111,15 @@ export function getTokenAttributes(
       name: { name },
     } = node.data
 
-    const rule: Rule = Builders.rule(name, {
-      pattern: getStringLiteral(pattern),
+    const parsedPattern = getStringLiteral(pattern)
+
+    if (!parsedPattern) {
+      throw new Error(`No pattern associated with token type ${name}`)
+    }
+
+    const r: Rule = rule(name, parsedPattern, {
       discard: getBooleanLiteral(discard),
-      ...(printPattern && { print: printPattern }),
+      // ...(printPattern && { print: printPattern }),
       ...(action && { action: getAction(action) }),
     })
 
@@ -122,14 +129,14 @@ export function getTokenAttributes(
 
     return {
       parentState,
-      rule,
+      rule: r,
       transform: token => {
         return {
           type: token.type,
           ...Object.fromEntries(
             associatedValues.map((associatedValue, index, array) => [
               valueBindingName(associatedValue, index, array.length),
-              token.groups[index],
+              token.values[index],
             ])
           ),
         }
@@ -159,7 +166,7 @@ export function buildLexerDefinition(
 }
 
 export function buildLexer(node: EnumerationDeclaration): Lexer {
-  return new Lexer(buildLexerDefinition(node), 'main')
+  return new Lexer(buildLexerDefinition(node))
 }
 
 /**
